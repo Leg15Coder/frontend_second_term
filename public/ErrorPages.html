@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - The Mystic Path</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0e1e 0%, #1a1530 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .error-container {
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .error-code {
+            font-size: 120px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(168, 230, 207, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .error-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #e0e0e0;
+        }
+
+        .error-description {
+            font-size: 16px;
+            color: #b0b0b0;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .error-details {
+            background: rgba(255, 100, 100, 0.08);
+            border: 1px solid rgba(255, 100, 100, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .error-details-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #ff9999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .error-details-title .material-icons {
+            font-size: 18px;
+        }
+
+        .error-details-content {
+            font-size: 13px;
+            color: #b0b0b0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            word-break: break-all;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .suggestions {
+            background: rgba(168, 230, 207, 0.08);
+            border: 1px solid rgba(168, 230, 207, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .suggestions-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #a8e6cf;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .suggestions-title .material-icons {
+            font-size: 18px;
+        }
+
+        .suggestions-list {
+            list-style: none;
+        }
+
+        .suggestions-list li {
+            font-size: 13px;
+            color: #b0b0b0;
+            padding: 6px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .suggestions-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #a8e6cf;
+            font-weight: bold;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        button, a {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            color: #0f0e1e;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(168, 230, 207, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #a8e6cf;
+            border: 1px solid rgba(168, 230, 207, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(168, 230, 207, 0.1);
+            border-color: #a8e6cf;
+        }
+
+        .support-link {
+            font-size: 12px;
+            color: #8fd3d3;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(168, 230, 207, 0.1);
+        }
+
+        .support-link a {
+            color: #a8e6cf;
+            text-decoration: underline;
+            padding: 0;
+            display: inline;
+        }
+
+        .support-link a:hover {
+            color: #8fd3d3;
+        }
+
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(168, 230, 207, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(143, 211, 211, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+
+    <div class="error-container">
+        <!-- Toggle between 404 and Error by changing the HTML -->
+        <div id="errorType" class="error-type-404">
+            <!-- 404 NOT FOUND -->
+            <div class="error-code" id="errorCode">404</div>
+            <div class="error-icon">🗺️</div>
+            <h1>Page Not Found</h1>
+            <p class="error-description">
+                The path you're seeking doesn't exist in The Mystic Path. This page may have moved or disappeared into the shadows of forgotten routes.
+            </p>
+
+            <div class="error-details">
+                <div class="error-details-title">
+                    <span class="material-icons">info</span>
+                    Requested Path
+                </div>
+                <div class="error-details-content">
+                    /habit/123456/unknown-section
+                </div>
+            </div>
+
+            <div class="suggestions">
+                <div class="suggestions-title">
+                    <span class="material-icons">lightbulb</span>
+                    What You Can Do
+                </div>
+                <ul class="suggestions-list">
+                    <li>Return to the main dashboard</li>
+                    <li>Check if the URL is correct</li>
+                    <li>Browse available sections from the menu</li>
+                    <li>Create a new habit or goal</li>
+                    <li>Contact support if you need help</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ERROR BOUNDARY (uncomment to view) -->
+        <div id="errorType-error" class="error-type-error" style="display: none;">
+            <div class="error-code" id="errorCodeError">500</div>
+            <div class="error-icon">⚠️</div>
+            <h1>Something Went Wrong</h1>
+            <p class="error-description">
+                An unexpected error occurred in The Mystic Path. Our team has been notified and is working to restore harmony.
+            </p>
+
+            <div class="error-details">
+                <div class="error-details-title">
+                    <span class="material-icons">bug_report</span>
+                    Error Details
+                </div>
+                <div class="error-details-content">
+                    TypeError: Cannot read property 'habits' of undefined at loadUserData (app.js:234)
+                </div>
+            </div>
+
+            <div class="suggestions">
+                <div class="suggestions-title">
+                    <span class="material-icons">healing</span>
+                    Recovery Options
+                </div>
+                <ul class="suggestions-list">
+                    <li>Refresh the page and try again</li>
+                    <li>Clear your browser cache</li>
+                    <li>Try a different browser</li>
+                    <li>Check your internet connection</li>
+                    <li>Contact our support team</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <a href="#/" class="btn-primary">Return Home</a>
+            <a href="#/dashboard" class="btn-secondary">Go to Dashboard</a>
+        </div>
+
+        <div class="support-link">
+            Still having issues? <a href="#/support">Contact our support team</a> or check the <a href="#/help">help center</a>.
+        </div>
+    </div>
+
+    <script>
+        // Toggle between 404 and Error views
+        const errorTypeParam = new URLSearchParams(window.location.search).get('type') || '404';
+        
+        if (errorTypeParam === 'error') {
+            document.getElementById('errorType').style.display = 'none';
+            document.getElementById('errorType-error').style.display = 'block';
+        } else {
+            document.getElementById('errorType').style.display = 'block';
+            document.getElementById('errorType-error').style.display = 'none';
+        }
+
+        // Try again button
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'r' && e.ctrlKey) {
+                location.reload();
+            }
+        });
+    </script>
+</body>
+</html>

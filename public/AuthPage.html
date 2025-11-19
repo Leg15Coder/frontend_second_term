@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Register - The Mystic Path</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0e1e 0%, #1a1530 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #root {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .auth-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .auth-form-wrapper {
+            background: linear-gradient(135deg, rgba(168, 230, 207, 0.08), rgba(143, 211, 211, 0.03));
+            border: 1px solid rgba(168, 230, 207, 0.2);
+            border-radius: 16px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-text {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+
+        .logo-subtitle {
+            font-size: 12px;
+            color: #8fd3d3;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #e0e0e0;
+            text-align: center;
+        }
+
+        .auth-subtitle {
+            font-size: 13px;
+            color: #8fd3d3;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #a8e6cf;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(168, 230, 207, 0.3);
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #a8e6cf;
+            background: rgba(168, 230, 207, 0.1);
+            box-shadow: 0 0 0 3px rgba(168, 230, 207, 0.1);
+        }
+
+        input::placeholder {
+            color: rgba(168, 230, 207, 0.4);
+        }
+
+        .error-message {
+            color: #ff9999;
+            font-size: 12px;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #a8e6cf;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            color: #b0b0b0;
+            text-transform: none;
+            font-size: 12px;
+            cursor: pointer;
+            text-transform: none;
+            font-weight: 400;
+            letter-spacing: 0;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .forgot-password a {
+            color: #a8e6cf;
+            text-decoration: none;
+            font-size: 12px;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #8fd3d3;
+            text-decoration: underline;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            color: #0f0e1e;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(168, 230, 207, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: rgba(168, 230, 207, 0.2);
+        }
+
+        .divider-text {
+            font-size: 12px;
+            color: #8fd3d3;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .oauth-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .oauth-btn {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(168, 230, 207, 0.2);
+            border-radius: 8px;
+            color: #a8e6cf;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .oauth-btn:hover {
+            background: rgba(168, 230, 207, 0.1);
+            border-color: #a8e6cf;
+        }
+
+        .auth-toggle {
+            text-align: center;
+            font-size: 13px;
+            color: #b0b0b0;
+        }
+
+        .auth-toggle a {
+            color: #a8e6cf;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .auth-toggle a:hover {
+            color: #8fd3d3;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background: #a8e6cf;
+            border-radius: 50%;
+            animation: loading 1.5s infinite;
+            margin-left: 4px;
+        }
+
+        .loading::after,
+        .loading::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background: #a8e6cf;
+            border-radius: 50%;
+            margin-left: 4px;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0%, 60%, 100% { opacity: 0.3; }
+            30% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const AuthForm = () => {
+            const [isLogin, setIsLogin] = useState(true);
+            const [loading, setLoading] = useState(false);
+            const [errors, setErrors] = useState({});
+            const [formData, setFormData] = useState({
+                email: '',
+                password: '',
+                firstName: '',
+                lastName: '',
+                confirmPassword: '',
+                agreeToTerms: false
+            });
+
+            const handleInputChange = (e) => {
+                const { name, value, type, checked } = e.target;
+                setFormData({
+                    ...formData,
+                    [name]: type === 'checkbox' ? checked : value
+                });
+            };
+
+            const validateForm = () => {
+                const newErrors = {};
+                
+                if (!formData.email) {
+                    newErrors.email = 'Email is required';
+                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+                    newErrors.email = 'Email is invalid';
+                }
+
+                if (!formData.password) {
+                    newErrors.password = 'Password is required';
+                } else if (formData.password.length < 6) {
+                    newErrors.password = 'Password must be at least 6 characters';
+                }
+
+                if (!isLogin) {
+                    if (!formData.firstName) newErrors.firstName = 'First name is required';
+                    if (!formData.lastName) newErrors.lastName = 'Last name is required';
+                    if (formData.password !== formData.confirmPassword) {
+                        newErrors.confirmPassword = 'Passwords do not match';
+                    }
+                    if (!formData.agreeToTerms) {
+                        newErrors.agreeToTerms = 'You must agree to the terms';
+                    }
+                }
+
+                setErrors(newErrors);
+                return Object.keys(newErrors).length === 0;
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                
+                if (!validateForm()) return;
+
+                setLoading(true);
+                
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    console.log('Form submitted:', { isLogin, ...formData });
+                    alert(`${isLogin ? 'Login' : 'Registration'} successful!`);
+                    window.location.hash = '#/dashboard';
+                } catch (error) {
+                    setErrors({ submit: 'An error occurred. Please try again.' });
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const handleOAuth = (provider) => {
+                setLoading(true);
+                setTimeout(() => {
+                    alert(`${provider} authentication initiated`);
+                    setLoading(false);
+                }, 1500);
+            };
+
+            return (
+                <div className="auth-container">
+                    <div className="auth-form-wrapper">
+                        <div className="logo">
+                            <div className="logo-text">✨ MYSTIC PATH</div>
+                            <div className="logo-subtitle">Your Journey Begins Here</div>
+                        </div>
+
+                        <h2>{isLogin ? 'Welcome Back' : 'Join The Path'}</h2>
+                        <div className="auth-subtitle">
+                            {isLogin 
+                                ? 'Continue building your habits and achieving your goals'
+                                : 'Start your journey of personal growth today'
+                            }
+                        </div>
+
+                        <form onSubmit={handleSubmit}>
+                            {!isLogin && (
+                                <>
+                                    <div className="form-row">
+                                        <div className="form-group">
+                                            <label htmlFor="firstName">First Name</label>
+                                            <input
+                                                type="text"
+                                                id="firstName"
+                                                name="firstName"
+                                                value={formData.firstName}
+                                                onChange={handleInputChange}
+                                                placeholder="Alexandra"
+                                            />
+                                            {errors.firstName && <div className="error-message"><span className="material-icons" style={{fontSize: '14px'}}>error</span>{errors.firstName}</div>}
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="lastName">Last Name</label>
+                                            <input
+                                                type="text"
+                                                id="lastName"
+                                                name="lastName"
+                                                value={formData.lastName}
+                                                onChange={handleInputChange}
+                                                placeholder="Morgan"
+                                            />
+                                            {errors.lastName && <div className="error-message"><span className="material-icons" style={{fontSize: '14px'}}>error</span>{errors.lastName}</div>}
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+
+                            <div className="form-group">
+                                <label htmlFor="email">Email Address</label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleInputChange}
+                                    placeholder="you@example.com"
+                                />
+                                {errors.email && <div className="error-message"><span className="material-icons" style={{fontSize: '14px'}}>error</span>{errors.email}</div>}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="password">Password</label>
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleInputChange}
+                                    placeholder="••••••••"
+                                />
+                                {errors.password && <div className="error-message"><span className="material-icons" style={{fontSize: '14px'}}>error</span>{errors.password}</div>}
+                            </div>
+
+                            {!isLogin && (
+                                <div className="form-group">
+                                    <label htmlFor="confirmPassword">Confirm Password</label>
+                                    <input
+                                        type="password"
+                                        id="confirmPassword"
+                                        name="confirmPassword"
+                                        value={formData.confirmPassword}
+                                        onChange={handleInputChange}
+                                        placeholder="••••••••"
+                                    />
+                                    {errors.confirmPassword && <div className="error-message"><span className="material-icons" style={{fontSize: '14px'}}>error</span>{errors.confirmPassword}</div>}
+                                </div>
+                            )}
+
+                            {isLogin && (
+                                <div className="forgot-password">
+                                    <a href="#/forgot-password">Forgot password?</a>
+                                </div>
+                            )}
+
+                            {!isLogin && (
+                                <div className="checkbox-group">
+                                    <input
+                                        type="checkbox"
+                                        id="terms"
+                                        name="agreeToTerms"
+                                        checked={formData.agreeToTerms}
+                                        onChange={handleInputChange}
+                                    />
+                                    <label htmlFor="terms">I agree to Terms of Service and Privacy Policy</label>
+                                </div>
+                            )}
+
+                            {errors.agreeToTerms && <div className="error-message" style={{marginBottom: '12px'}}><span className="material-icons" style={{fontSize: '14px'}}>error</span>{errors.agreeToTerms}</div>}
+
+                            <button type="submit" className="submit-btn" disabled={loading}>
+                                {loading ? (
+                                    <>
+                                        {isLogin ? 'Logging in' : 'Creating account'}
+                                        <span className="loading"></span>
+                                    </>
+                                ) : (
+                                    isLogin ? 'Login' : 'Create Account'
+                                )}
+                            </button>
+
+                            <div className="divider">
+                                <div className="divider-line"></div>
+                                <div className="divider-text">Or continue with</div>
+                                <div className="divider-line"></div>
+                            </div>
+
+                            <div className="oauth-buttons">
+                                <button type="button" className="oauth-btn" onClick={() => handleOAuth('Google')} disabled={loading}>
+                                    <span className="material-icons" style={{fontSize: '18px'}}>g_translate</span>
+                                    Google
+                                </button>
+                                <button type="button" className="oauth-btn" onClick={() => handleOAuth('GitHub')} disabled={loading}>
+                                    <span className="material-icons" style={{fontSize: '18px'}}>code</span>
+                                    GitHub
+                                </button>
+                            </div>
+
+                            {errors.submit && <div className="error-message" style={{marginBottom: '12px'}}><span className="material-icons" style={{fontSize: '14px'}}>error</span>{errors.submit}</div>}
+                        </form>
+
+                        <div className="auth-toggle">
+                            {isLogin ? 'Don\'t have an account? ' : 'Already have an account? '}
+                            <a onClick={() => {
+                                setIsLogin(!isLogin);
+                                setErrors({});
+                                setFormData({
+                                    email: '',
+                                    password: '',
+                                    firstName: '',
+                                    lastName: '',
+                                    confirmPassword: '',
+                                    agreeToTerms: false
+                                });
+                            }}>
+                                {isLogin ? 'Sign up' : 'Login'}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<AuthForm />, document.getElementById('root'));
+    </script>
+</body>
+</html>

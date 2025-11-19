@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html class="dark" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Challenges - Mystic Path</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4F46E5", // A mystical blue/indigo
+                        "accent": "#FBBF24", // Luminous Gold
+                        "background-dark": "#0A0F2B", // Deep Navy Blue
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'glow-blue': '0 0 15px 5px rgba(79, 70, 229, 0.2), 0 0 25px 10px rgba(79, 70, 229, 0.1)',
+                        'glow-gold': '0 0 10px 2px rgba(251, 191, 36, 0.3), 0 0 20px 5px rgba(251, 191, 36, 0.2)',
+                        'glow-gold-hover': '0 0 15px 4px rgba(251, 191, 36, 0.5), 0 0 25px 8px rgba(251, 191, 36, 0.3)',
+                        'glow-white': '0 0 8px 2px rgba(255, 255, 255, 0.3)',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'shimmer': 'shimmer 3s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(-5px)' },
+                            '50%': { transform: 'translateY(5px)' },
+                        },
+                        shimmer: {
+                             '0%': { boxShadow: '0 0 10px 2px rgba(251, 191, 36, 0.2), 0 0 20px 5px rgba(251, 191, 36, 0.1)' },
+                            '100%': { boxShadow: '0 0 15px 4px rgba(251, 191, 36, 0.5), 0 0 30px 10px rgba(251, 191, 36, 0.3)' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            @apply font-display bg-background-dark text-white;
+        }
+        .glass-panel {
+            @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen w-full overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+<div class="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-primary/20 rounded-full blur-[150px] animate-pulse-slow"></div>
+<div class="absolute bottom-[-15%] right-[-15%] w-[600px] h-[600px] bg-accent/10 rounded-full blur-[150px] animate-pulse-slow"></div>
+<div class="absolute top-[30%] right-[5%] w-[400px] h-[400px] bg-[#1B1038] rounded-full blur-[120px]"></div>
+</div>
+<div class="flex h-full min-h-screen w-full">
+<aside class="w-64 p-4 flex-shrink-0">
+<div class="flex h-full flex-col justify-between glass-panel p-4">
+<div class="flex flex-col gap-4">
+<div class="flex gap-3 items-center">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-accent/50" data-alt="User profile picture of Alex Mercer" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAsZ7KMbxc4Kgqb5qIHSWF26LY279GQZ0Z8KIM7CLI4Vugo-aW3nUZUmIFmEgs5MwHrEEtZwWBhS_vFBIVabCAJkpmU6yfgJX0TjFpaS6TjutdURA3KsJFolV0ri-MMMA1r1ndk-LA1lp45benYrHK-wjAtPpfy0EyVWiO_2BbchFfXp6mi7GZDpAJpO4XmpKy4OUUkDcBF1--tfZ_VVT8maDb17VyHBQti_LSF2EEQCFNq8Ia9MTh6Lswxb0BfxvNTm13QdVbxXig5");'></div>
+<div class="flex flex-col">
+<h1 class="text-white text-base font-medium leading-normal">Alex Mercer</h1>
+<p class="text-white/60 text-sm font-normal leading-normal">Level 12 Mage</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 mt-6">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-white/80">dashboard</span>
+<p class="text-white/80 text-sm font-medium leading-normal">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-white/80">checklist</span>
+<p class="text-white/80 text-sm font-medium leading-normal">Habits</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-white/80">flag</span>
+<p class="text-white/80 text-sm font-medium leading-normal">Goals</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-white/10 border border-white/20" href="#">
+<span class="material-symbols-outlined text-accent" style="font-variation-settings: 'FILL' 1;">shield</span>
+<p class="text-white text-sm font-medium leading-normal">Challenges</p>
+</a>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-white/80">settings</span>
+<p class="text-white/80 text-sm font-medium leading-normal">Settings</p>
+</a>
+</div>
+</div>
+</aside>
+<main class="flex-1 p-8 flex flex-col">
+<div class="flex flex-col gap-4 mb-6">
+<p class="text-white text-4xl font-black leading-tight tracking-[-0.033em]">The Mystic Path</p>
+<p class="text-white/60 text-base font-normal leading-normal">Your current challenge. Embark on a journey of self-improvement.</p>
+</div>
+<div class="flex-1 glass-panel rounded-xl flex items-center justify-center overflow-hidden relative">
+<div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuASeXKvfC5FThQuuMauMrf8HPT0ZKU4eoVSSMm6_o23OJTVaYjyqpFWElhjtpx4uFjgRyp3DbMGUeFLz--YAMz8bd9RBPCniCMPF4TsqySWIQorLDGAz75f9q5CcgFZ25XaeHs61DaZLh76fUPg_Aqt8k6aRZeyOpn8q76qCF61j1icKH_BM0V0GqN5gRiA3EhqXJ8UIQXCa8xnFsIfMOKkCKkQc1_kxLMc9_BA-7HM48-qzifToSTOENRBnbTx4kQfuZMJkSotcmYz'); transform: scale(1.1);"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/50 to-transparent"></div>
+<div class="relative w-full h-full p-12">
+<svg class="absolute inset-0 w-full h-full" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+<path class="stroke-current text-white/20" d="M 100 400 Q 250 300, 400 350 T 700 100" fill="none" stroke-dasharray="5 5" stroke-width="2"></path>
+</svg>
+<div class="absolute animate-float" style="left: 10%; top: 75%;">
+<div class="relative flex flex-col items-center">
+<div class="w-16 h-16 bg-center bg-no-repeat aspect-square bg-cover rounded-full border-2 border-accent shadow-glow-gold" data-alt="Player Character Avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAsZ7KMbxc4Kgqb5qIHSWF26LY279GQZ0Z8KIM7CLI4Vugo-aW3nUZUmIFmEgs5MwHrEEtZwWBhS_vFBIVabCAJkpmU6yfgJX0TjFpaS6TjutdURA3KsJFolV0ri-MMMA1r1ndk-LA1lp45benYrHK-wjAtPpfy0EyVWiO_2BbchFfXp6mi7GZDpAJpO4XmpKy4OUUkDcBF1--tfZ_VVT8maDb17VyHBQti_LSF2EEQCFNq8Ia9MTh6Lswxb0BfxvNTm13QdVbxXig5");'></div>
+<span class="mt-2 text-xs font-bold text-white bg-black/50 px-2 py-1 rounded">You are here</span>
+</div>
+</div>
+<button class="absolute flex items-center justify-center size-8 rounded-full bg-primary/30 border-2 border-primary cursor-pointer" style="left: 30%; top: 58%;">
+<span class="material-symbols-outlined text-primary text-xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</button>
+<button class="absolute flex items-center justify-center size-8 rounded-full bg-accent/30 border-2 border-accent animate-shimmer cursor-pointer shadow-glow-gold" style="left: 50%; top: 65%;">
+<span class="material-symbols-outlined text-accent text-xl animate-pulse">star</span>
+</button>
+<div class="absolute flex items-center justify-center size-8 rounded-full bg-white/10 border-2 border-white/20" style="left: 68%; top: 40%;">
+<span class="material-symbols-outlined text-white/40">lock</span>
+</div>
+<div class="absolute flex items-center justify-center size-8 rounded-full bg-white/10 border-2 border-white/20" style="left: 85%; top: 18%;">
+<span class="material-symbols-outlined text-white/40">lock</span>
+</div>
+</div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md">
+<div class="glass-panel p-6 border-accent/50 shadow-glow-gold-hover flex flex-col gap-4 text-center items-center">
+<span class="material-symbols-outlined text-accent text-5xl">auto_stories</span>
+<h3 class="text-white text-2xl font-bold leading-tight tracking-[-0.015em]">Chapter 2: The Silent Library</h3>
+<p class="text-white/80 text-base font-normal leading-normal">Your task is to read for 30 minutes. Focus your mind, gather knowledge, and prepare for the path ahead.</p>
+<button class="flex items-center justify-center overflow-hidden rounded-lg h-10 px-6 mt-2 bg-accent/10 text-accent text-sm font-bold leading-normal tracking-[0.015em] border border-accent/80 hover:bg-accent/20 transition-colors duration-300 w-full sm:w-auto">
+<span class="truncate">Mark as Complete</span>
+</button>
+</div>
+</div>
+<div class="absolute bottom-6 right-6 flex flex-col gap-2">
+<button class="size-10 glass-panel rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-white/80">add</span>
+</button>
+<button class="size-10 glass-panel rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-white/80">remove</span>
+</button>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>

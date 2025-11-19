@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html class="dark" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Habits Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&amp;family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#4A044E", // Deep Violet
+              "accent": "#FBBF24",  // Amber
+              "background-dark": "#0C0A09", // Almost Black
+              "rune-glow": "#FBBF24",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"],
+              "rune": ["Cinzel", "serif"],
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem"},
+            boxShadow: {
+                'glow-amber': '0 0 15px 5px rgba(251, 191, 36, 0.2), 0 0 25px 10px rgba(251, 191, 36, 0.1)',
+                'glow-amber-hover': '0 0 20px 7px rgba(251, 191, 36, 0.4), 0 0 35px 15px rgba(251, 191, 36, 0.2)',
+                'magic-aura': '0 0 25px 8px rgba(251, 191, 36, 0.3), 0 0 40px 15px rgba(74, 4, 78, 0.5)',
+            },
+            animation: {
+                'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                'flicker': 'flicker 2.5s infinite',
+            },
+            keyframes: {
+                flicker: {
+                    '0%, 100%': { opacity: 1, boxShadow: '0 0 15px 5px rgba(251, 191, 36, 0.3)' },
+                    '50%': { opacity: 0.7, boxShadow: '0 0 10px 2px rgba(251, 191, 36, 0.2)' },
+                }
+            }
+          },
+        },
+      }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            @apply font-display bg-background-dark text-stone-300;
+        }
+        .rune-text {
+            @apply font-rune text-rune-glow;
+        }
+        .magic-card {
+            @apply bg-black/30 backdrop-blur-md border border-amber-500/20 rounded-lg p-6 transition-all duration-300;
+        }
+        .magic-card:hover {
+            @apply border-amber-500/50 shadow-magic-aura scale-105;
+        }
+        .flicker-active {
+            @apply animate-flicker border-amber-500/60;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen w-full overflow-x-hidden">
+<div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+<div class="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-primary/30 rounded-full blur-[150px] animate-pulse-slow"></div>
+<div class="absolute bottom-[-15%] right-[-15%] w-[600px] h-[600px] bg-accent/20 rounded-full blur-[150px] animate-pulse-slow animation-delay-2000"></div>
+</div>
+<div class="container mx-auto px-4 py-8">
+<header class="text-center mb-12">
+<h1 class="rune-text text-5xl font-bold tracking-widest" style="text-shadow: 0 0 10px #FBBF24, 0 0 20px #FBBF24;">Book of Habits</h1>
+<p class="text-stone-400 mt-2">Forge your destiny, one ritual at a time.</p>
+</header>
+<main>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+<div class="magic-card flicker-active">
+<div class="flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-6xl text-rune-glow mb-4" style="text-shadow: 0 0 8px #FBBF24;">self_improvement</span>
+<h2 class="rune-text text-xl font-bold tracking-wider">Morning Meditation</h2>
+<p class="text-stone-400 text-sm mt-2">15 minutes of mindfulness to center the soul.</p>
+<div class="mt-4 text-stone-300 text-xs font-mono">Streak: 21 Days</div>
+</div>
+</div>
+<div class="magic-card">
+<div class="flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-6xl text-stone-500 mb-4">menu_book</span>
+<h2 class="rune-text text-xl font-bold tracking-wider text-stone-300">Read Ancient Texts</h2>
+<p class="text-stone-400 text-sm mt-2">One chapter from the arcane library.</p>
+<div class="mt-4 text-stone-300 text-xs font-mono">Streak: 5 Days</div>
+</div>
+</div>
+<div class="magic-card flicker-active">
+<div class="flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-6xl text-rune-glow mb-4" style="text-shadow: 0 0 8px #FBBF24;">fitness_center</span>
+<h2 class="rune-text text-xl font-bold tracking-wider">Strength Ritual</h2>
+<p class="text-stone-400 text-sm mt-2">Physical training to hone the body.</p>
+<div class="mt-4 text-stone-300 text-xs font-mono">Streak: 12 Days</div>
+</div>
+</div>
+<div class="magic-card">
+<div class="flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-6xl text-stone-500 mb-4">school</span>
+<h2 class="rune-text text-xl font-bold tracking-wider text-stone-300">Learn New Rune</h2>
+<p class="text-stone-400 text-sm mt-2">Study and practice a new symbol of power.</p>
+<div class="mt-4 text-stone-300 text-xs font-mono">Streak: 3 Days</div>
+</div>
+</div>
+<div class="magic-card">
+<div class="flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-6xl text-stone-500 mb-4">forest</span>
+<h2 class="rune-text text-xl font-bold tracking-wider text-stone-300">Nature Walk</h2>
+<p class="text-stone-400 text-sm mt-2">Connect with the earth's energies.</p>
+<div class="mt-4 text-stone-300 text-xs font-mono">Streak: 8 Days</div>
+</div>
+</div>
+<div class="magic-card">
+<div class="flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-6xl text-stone-500 mb-4">edit</span>
+<h2 class="rune-text text-xl font-bold tracking-wider text-stone-300">Journaling</h2>
+<p class="text-stone-400 text-sm mt-2">Transcribe thoughts and incantations.</p>
+<div class="mt-4 text-stone-300 text-xs font-mono">Streak: 33 Days</div>
+</div>
+</div>
+<div class="magic-card border-dashed border-amber-500/30 hover:border-amber-500/80 group">
+<div class="flex flex-col items-center justify-center text-center h-full">
+<span class="material-symbols-outlined text-6xl text-stone-600 mb-4 group-hover:text-rune-glow transition-colors duration-300">add_circle</span>
+<h2 class="rune-text text-xl font-bold tracking-wider text-stone-400 group-hover:text-rune-glow transition-colors duration-300">New Ritual</h2>
+<p class="text-stone-500 text-sm mt-2 group-hover:text-stone-400 transition-colors duration-300">Conjure a new habit to master.</p>
+</div>
+</div>
+</div>
+</main>
+<footer class="text-center mt-16">
+<button class="rune-text border border-amber-800 bg-amber-950/50 px-8 py-3 rounded-lg text-amber-400 tracking-widest hover:bg-amber-950 hover:shadow-glow-amber-hover transition-all duration-300">
+            View All Glyphs
+        </button>
+</footer>
+</div>
+
+</body></html>
