@@ -59,6 +59,13 @@ function App() {
           <Route path="/public/finish" element={<Public.FinishChallenge />} />
           <Route path="/public/finish-animated" element={<Public.FinishChallengeAnimated />} />
           <Route path="/public/modals" element={<Public.ModalsDemo />} />
+          <Route path="/public/checklist" element={<Public.Checklist />} />
+          <Route path="/public/activity" element={<Public.ActivityFeed />} />
+          <Route path="/public/challenge/:id" element={<Public.ChallengeDetail />} />
+          <Route path="/public/notifications" element={<Public.Notifications />} />
+          <Route path="/public/states" element={<Public.States />} />
+          <Route path="/public/toasts" element={<Public.ToastsDemo />} />
+          <Route path="/public/auth" element={<Public.AuthPage />} />
           <Route path="/public/error" element={<Public.ErrorPages />} />
         </Routes>
       </main>

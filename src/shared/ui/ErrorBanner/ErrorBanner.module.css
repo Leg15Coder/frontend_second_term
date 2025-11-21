@@ -1,0 +1,4 @@
+.banner{background:#ffdddd;color:#6b0000;padding:12px;border-radius:8px;display:flex;justify-content:space-between;align-items:center}
+.message{flex:1}
+.retry{margin-left:12px;padding:6px 10px;border-radius:6px;border:1px solid rgba(0,0,0,0.1);background:white;cursor:pointer}
+

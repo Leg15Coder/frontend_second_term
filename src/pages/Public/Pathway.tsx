@@ -9,7 +9,7 @@ const Pathway: React.FC = () => {
         <div className="flex h-full flex-col justify-between glass-panel p-4">
           <div>
             <div className="flex gap-3 items-center">
-              <div className="rounded-full w-12 h-12 bg-center bg-cover" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80')" }} />
+              <div className="avatar-lg" style={{ width: 48, height: 48, backgroundImage: "url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80')" }} />
               <div>
                 <h1 className="text-white font-medium">Alex Mercer</h1>
                 <p className="text-white/60 text-sm">Level 12 Mage</p>
@@ -45,7 +45,7 @@ const Pathway: React.FC = () => {
                   <span className="material-symbols-outlined text-accent text-5xl">auto_stories</span>
                   <h3 className="text-white text-2xl font-bold">Chapter 2: The Silent Library</h3>
                   <p className="text-white/80 text-base">Your task is to read for 30 minutes. Focus your mind, gather knowledge, and prepare for the path ahead.</p>
-                  <button className="flex items-center justify-center overflow-hidden rounded-lg h-10 px-6 mt-2 bg-accent/10 text-accent text-sm font-bold border border-accent/80 hover:bg-accent/20">Mark as Complete</button>
+                  <button className="btn-accent mt-2">Mark as Complete</button>
                 </div>
               </div>
             </div>

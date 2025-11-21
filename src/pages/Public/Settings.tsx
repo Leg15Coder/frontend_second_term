@@ -12,13 +12,16 @@ const Settings: React.FC = () => {
           <h2 className="text-2xl font-bold mb-4">Settings</h2>
           <div className="flex flex-col gap-4">
             <label className="flex items-center justify-between">
-              <span>Notifications</span>
-              <input type="checkbox" checked={notifications} onChange={() => setNotifications((s) => !s)} />
+              <span className="text-white/80">Notifications</span>
+              <input type="checkbox" checked={notifications} onChange={() => setNotifications((s) => !s)} className="h-5 w-5" />
             </label>
             <label className="flex items-center justify-between">
-              <span>Dark mode</span>
-              <input type="checkbox" checked={darkMode} onChange={() => setDarkMode((s) => !s)} />
+              <span className="text-white/80">Dark mode</span>
+              <input type="checkbox" checked={darkMode} onChange={() => setDarkMode((s) => !s)} className="h-5 w-5" />
             </label>
+          </div>
+          <div className="mt-6 flex justify-end">
+            <button className="btn-accent">Save settings</button>
           </div>
         </div>
       </main>
@@ -27,4 +30,3 @@ const Settings: React.FC = () => {
 }
 
 export default Settings
-

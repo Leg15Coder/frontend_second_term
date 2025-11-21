@@ -6,12 +6,13 @@ interface Props {
 
 const MockLayout: React.FC<Props> = ({ children }) => {
   return (
-    <div className="min-h-screen w-full bg-[--bg]" style={{ minHeight: '100vh' }}>
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-[-15%] left-[-10%] w-[400px] h-[400px] bg-primary/20 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-accent/10 rounded-full blur-[150px] animate-pulse" />
+    <div style={{ minHeight: '100vh', width: '100%', background: 'var(--bg)', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', inset: 0, zIndex: -10 }}>
+        <div style={{ position: 'absolute', top: '-20%', left: '-12%', width: 520, height: 520, background: 'var(--primary)', borderRadius: '50%', filter: 'blur(160px)', opacity: 0.12, animation: 'pulse 7s infinite' }} />
+        <div style={{ position: 'absolute', bottom: '-15%', right: '-12%', width: 620, height: 620, background: 'var(--accent)', borderRadius: '50%', filter: 'blur(180px)', opacity: 0.06, animation: 'pulse 9s infinite' }} />
+        <div style={{ position: 'absolute', top: '30%', right: '6%', width: 420, height: 420, background: 'rgba(10,15,43,0.6)', borderRadius: '50%', filter: 'blur(120px)', opacity: 0.6 }} />
       </div>
-      <div className="flex min-h-screen">
+      <div style={{ display: 'flex', minHeight: '100vh' }}>
         {children}
       </div>
     </div>
@@ -19,4 +20,3 @@ const MockLayout: React.FC<Props> = ({ children }) => {
 }
 
 export default MockLayout
-

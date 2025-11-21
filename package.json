@@ -18,7 +18,10 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "test:screenshots": "loki test --storybook-url http://localhost:6006",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.10.1",
@@ -59,7 +62,7 @@
     "globals": "^16.5.0",
     "jest": "^30.2.0",
     "jsdom": "^27.2.0",
-    "msw": "^1.2.3",
+    "msw": "^2.1.0",
     "playwright": "^1.56.1",
     "prettier": "^3.6.2",
     "storybook": "^10.0.7",

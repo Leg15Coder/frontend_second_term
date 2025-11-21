@@ -2,7 +2,8 @@ import React, { useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import MockLayout from './MockLayout'
 import { useAppDispatch, useAppSelector } from '../../app/store'
-import { fetchHabits, toggleHabit } from '../../features/habits/habitsSlice'
+import { fetchHabits, toggleLocalComplete } from '../../features/habits/habitsSlice'
+import type { Habit } from '../../types'
 
 const HabitDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -13,9 +14,9 @@ const HabitDetail: React.FC = () => {
     dispatch(fetchHabits())
   }, [dispatch])
 
-  const habit = items.find((h) => h.id === id)
+  const habit: Habit | undefined = items.find((h) => h.id === id)
 
-  if (!habit)
+  if (!habit) {
     return (
       <MockLayout>
         <main className="flex-1 p-8">
@@ -23,6 +24,7 @@ const HabitDetail: React.FC = () => {
         </main>
       </MockLayout>
     )
+  }
 
   return (
     <MockLayout>
@@ -31,14 +33,14 @@ const HabitDetail: React.FC = () => {
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold">{habit.title}</h2>
             <div className="flex gap-2">
-              <button onClick={() => dispatch(toggleHabit(habit.id))} className="px-3 py-1 rounded bg-white/10">Toggle</button>
+              <button onClick={() => dispatch(toggleLocalComplete(habit.id))} className="btn-accent">{habit.completed ? 'Mark Incomplete' : 'Mark Complete'}</button>
               <Link to="/public/habits" className="px-3 py-1 rounded bg-white/10">Back</Link>
             </div>
           </div>
           <p className="mt-4 text-white/70">{habit.description}</p>
           <div className="mt-6">
             <h4 className="font-semibold">Streak</h4>
-            <div>{habit.streak} days</div>
+            <div>{habit.streak ?? 0} days</div>
           </div>
         </div>
       </main>
@@ -47,4 +49,3 @@ const HabitDetail: React.FC = () => {
 }
 
 export default HabitDetail
-

@@ -3,7 +3,7 @@ export interface Habit {
   title: string
   description?: string
   completed: boolean
-  streak: number
+  streak?: number
   createdAt: string
   updatedAt?: string
 }
@@ -21,9 +21,24 @@ export interface Goal {
 export interface User {
   id: string
   name: string
-  email: string
-  avatarUrl?: string
-  createdAt: string
+  email?: string
+  avatar?: string
   updatedAt?: string
+  createdAt: string
 }
 
+export interface Challenge {
+  id: string
+  title: string
+  daysTotal: number
+  daysCompleted: number
+  description?: string
+}
+
+export interface Notification {
+  id: string
+  type: 'info' | 'success' | 'error' | 'warning'
+  message: string
+  read: boolean
+  createdAt: string
+}

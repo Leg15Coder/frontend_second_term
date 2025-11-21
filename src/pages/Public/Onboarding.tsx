@@ -23,7 +23,7 @@ const Onboarding: React.FC = () => {
               </div>
             ))}
           </div>
-          <Link to="/public/habits/new" className="px-6 py-3 rounded bg-accent/10 text-accent">Get started</Link>
+          <Link to="/public/habits/new" className="btn-accent" aria-label="get-started">Get started</Link>
         </div>
       </main>
     </MockLayout>

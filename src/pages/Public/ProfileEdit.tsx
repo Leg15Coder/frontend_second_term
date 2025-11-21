@@ -34,14 +34,14 @@ const ProfileEdit: React.FC = () => {
           <form onSubmit={onSubmit} className="flex flex-col gap-4">
             <label className="flex flex-col">
               <span className="text-sm text-white/70">Name</span>
-              <input value={name} onChange={(e) => setName(e.target.value)} className="mt-1 p-3 rounded bg-white/5" />
+              <input value={name} onChange={(e) => setName(e.target.value)} className="mt-1 p-3 rounded bg-white/5" aria-label="name" />
             </label>
             <label className="flex flex-col">
               <span className="text-sm text-white/70">Email</span>
-              <input value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 p-3 rounded bg-white/5" />
+              <input value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 p-3 rounded bg-white/5" aria-label="email" type="email" />
             </label>
             <div className="flex gap-3">
-              <button type="submit" className="px-4 py-2 rounded bg-accent/10 text-accent">Save</button>
+              <button type="submit" className="btn-accent">Save</button>
               <button type="button" onClick={() => navigate(-1)} className="px-4 py-2 rounded bg-white/10">Cancel</button>
             </div>
           </form>

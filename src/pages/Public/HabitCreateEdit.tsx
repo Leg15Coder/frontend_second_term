@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MockLayout from './MockLayout'
 import { useAppDispatch } from '../../app/store'
-import { addHabit } from '../../features/habits/habitsSlice'
+import { createHabit } from '../../features/habits/habitsSlice'
+import type { Habit } from '../../types'
 
 const HabitCreateEdit: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -13,12 +14,12 @@ const HabitCreateEdit: React.FC = () => {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim()) return
-    await dispatch(
-      addHabit({
-        title,
-        description,
-      } as Omit<import('../../types').Habit, 'id' | 'createdAt' | 'updatedAt'>),
-    )
+    const payload: Omit<Habit, 'id' | 'createdAt' | 'updatedAt' | 'streak'> = {
+      title,
+      description,
+      completed: false,
+    }
+    await dispatch(createHabit(payload))
     navigate('/public/habits')
   }
 
@@ -30,14 +31,14 @@ const HabitCreateEdit: React.FC = () => {
           <form onSubmit={onSubmit} className="flex flex-col gap-4">
             <label className="flex flex-col">
               <span className="text-sm text-white/70">Title</span>
-              <input value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 p-3 rounded bg-white/5" />
+              <input value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 p-3 rounded bg-white/5" aria-label="habit title" />
             </label>
             <label className="flex flex-col">
               <span className="text-sm text-white/70">Description</span>
-              <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="mt-1 p-3 rounded bg-white/5" rows={4} />
+              <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="mt-1 p-3 rounded bg-white/5" rows={4} aria-label="habit description" />
             </label>
             <div className="flex gap-3">
-              <button type="submit" className="px-4 py-2 rounded bg-accent/10 text-accent">Create</button>
+              <button type="submit" className="btn-accent">Create</button>
               <button type="button" onClick={() => navigate(-1)} className="px-4 py-2 rounded bg-white/10">Cancel</button>
             </div>
           </form>

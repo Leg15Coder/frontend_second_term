@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '../../app/store'
-import { fetchHabits, toggleHabit } from '../../features/habits/habitsSlice'
+import { fetchHabits, toggleLocalComplete } from '../../features/habits/habitsSlice'
 import Card from '../../shared/ui/Card/Card'
 import Button from '../../shared/ui/Button/Button'
+import Loader from '../../shared/ui/Loader/Loader'
+import ErrorBanner from '../../shared/ui/ErrorBanner/ErrorBanner'
 import styles from './HabitsPage.module.css'
 
 const HabitsPage: React.FC = () => {
   const dispatch = useAppDispatch()
-  const { items, loading } = useAppSelector((s) => s.habits)
+  const { items, loading, error } = useAppSelector((s) => s.habits)
 
   useEffect(() => {
     dispatch(fetchHabits())
@@ -16,13 +18,14 @@ const HabitsPage: React.FC = () => {
   return (
     <div className={styles.wrap}>
       <h1>Habits</h1>
-      {loading && <div>Loading...</div>}
+      {loading && <Loader size={32} />}
+      {error && <ErrorBanner message={error} onRetry={() => dispatch(fetchHabits())} />}
       <div className={styles.list}>
         {items.map((h) => (
           <Card key={h.id} title={h.title}>
             <div>{h.description}</div>
             <div>Completed: {h.completed ? 'Yes' : 'No'}</div>
-            <Button onClick={() => dispatch(toggleHabit(h.id))} variant="secondary">Toggle</Button>
+            <Button onClick={() => dispatch(toggleLocalComplete(h.id))} variant="secondary">Toggle</Button>
           </Card>
         ))}
       </div>

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import MockLayout from './MockLayout'
 import { useAppDispatch, useAppSelector } from '../../app/store'
 import { fetchGoals } from '../../features/goals/goalsSlice'
+import type { Goal } from '../../types'
 
 const GoalDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -13,9 +14,9 @@ const GoalDetail: React.FC = () => {
     dispatch(fetchGoals())
   }, [dispatch])
 
-  const goal = items.find((g) => g.id === id)
+  const goal: Goal | undefined = items.find((g) => g.id === id)
 
-  if (!goal)
+  if (!goal) {
     return (
       <MockLayout>
         <main className="flex-1 p-8">
@@ -23,6 +24,9 @@ const GoalDetail: React.FC = () => {
         </main>
       </MockLayout>
     )
+  }
+
+  const progress = Math.max(0, Math.min(100, goal.progress ?? 0))
 
   return (
     <MockLayout>
@@ -30,13 +34,16 @@ const GoalDetail: React.FC = () => {
         <div className="max-w-3xl mx-auto glass-panel p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold">{goal.title}</h2>
-            <Link to="/public/goals" className="px-3 py-1 rounded bg-white/10">Back</Link>
+            <div className="flex gap-2">
+              <button className="btn-accent">Edit</button>
+              <Link to="/public/goals" className="px-3 py-1 rounded bg-white/10">Back</Link>
+            </div>
           </div>
-          <p className="mt-4 text-white/70">{goal.description}</p>
+          <p className="mt-4 text-white/70">{goal.description ?? 'No description provided.'}</p>
           <div className="mt-6">
             <h4 className="font-semibold">Progress</h4>
-            <div className="w-full bg-black/20 rounded-full h-2.5 mt-2"><div className="bg-primary h-2.5 rounded-full" style={{ width: `${goal.progress}%` }} /></div>
-            <p className="text-sm text-white/60 mt-2">{goal.progress}% complete</p>
+            <div className="w-full bg-black/20 rounded-full h-3 mt-2"><div className="bg-primary h-3 rounded-full" style={{ width: `${progress}%` }} /></div>
+            <p className="text-sm text-white/60 mt-2">{progress}% complete</p>
           </div>
         </div>
       </main>
@@ -45,4 +52,3 @@ const GoalDetail: React.FC = () => {
 }
 
 export default GoalDetail
-

@@ -1,0 +1,11 @@
+{
+  "storybookUrl": "http://localhost:6006",
+  "chrome": {
+    "enableV2": true
+  },
+  "configuration": {
+    "deviceScaleFactor": 1
+  },
+  "outputDir": "loki-report"
+}
+

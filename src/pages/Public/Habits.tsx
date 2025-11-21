@@ -1,72 +1,60 @@
-import React from 'react'
-import MockLayout from './MockLayout'
-import { Link } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { useAppDispatch, useAppSelector } from '../../app/store'
+import { fetchHabits, createHabit, toggleLocalComplete } from '../../features/habits/habitsSlice'
+import type { Habit } from '../../types'
 
-const SAMPLE_HABITS = [
-  { id: 'h1', title: 'Morning Meditation', streak: 21 },
-  { id: 'h2', title: 'Read Ancient Texts', streak: 5 },
-  { id: 'h3', title: 'Strength Ritual', streak: 12 },
-  { id: 'h4', title: 'Nature Walk', streak: 8 },
-  { id: 'h5', title: 'Journaling', streak: 33 },
-  { id: 'h6', title: 'Evening Stretch', streak: 4 },
-  { id: 'h7', title: 'Hydration', streak: 10 },
-  { id: 'h8', title: 'Reading', streak: 2 },
-]
+const HabitsPage: React.FC = () => {
+  const dispatch = useAppDispatch()
+  const { items, loading, error } = useAppSelector((s) => s.habits)
 
-const Habits: React.FC = () => {
+  useEffect(() => {
+    dispatch(fetchHabits())
+  }, [dispatch])
+
+  const onAdd = () => {
+    const title = globalThis.prompt('New habit title')
+    if (title) {
+      const payload: Omit<Habit, 'id' | 'createdAt' | 'streak'> = {
+        title,
+        completed: false,
+      }
+      dispatch(createHabit(payload))
+    }
+  }
+
   return (
-    <MockLayout>
-      <aside className="w-64 p-4 flex-shrink-0">
-        <div className="flex h-full flex-col justify-between glass-panel p-4">
+    <div className="p-8">
+      <div className="glass-panel p-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold">Habits</h2>
           <div>
-            <div className="flex gap-3 items-center">
-              <div className="rounded-full w-12 h-12 bg-center bg-cover" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80')" }} />
-              <div>
-                <h1 className="text-white font-medium">Alex Mercer</h1>
-                <p className="text-white/60 text-sm">Book of Habits</p>
-              </div>
-            </div>
-            <nav className="mt-6 flex flex-col gap-2">
-              <Link to="/public/habits" className="px-3 py-2 rounded-lg hover:bg-white/5">All</Link>
-              <Link to="/public/habits?filter=active" className="px-3 py-2 rounded-lg hover:bg-white/5">Active</Link>
-              <Link to="/public/habits?filter=completed" className="px-3 py-2 rounded-lg hover:bg-white/5">Completed</Link>
-            </nav>
-          </div>
-          <div>
-            <Link to="/public/habits/new" className="px-3 py-2 rounded-lg hover:bg-white/5">View All Glyphs</Link>
+            <button type="button" onClick={onAdd} className="btn-accent">Add Habit</button>
           </div>
         </div>
-      </aside>
 
-      <main className="flex-1 p-8">
-        <div className="container mx-auto">
-          <header className="mb-8 text-center">
-            <h1 className="text-4xl font-bold tracking-widest">Book of Habits</h1>
-            <p className="text-white/60 mt-2">Forge your destiny, one ritual at a time.</p>
-          </header>
-
-          <main>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {SAMPLE_HABITS.map((h) => (
-                <div key={h.id} className="magic-card p-6 text-center">
-                  <span className="material-symbols-outlined text-6xl text-rune-glow mb-4">self_improvement</span>
-                  <h2 className="rune-text text-xl font-bold">{h.title}</h2>
-                  <p className="text-stone-400 text-sm mt-2">Short description of habit.</p>
-                  <div className="mt-4 text-stone-300 text-xs font-mono">Streak: {h.streak} Days</div>
+        <div className="mt-4">
+          {loading && <p className="text-white/60">Loading...</p>}
+          {error && <p className="text-red-400">{error}</p>}
+          <ul className="flex flex-col gap-3 mt-3">
+            {items.map((h) => (
+              <li key={h.id} className="flex items-center justify-between p-3 bg-white/5 rounded-md">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={h.completed}
+                    onChange={() => dispatch(toggleLocalComplete(h.id))}
+                    className="h-5 w-5 rounded-full border-white/30 border-2 bg-transparent text-primary checked:bg-primary checked:border-primary"
+                  />
+                  <span className={`${h.completed ? 'line-through text-white/60' : ''}`}>{h.title}</span>
                 </div>
-              ))}
-              <Link to="/public/habits/new" className="magic-card border-dashed border-amber-500/30 group flex items-center justify-center">
-                <div className="text-center">
-                  <span className="material-symbols-outlined text-6xl text-stone-600 mb-4">add_circle</span>
-                  <h2 className="rune-text text-xl font-bold">New Ritual</h2>
-                </div>
-              </Link>
-            </div>
-          </main>
+                <div className="text-sm text-white/60">{h.streak ?? 0}d</div>
+              </li>
+            ))}
+          </ul>
         </div>
-      </main>
-    </MockLayout>
+      </div>
+    </div>
   )
 }
 
-export default Habits
+export default HabitsPage

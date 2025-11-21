@@ -16,12 +16,12 @@ const initialState: UserState = {
 }
 
 export const fetchMe = createAsyncThunk('user/fetchMe', async () => {
-  const res = await api.get<User>('/me')
+  const res = await api.get<User>('/api/me')
   return res.data
 })
 
 export const updateMe = createAsyncThunk('user/updateMe', async (payload: Partial<User>) => {
-  const res = await api.patch<User>('/me', payload)
+  const res = await api.patch<User>('/api/me', payload)
   return res.data
 })
 

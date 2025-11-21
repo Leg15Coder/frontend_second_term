@@ -48,7 +48,7 @@ const Dashboard: React.FC = () => {
 
       <main className="flex-1 p-8">
         <div className="flex flex-col gap-8">
-          <PublicHero title="Dashboard" subtitle="Here's your progress for today. Keep going!" cta={<button className="flex items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-accent/10 text-accent text-sm font-bold border border-accent/80">Add New Goal</button>} />
+          <PublicHero title="Dashboard" subtitle="Here's your progress for today. Keep going!" cta={<button className="btn-ghost-accent">Add New Goal</button>} />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 flex flex-col gap-8">
