@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pages: write
+      id-token: write
 
     steps:
       - name: Checkout
@@ -27,10 +29,19 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Create 404 for SPA
+        run: |
+          # copy index.html to 404.html so GitHub Pages serves index for unknown routes
+          if [ -f dist/index.html ]; then
+            cp dist/index.html dist/404.html
+          fi
+          # for file in $(find dist -type f); do
+          #   echo "::add-mask::$file"
+          # done
+
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
           keep_files: false
-
