@@ -35,7 +35,9 @@
     </script>
 <style type="text/tailwindcss">
         body {
-            @apply font-display bg-background-dark text-white;
+            font-family: Inter, sans-serif;
+            background-color: #0A0F2B;
+            color: #ffffff;
         }
         .glass-panel {
             @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl;
@@ -91,10 +93,8 @@
 </div>
 </div>
 </aside>
-<!-- Main Content -->
 <main class="flex-1 p-8">
 <div class="flex flex-col gap-8">
-<!-- PageHeading -->
 <div class="flex flex-wrap justify-between items-center gap-4">
 <div class="flex flex-col gap-2">
 <p class="text-white text-4xl font-black leading-tight tracking-[-0.033em]">Dashboard</p>
@@ -105,9 +105,7 @@
 </button>
 </div>
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-<!-- Left Column -->
 <div class="lg:col-span-2 flex flex-col gap-8">
-<!-- Today's Focus -->
 <div class="glass-panel p-6">
 <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] pb-4">Today's Focus</h2>
 <div class="flex flex-col divide-y divide-white/10">
@@ -125,11 +123,9 @@
 </label>
 </div>
 </div>
-<!-- Active Goals -->
 <div class="glass-panel p-6">
 <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] pb-4">Active Goals</h2>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<!-- Goal Card -->
 <div class="p-4 rounded-lg bg-white/5 border border-white/10 flex flex-col gap-3">
 <p class="text-white font-semibold">Learn Spanish Fluently</p>
 <div class="w-full bg-black/20 rounded-full h-2.5">
@@ -148,9 +144,7 @@
 </div>
 </div>
 </div>
-<!-- Right Column -->
 <div class="lg:col-span-1 flex flex-col gap-8">
-<!-- Ongoing Challenges -->
 <div class="glass-panel p-6">
 <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] pb-4">Ongoing Challenge</h2>
 <div class="relative p-4 rounded-lg bg-gradient-to-br from-accent/20 to-primary/20 border border-accent/30 flex flex-col gap-3 items-center text-center glow-border">
@@ -162,7 +156,6 @@
 </div>
 </div>
 </div>
-<!-- Progress Overview -->
 <div class="glass-panel p-6">
 <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] pb-4">Progress Overview</h2>
 <div class="flex items-center justify-center">

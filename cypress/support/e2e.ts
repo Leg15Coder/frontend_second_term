@@ -1,5 +1,9 @@
 /// <reference types="cypress" />
 
+interface WindowWithMSW {
+  __msw_worker__?: { start?: (...args: unknown[]) => Promise<unknown>; stop?: () => void }
+}
+
 before(() => {
   cy.log('Cypress: initialize MSW worker from /src/mocks/browser.js')
   cy.window().then((win) => {
@@ -10,10 +14,8 @@ before(() => {
           await mod.worker.start({ onUnhandledRequest: 'warn' })
           window.__msw_worker__ = mod.worker
         }
-      } catch (e) {
-        // if import fails, log to console in AUT
-        // eslint-disable-next-line no-console
-        console.error('Failed to start MSW worker from Cypress', e)
+      } catch (err) {
+        console.error('Failed to start MSW worker from Cypress', String(err))
       }
     })()`)
   })
@@ -21,11 +23,12 @@ before(() => {
 
 after(() => {
   cy.window().then((win) => {
-    if ((win as any).__msw_worker__) {
+    const w = win as unknown as WindowWithMSW
+    if (w.__msw_worker__) {
       try {
-        (win as any).__msw_worker__.stop()
-      } catch (e) {
-          console.log(e);
+        w.__msw_worker__.stop?.()
+      } catch (err) {
+        console.log(String(err))
       }
     }
   })

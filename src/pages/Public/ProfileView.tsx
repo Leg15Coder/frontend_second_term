@@ -17,7 +17,7 @@ const ProfileView: React.FC = () => {
       <main className="flex-1 p-8">
         <div className="max-w-3xl mx-auto">
           <div className="glass-panel p-6 flex items-center gap-6">
-            <div className="w-24 h-24 rounded-full bg-center bg-cover" style={{ backgroundImage: `url(${me?.avatarUrl ?? 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&q=80'})` }} />
+            <div className="w-24 h-24 rounded-full bg-center bg-cover" style={{ backgroundImage: `url(${me?.avatar ?? 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&q=80'})` }} />
             <div className="flex-1">
               <h2 className="text-2xl font-bold">{me?.name ?? 'Guest'}</h2>
               <p className="text-white/70">{me?.email}</p>
@@ -68,4 +68,3 @@ const ProfileView: React.FC = () => {
 }
 
 export default ProfileView
-
