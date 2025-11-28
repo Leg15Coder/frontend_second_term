@@ -11,6 +11,10 @@ const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(file
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
+  // Базовый путь для GitHub Pages — соответствует полю "homepage" в package.json
+  // Если ваш репозиторий называется `frontend_second_term` и пользователь — Leg15Coder,
+  // то base должен быть "/frontend_second_term/". Измените при необходимости.
+  base: '/frontend_second_term/',
   plugins: [react()],
   resolve: {
     alias: {
