@@ -42,3 +42,15 @@ export interface Notification {
   read: boolean
   createdAt: string
 }
+
+export interface HabitsState {
+  items: Habit[];
+  loading: boolean;
+  error: string | null;
+}
+
+export interface GoalsState {
+  items: Goal[];
+  loading: boolean;
+  error: string | null;
+}

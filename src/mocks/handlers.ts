@@ -42,7 +42,7 @@ const me: User = {
   createdAt: new Date().toISOString(),
 }
 
-export function createHandlers(rest: any) {
+export function createHandlers(rest: typeof import('msw').rest) {
   return [
     rest.get('/api/habits', (_req: ReqWithBody, res: ResFn, ctx: CtxSubset) => {
       return res(ctx.status(200), ctx.json(habits))
@@ -95,8 +95,8 @@ export function createHandlers(rest: any) {
     rest.patch('/api/me', async (req: ReqWithBody<Partial<User>>, res: ResFn, ctx: CtxSubset) => {
       const body = await req.json()
       const updated: User = { ...me, ...body }
-      if ((body as any).updatedAt === undefined) {
-        ;(updated as any).updatedAt = new Date().toISOString()
+      if (body.updatedAt === undefined) {
+        ;(updated as unknown as Record<string, unknown>).updatedAt = new Date().toISOString()
       }
       return res(ctx.status(200), ctx.json(updated))
     }),

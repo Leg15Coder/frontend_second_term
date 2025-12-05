@@ -1,0 +1,121 @@
+:root{}
+.previewRoot{
+  height:100%;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  gap:0.75rem;
+  box-sizing:border-box;
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+}
+.previewCard{
+  min-height:0;
+  overflow:hidden;
+}
+/* Glass panel should match app: translucent, blurred, subtle border and glow */
+.glassPanelOverride{
+  background: rgba(255,255,255,0.04);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 1rem;
+  padding: 0.75rem;
+  box-shadow: 0 8px 32px rgba(190,52,213,0.08), inset 0 1px 0 rgba(255,255,255,0.03);
+}
+/* more aggressive glass variant for strong cards */
+.glass-strong {
+  background: rgba(255,255,255,0.06);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 1rem;
+  box-shadow: 0 12px 40px rgba(190,52,213,0.12), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+/* Typography tweaks for preview headings to match app */
+.previewRoot h2,
+.previewRoot h4,
+.previewRoot h3 {
+  font-family: 'Cinzel', serif;
+  margin: 0;
+  color: #fff;
+}
+.previewRoot h2 { font-size: 22px; font-weight: 700; }
+.previewRoot h4 { font-size: 16px; font-weight: 600; }
+
+/* Styled checkbox to match app appearance */
+.previewRoot input[type="checkbox"]{
+  pointer-events: none; /* keep non-interactive */
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  display: inline-block;
+  vertical-align: middle;
+  border: 2px solid rgba(255,255,255,0.28);
+  background: transparent;
+  box-sizing: border-box;
+}
+.previewRoot input[type="checkbox"]:checked{
+  background: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  box-shadow: 0 6px 18px rgba(190,52,213,0.25);
+}
+
+/* Progress bar helpers */
+.progressWrapper{
+  display:block;
+  width:100%;
+  height:0.6rem;
+  background:rgba(0,0,0,0.12);
+  border-radius:999px;
+  overflow:hidden;
+}
+.progressBar{
+  height:100%;
+  background:linear-gradient(90deg,rgba(190,52,213,0.95),rgba(255,215,0,0.9));
+  box-shadow:0 6px 18px rgba(190,52,213,0.12);
+}
+
+/* Small stat grid */
+.statGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:0.5rem;
+}
+.smallCard{
+  padding:0.5rem;
+  border-radius:0.75rem;
+  background:rgba(255,255,255,0.03);
+  text-align:center;
+}
+
+/* Goal card preview */
+.previewRoot .goal-preview {
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.previewRoot .goal-preview .progress {
+  height:10px;
+  border-radius:999px;
+  background: rgba(0,0,0,0.18);
+  overflow:hidden;
+}
+.previewRoot .goal-preview .progress > div { height:100%; background: linear-gradient(90deg, rgba(190,52,213,0.95), rgba(255,215,0,0.9)); }
+
+/* ensure preview checkboxes don't show focus rings or change layout */
+.previewRoot input[type="checkbox"]:focus{ outline: none; box-shadow: none; }
+
+/* Limit preview content so it fits the card without scrolling */
+.previewRoot .max-preview-height{ max-height: 220px; overflow: hidden; }
+
+/* ensure icons align and do not overflow */
+.previewRoot .material-symbols-outlined{ font-variation-settings: 'FILL' 1; }
+
+/* subtle overlay for preview area to mimic background glows */
+.previewOverlay {
+  position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(0,0,0,0.02), transparent 40%);
+}
