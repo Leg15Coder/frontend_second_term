@@ -29,8 +29,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          # Install dependencies: allow legacy peer deps and omit optional deps (avoids platform-specific EBADPLATFORM)
-          npm ci --legacy-peer-deps --omit=optional
+          # Use `npm install` in CI to allow npm to resolve and install platform-appropriate optional native packages
+          # Use --legacy-peer-deps to avoid peer dependency resolution failures
+          npm install --legacy-peer-deps
 
       - name: Lint
         run: npm run lint
