@@ -31,8 +31,24 @@ jobs:
 
       - name: Install dependencies
         run: |
-          # Use `npm install` so npm can re-resolve optional native packages for the runner platform
-          npm install --legacy-peer-deps
+          # Robust retry loop for transient npm registry 5xx errors
+          set -e
+          MAX=5
+          for i in $(seq 1 $MAX); do
+            echo "Attempt $i/$MAX: npm install --legacy-peer-deps"
+            if npm install --legacy-peer-deps; then
+              echo "Install succeeded"
+              break
+            fi
+            if [ "$i" -lt "$MAX" ]; then
+              echo "Install failed on attempt $i; cleaning npm cache and retrying in $((i*5))s..."
+              npm cache clean --force || true
+              sleep $((i*5))
+            else
+              echo "Install failed after $MAX attempts"
+              exit 1
+            fi
+          done
 
       - name: Build production
         run: npm run build
@@ -70,3 +86,21 @@ jobs:
           user_name: github-actions[bot]
           user_email: 41898282+github-actions[bot]@users.noreply.github.com
           keep_files: false
+
+      - name: Ensure Pages uses gh-pages and trigger a build
+        env:
+          GITHUB_API_URL: https://api.github.com
+        run: |
+          REPO=${{ github.repository }}
+          TOKEN=${{ secrets.GITHUB_TOKEN }}
+          OWNER=$(echo "$REPO" | cut -d'/' -f1)
+          NAME=$(echo "$REPO" | cut -d'/' -f2)
+          # Set Pages source to gh-pages branch (root)
+          echo "Setting Pages source to gh-pages for $REPO"
+          curl -s -X PUT -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" \
+            "$GITHUB_API_URL/repos/$OWNER/$NAME/pages" \
+            -d '{"source": {"branch": "gh-pages", "path": "/"}}' || true
+          # Trigger a Pages build so Pages UI updates quickly
+          echo "Triggering Pages build for $REPO"
+          curl -s -X POST -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" \
+            "$GITHUB_API_URL/repos/$OWNER/$NAME/pages/builds" || true
