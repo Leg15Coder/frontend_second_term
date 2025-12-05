@@ -65,9 +65,9 @@ const APISection = () => {
             <div className="glass-card p-4">
               <p className="text-sm text-muted-foreground">Основные ресурсы приложения:</p>
               <ul className="list-disc pl-5 mt-2 text-sm text-muted-foreground space-y-1">
-                <li><code className="font-mono">/api/habits</code> — привычки (GET/POST), PATCH/DELETE по id.</li>
-                <li><code className="font-mono">/api/goals</code> — цели (GET/POST) и управление ими.</li>
-                <li><code className="font-mono">/api/me</code> — профиль текущего пользователя (GET/PATCH).</li>
+                <li><code className="font-mono">/api/habits</code> - привычки (GET/POST), PATCH/DELETE по id.</li>
+                <li><code className="font-mono">/api/goals</code> - цели (GET/POST) и управление ими.</li>
+                <li><code className="font-mono">/api/me</code> - профиль текущего пользователя (GET/PATCH).</li>
               </ul>
 
               <div className="mt-4">

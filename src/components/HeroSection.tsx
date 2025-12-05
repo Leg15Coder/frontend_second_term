@@ -31,7 +31,7 @@ const HeroSection = () => {
               <span className="text-turquoise"> трекинг</span>, 
               <span className="text-gold"> визуализацию прогресса</span>, 
               вызовы, челленджи и мягкие напоминания.
-              Забудьте о скучных трекерах — окунитесь в геймифицированный опыт.
+              Забудьте о скучных трекерах - окунитесь в геймифицированный опыт.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
