@@ -33,6 +33,8 @@ jobs:
         run: |
           # allow installing despite peer dependency conflicts (React 19 vs libs expecting <=18)
           npm config set legacy-peer-deps true
+          # On non-Windows runners skip optionalDependencies (to avoid platform-specific EBADPLATFORM)
+          if [ "$RUNNER_OS" != "Windows" ]; then npm config set optional false; fi
           npm ci
 
       - name: Build production
