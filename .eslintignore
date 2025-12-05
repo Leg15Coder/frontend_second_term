@@ -1,5 +1,0 @@
-# Ignore Storybook config and stories from some eslint checks
-.storybook/
-src/stories/
-public/
-
