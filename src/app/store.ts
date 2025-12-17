@@ -3,12 +3,16 @@ import { useDispatch, useSelector, type TypedUseSelectorHook } from 'react-redux
 import habitsReducer from '../features/habits/habitsSlice'
 import userReducer from '../features/user/userSlice'
 import goalsReducer from '../features/goals/goalsSlice'
+import challengesReducer from '../features/challenges/challengesSlice'
+import todosReducer from '../features/todos/todosSlice'
 
 export const store = configureStore({
   reducer: {
     habits: habitsReducer,
     user: userReducer,
     goals: goalsReducer,
+    challenges: challengesReducer,
+    todos: todosReducer,
   },
 })
 

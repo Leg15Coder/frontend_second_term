@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit'
-import api from '../../app/api'
-import type { Habit } from '../../types'
+import { habitsService } from '@/services/habitsService'
+import type { Habit } from '@/types'
+import { auth } from '@/firebase'
+import { analytics } from '../../lib/analytics'
 
 type State = {
   items: Habit[]
@@ -14,28 +16,55 @@ const initialState: State = {
   error: null,
 }
 
-export const fetchHabits = createAsyncThunk<Habit[]>('habits/fetch', async () => {
-  const res = await api.get<Habit[]>('/api/habits')
-  return res.data
-})
+export const fetchHabits = createAsyncThunk<Habit[], string | undefined, {}>(
+  'habits/fetch',
+  async (userId) => {
+    if (!userId) {
+      const currentUserId = auth.currentUser?.uid
+      if (!currentUserId) return []
+      return await habitsService.getHabits(currentUserId)
+    }
+    return await habitsService.getHabits(userId)
+  }
+)
 
-export const createHabit = createAsyncThunk<Habit, Partial<Habit>>('habits/create', async (payload) => {
-  const res = await api.post<Habit>('/api/habits', payload)
-  return res.data
+export const createHabit = createAsyncThunk<
+  Habit,
+  Omit<Habit, 'id' | 'createdAt' | 'userId'>
+>('habits/create', async (payload) => {
+  const userId = auth.currentUser?.uid
+  if (!userId) throw new Error('Not authenticated')
+  const toCreate = { ...payload, userId }
+  const created = await habitsService.addHabit(toCreate)
+  void analytics.trackEvent('create_habit', { habitId: created.id })
+  return created
 })
 
 export const updateHabit = createAsyncThunk<Habit, { id: string; data: Partial<Habit> }>(
   'habits/update',
   async ({ id, data }) => {
-    const res = await api.patch<Habit>(`/api/habits/${id}`, data)
-    return res.data
+    const userId = auth.currentUser?.uid
+    if (!userId) throw new Error('Not authenticated')
+    return await habitsService.updateHabit(id, { ...data, userId })
   }
 )
 
 export const deleteHabit = createAsyncThunk<string, string>('habits/delete', async (id) => {
-  await api.delete(`/api/habits/${id}`)
+  const userId = auth.currentUser?.uid
+  if (!userId) throw new Error('Not authenticated')
+  await habitsService.deleteHabit(id, userId)
   return id
 })
+
+export const checkInHabit = createAsyncThunk<{ id: string; date: string }, { id: string; date: string }>(
+  'habits/checkIn',
+  async ({ id, date }) => {
+    const userId = auth.currentUser?.uid
+    if (!userId) throw new Error('Not authenticated')
+    await habitsService.checkInHabit(id, date, userId)
+    return { id, date }
+  }
+)
 
 const slice = createSlice({
   name: 'habits',
@@ -70,6 +99,14 @@ const slice = createSlice({
       })
       .addCase(deleteHabit.fulfilled, (state, action) => {
         state.items = state.items.filter((h) => h.id !== action.payload)
+      })
+      .addCase(checkInHabit.fulfilled, (state, action) => {
+        const { id, date } = action.payload
+        const item = state.items.find((h) => h.id === id)
+        if (item) {
+          item.datesCompleted ??= []
+          if (!item.datesCompleted.includes(date)) item.datesCompleted.push(date)
+        }
       })
   },
 })

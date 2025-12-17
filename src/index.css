@@ -103,6 +103,19 @@
     @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl;
   }
 
+  .glow-border {
+    box-shadow: 0 0 2px #fff, inset 0 0 2px #fff, 0 0 5px rgb(var(--primary-rgb)), 0 0 15px rgb(var(--primary-rgb)), 0 0 30px rgb(var(--primary-rgb));
+  }
+
+  .magic-card {
+    @apply bg-black/30 backdrop-blur-md border border-amber-500/20 rounded-lg p-6 transition-all duration-300;
+  }
+
+  .magic-card:hover {
+    @apply border-amber-500/50 scale-105;
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+  }
+
   .text-muted-foreground {
     color: hsl(var(--muted-foreground));
   }

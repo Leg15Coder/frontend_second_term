@@ -1,10 +1,20 @@
 import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+import { store } from "./app/store";
 import App from "./App.tsx";
 import "./index.css";
 import { connectEmulators, initAnalytics } from './firebase'
+import { initSentry } from './lib/sentry'
 
-connectEmulators()
+const rootEl = document.getElementById("root");
+if (!rootEl) throw new Error("Root element not found");
 
-await initAnalytics()
+createRoot(rootEl).render(
+  <Provider store={store}>
+    <App />
+  </Provider>
+);
 
-createRoot(document.getElementById("root")!).render(<App />);
+connectEmulators();
+initSentry(import.meta.env.VITE_SENTRY_DSN as string | undefined);
+initAnalytics().catch((err) => console.warn('Analytics init failed:', err));

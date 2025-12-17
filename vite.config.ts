@@ -11,8 +11,6 @@ const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(file
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig(({ mode }) => {
-  // В dev-режиме используем корень '/', чтобы локальные маршруты работали как раньше.
-  // Для production (сборки) устанавливаем base на имя репозитория для GitHub Pages.
   const base = mode === 'production' ? '/frontend_second_term/' : '/';
   return {
     base,
@@ -21,6 +19,20 @@ export default defineConfig(({ mode }) => {
       alias: {
         "@": path.resolve(dirname, "./src"),
       },
+    },
+    build: {
+      sourcemap: mode !== 'production',
+      chunkSizeWarningLimit: 600,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('react')) return 'vendor-react'
+              return 'vendor'
+            }
+          }
+        }
+      }
     },
     test: {
       projects: [{

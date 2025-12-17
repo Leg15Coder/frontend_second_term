@@ -2,12 +2,21 @@ name: CI
 
 on:
   push:
+<<<<<<< HEAD
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
 
 jobs:
   test:
+=======
+    branches: [ main, master, dev ]
+  pull_request:
+    branches: [ main, master, dev ]
+
+jobs:
+  build:
+>>>>>>> fab7de0 (Минимально работоспособная версия)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,6 +28,7 @@ jobs:
         run: npm ci
       - name: Lint
         run: npm run lint
+<<<<<<< HEAD
       - name: Run unit tests and coverage
         run: npm run test:coverage
       - name: Build Storybook
@@ -34,3 +44,10 @@ jobs:
           files: ./coverage/lcov.info
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
+=======
+      - name: Unit tests
+        run: npm run test:unit
+      - name: Build
+        run: npm run build
+
+>>>>>>> fab7de0 (Минимально работоспособная версия)

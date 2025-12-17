@@ -6,6 +6,21 @@ export interface Habit {
   streak?: number
   createdAt: string
   updatedAt?: string
+  userId?: string
+  datesCompleted?: string[]
+  frequency?: 'daily' | 'weekdays' | 'custom'
+  customDays?: number[]
+  difficulty?: 'low' | 'medium' | 'hard'
+}
+
+export interface GoalTask {
+  id: string
+  title: string
+  description?: string
+  week_estimate?: number
+  day_estimate?: number
+  acceptanceCriteria?: string
+  done: boolean
 }
 
 export interface Goal {
@@ -16,6 +31,8 @@ export interface Goal {
   completed: boolean
   createdAt: string
   updatedAt?: string
+  tasks?: GoalTask[]
+  detailedDescription?: string
 }
 
 export interface User {
@@ -30,9 +47,13 @@ export interface User {
 export interface Challenge {
   id: string
   title: string
-  daysTotal: number
-  daysCompleted: number
   description?: string
+  days: number
+  startDate?: string
+  participants?: string[]
+  dailyChecks?: Record<string, string[]>
+  createdAt: string
+  updatedAt?: string
 }
 
 export interface Notification {
@@ -53,4 +74,21 @@ export interface GoalsState {
   items: Goal[];
   loading: boolean;
   error: string | null;
+}
+
+export interface Todo {
+  id: string
+  title: string
+  description?: string
+  deadline?: string
+  completed: boolean
+  createdAt: string
+  updatedAt?: string
+  userId?: string
+}
+
+export interface TodosState {
+  items: Todo[]
+  loading: boolean
+  error: string | null
 }
