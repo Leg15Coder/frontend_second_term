@@ -69,6 +69,17 @@ export const checkInChallenge = createAsyncThunk<Challenge, { challengeId: strin
   }
 )
 
+export const undoCheckIn = createAsyncThunk<Challenge, { challengeId: string; userId: string; date?: string }, { rejectValue: string }>(
+  'challenges/undoCheckIn',
+  async ({ challengeId, userId, date }, { rejectWithValue }) => {
+    try {
+      return await challengesService.undoCheckIn(challengeId, userId, date)
+    } catch (err: unknown) {
+      return rejectWithValue(err instanceof Error ? err.message : 'Failed to undo check in')
+    }
+  }
+)
+
 const challengesSlice = createSlice({
   name: 'challenges',
   initialState,
@@ -133,6 +144,16 @@ const challengesSlice = createSlice({
       })
       .addCase(checkInChallenge.rejected, (state, action) => {
         state.error = action.payload ?? 'Failed to check in challenge'
+      })
+
+      .addCase(undoCheckIn.fulfilled, (state, action) => {
+        const index = state.items.findIndex((item) => item.id === action.payload.id)
+        if (index !== -1) {
+          state.items[index] = action.payload
+        }
+      })
+      .addCase(undoCheckIn.rejected, (state, action) => {
+        state.error = action.payload ?? 'Failed to undo check in'
       })
   },
 })

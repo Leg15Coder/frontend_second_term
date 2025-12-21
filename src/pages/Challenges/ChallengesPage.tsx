@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import AppLayout from '../../components/Layout/AppLayout'
 import { useAppDispatch, useAppSelector } from '../../app/store'
-import { fetchChallenges, joinChallenge, leaveChallenge } from '../../features/challenges/challengesSlice'
+import { fetchChallenges, joinChallenge, leaveChallenge, checkInChallenge, undoCheckIn } from '../../features/challenges/challengesSlice'
 import { toast } from 'sonner'
 
 const ChallengesPage: React.FC = () => {
@@ -37,6 +37,34 @@ const ChallengesPage: React.FC = () => {
     }
   }
 
+  const handleCheckIn = async (challengeId: string) => {
+    if (!user?.id) {
+      toast.error('Необходимо авторизоваться')
+      return
+    }
+
+    try {
+      await dispatch(checkInChallenge({ challengeId, userId: user.id })).unwrap()
+      toast.success('День отмечен!')
+    } catch {
+      toast.error('Не удалось отметить день')
+    }
+  }
+
+  const handleUndoCheckIn = async (challengeId: string) => {
+    if (!user?.id) {
+      toast.error('Необходимо авторизоваться')
+      return
+    }
+
+    try {
+      await dispatch(undoCheckIn({ challengeId, userId: user.id })).unwrap()
+      toast.success('Отметка отменена')
+    } catch {
+      toast.error('Не удалось отменить отметку')
+    }
+  }
+
   return (
     <AppLayout>
       <div className="flex flex-col gap-8">
@@ -65,6 +93,8 @@ const ChallengesPage: React.FC = () => {
               const isParticipating = user?.id && challenge.participants?.includes(user.id)
               const userChecks = user?.id ? (challenge.dailyChecks?.[user.id] ?? []) : []
               const progress = challenge.days > 0 ? (userChecks.length / challenge.days) * 100 : 0
+              const today = new Date().toISOString().split('T')[0]
+              const isCheckedToday = userChecks.includes(today)
 
               return (
                 <div key={challenge.id} className="glass-panel p-6 flex flex-col gap-4">
@@ -85,20 +115,42 @@ const ChallengesPage: React.FC = () => {
                   </div>
 
                   {isParticipating && (
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-white/80 text-sm">Прогресс</span>
-                        <span className="text-white text-sm font-semibold">
-                          {userChecks.length} / {challenge.days}
-                        </span>
+                    <>
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-white/80 text-sm">Прогресс</span>
+                          <span className="text-white text-sm font-semibold">
+                            {userChecks.length} / {challenge.days}
+                          </span>
+                        </div>
+                        <div className="w-full bg-white/10 rounded-full h-2">
+                          <div
+                            className="bg-accent h-2 rounded-full transition-all"
+                            style={{ width: `${Math.min(progress, 100)}%` }}
+                          />
+                        </div>
                       </div>
-                      <div className="w-full bg-white/10 rounded-full h-2">
-                        <div
-                          className="bg-accent h-2 rounded-full transition-all"
-                          style={{ width: `${Math.min(progress, 100)}%` }}
-                        />
+
+                      <div className="flex gap-2">
+                        {isCheckedToday ? (
+                          <button
+                            onClick={() => handleUndoCheckIn(challenge.id)}
+                            className="flex-1 px-4 py-2 rounded-lg bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20 transition-colors flex items-center justify-center gap-2"
+                          >
+                            <span className="material-symbols-outlined text-sm">undo</span>
+                            Отменить
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleCheckIn(challenge.id)}
+                            className="flex-1 px-4 py-2 rounded-lg bg-accent/20 text-accent hover:bg-accent/30 transition-colors flex items-center justify-center gap-2"
+                          >
+                            <span className="material-symbols-outlined text-sm">check_circle</span>
+                            Отметить день
+                          </button>
+                        )}
                       </div>
-                    </div>
+                    </>
                   )}
 
                   <div className="flex items-center gap-2 text-white/60 text-xs">

@@ -8,9 +8,22 @@ export interface Habit {
   updatedAt?: string
   userId?: string
   datesCompleted?: string[]
-  frequency?: 'daily' | 'weekdays' | 'custom'
+  frequency?: 'daily' | 'weekdays' | 'custom' | 'every_n_days'
   customDays?: number[]
+  everyNDays?: number
   difficulty?: 'low' | 'medium' | 'hard'
+  completionHistory?: HabitCompletion[]
+  status?: 'suggested' | 'active' | 'completed' | 'rejected'
+  source?: 'user' | 'ai'
+  linkedGoalId?: string
+  confidence?: number
+}
+
+export interface HabitCompletion {
+  id: string
+  date: string
+  completed: boolean
+  note?: string
 }
 
 export interface GoalTask {
@@ -21,12 +34,14 @@ export interface GoalTask {
   day_estimate?: number
   acceptanceCriteria?: string
   done: boolean
+  parentId?: string | null
+  childTasks?: GoalTask[]
+  order?: number
 }
 
 export interface Goal {
   id: string
   title: string
-  description?: string
   progress: number
   completed: boolean
   createdAt: string
@@ -42,6 +57,10 @@ export interface User {
   avatar?: string
   updatedAt?: string
   createdAt: string
+  isPublic?: boolean
+  bio?: string
+  friends?: string[]
+  friendRequests?: string[]
 }
 
 export interface Challenge {
@@ -54,6 +73,8 @@ export interface Challenge {
   dailyChecks?: Record<string, string[]>
   createdAt: string
   updatedAt?: string
+  mode?: 'cumulative' | 'streak'
+  lastResetDate?: string
 }
 
 export interface Notification {
@@ -85,10 +106,29 @@ export interface Todo {
   createdAt: string
   updatedAt?: string
   userId?: string
+  difficulty?: 'low' | 'medium' | 'high'
 }
 
 export interface TodosState {
   items: Todo[]
+  loading: boolean
+  error: string | null
+}
+
+export interface Group {
+  id: string
+  name: string
+  description?: string
+  isPublic: boolean
+  ownerId: string
+  members?: string[]
+  createdAt: string
+  updatedAt?: string
+  coverImage?: string
+}
+
+export interface GroupsState {
+  items: Group[]
   loading: boolean
   error: string | null
 }

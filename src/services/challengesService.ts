@@ -120,11 +120,27 @@ export const challengesService = {
 
     const challenge = list[index]
     const dailyChecks = challenge.dailyChecks ?? {}
-    const userChecks = dailyChecks[userId] ?? []
+    let userChecks = dailyChecks[userId] ?? []
     const checkDate = date ?? new Date().toISOString().split('T')[0]
 
     if (userChecks.includes(checkDate)) {
       return challenge
+    }
+
+    const mode = challenge.mode ?? 'cumulative'
+
+    if (mode === 'streak' && userChecks.length > 0) {
+      const sortedChecks = [...userChecks].sort()
+      const lastCheck = sortedChecks[sortedChecks.length - 1]
+      const lastCheckDate = new Date(lastCheck)
+      const currentDate = new Date(checkDate)
+
+      const diffDays = Math.floor((currentDate.getTime() - lastCheckDate.getTime()) / (1000 * 60 * 60 * 24))
+
+      if (diffDays > 1) {
+        userChecks = []
+        challenge.lastResetDate = checkDate
+      }
     }
 
     const updated = {
@@ -132,6 +148,33 @@ export const challengesService = {
       dailyChecks: {
         ...dailyChecks,
         [userId]: [...userChecks, checkDate],
+      },
+      updatedAt: new Date().toISOString(),
+    }
+    list[index] = updated
+    writeChallenges(list)
+    return updated
+  },
+
+  async undoCheckIn(challengeId: string, userId: string, date?: string): Promise<Challenge> {
+    const list = readChallenges()
+    const index = list.findIndex((item) => item.id === challengeId)
+    if (index === -1) throw new Error('Challenge not found')
+
+    const challenge = list[index]
+    const dailyChecks = challenge.dailyChecks ?? {}
+    const userChecks = dailyChecks[userId] ?? []
+    const checkDate = date ?? new Date().toISOString().split('T')[0]
+
+    if (!userChecks.includes(checkDate)) {
+      return challenge
+    }
+
+    const updated = {
+      ...challenge,
+      dailyChecks: {
+        ...dailyChecks,
+        [userId]: userChecks.filter((d) => d !== checkDate),
       },
       updatedAt: new Date().toISOString(),
     }

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector, type RootState } from '../../app/store'
-import { fetchHabits, checkInHabit, toggleLocalComplete } from '../../features/habits/habitsSlice'
+import { fetchHabits, checkInHabit } from '../../features/habits/habitsSlice'
 import { fetchGoals } from '../../features/goals/goalsSlice'
 import { fetchTodos, addTodo, toggleTodo, deleteTodo, updateTodo } from '../../features/todos/todosSlice'
 import AppLayout from '../../components/Layout/AppLayout'
 import Status from '../../components/Status/Status'
 import ChallengeWidget from '../../components/ChallengeWidget'
+import EisenhowerMatrix from '../../components/EisenhowerMatrix'
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogFooter } from '../../components/ui/dialog'
 import { Input } from '../../components/ui/input'
 import { Textarea } from '../../components/ui/textarea'
@@ -121,17 +122,13 @@ const Dashboard: React.FC = () => {
   const handleToggleHabit = async (id: string) => {
     if (!userId) return
     const today = new Date().toISOString().split('T')[0]
-    const habit = habits.find((h) => h.id === id)
-    if (!habit) return
-
-    dispatch(toggleLocalComplete(id))
 
     try {
       await dispatch(checkInHabit({ id, date: today })).unwrap()
-      toast.success(habit.completed ? 'Отметка снята' : 'Привычка отмечена!')
-    } catch {
-      dispatch(toggleLocalComplete(id))
+      toast.success('Привычка обновлена!')
+    } catch (error) {
       toast.error('Не удалось обновить привычку')
+      console.error('Failed to check in habit:', error)
     }
   }
 
@@ -337,6 +334,8 @@ const Dashboard: React.FC = () => {
 
           <div className="lg:col-span-1 flex flex-col gap-8">
             <ChallengeWidget />
+
+            <EisenhowerMatrix todos={activeTodos} habits={todayHabits} />
 
             <div className="glass-panel p-6">
               <h2 className="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] pb-4">Быстрая статистика</h2>

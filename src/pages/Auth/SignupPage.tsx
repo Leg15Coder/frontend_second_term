@@ -11,6 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { toast } from "sonner";
 import { useAppDispatch } from "@/app/store";
 import { setUser } from "@/features/user/userSlice";
+import { mapFirebaseErrorToMessage } from "@/lib/firebase-errors";
 
 const signupSchema = z.object({
   name: z.string().min(2, "Имя должно содержать минимум 2 символа"),
@@ -52,8 +53,7 @@ export default function SignupPage() {
       toast.success("Аккаунт создан успешно");
       navigate("/dashboard");
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : String(err)
-      toast.error(message || "Ошибка создания аккаунта");
+      toast.error(mapFirebaseErrorToMessage(err));
     } finally {
       setIsLoading(false);
     }

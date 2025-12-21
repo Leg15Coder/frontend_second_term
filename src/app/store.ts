@@ -5,6 +5,7 @@ import userReducer from '../features/user/userSlice'
 import goalsReducer from '../features/goals/goalsSlice'
 import challengesReducer from '../features/challenges/challengesSlice'
 import todosReducer from '../features/todos/todosSlice'
+import groupsReducer from '../features/groups/groupsSlice'
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     goals: goalsReducer,
     challenges: challengesReducer,
     todos: todosReducer,
+    groups: groupsReducer,
   },
 })
 

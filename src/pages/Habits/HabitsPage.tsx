@@ -15,7 +15,8 @@ import { toast } from 'sonner'
 const habitSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
-  frequency: z.enum(['daily', 'weekdays', 'custom']).optional(),
+  frequency: z.enum(['daily', 'weekdays', 'custom', 'every_n_days']).optional(),
+  everyNDays: z.number().min(1).max(365).optional(),
   difficulty: z.enum(['low', 'medium', 'hard']).optional(),
 })
 
@@ -34,6 +35,7 @@ const HabitsPage: React.FC = () => {
       title: '',
       description: '',
       frequency: 'daily',
+      everyNDays: 1,
       difficulty: 'medium'
     }
   })
@@ -63,6 +65,7 @@ const HabitsPage: React.FC = () => {
       title: h.title,
       description: h.description ?? '',
       frequency: h.frequency ?? 'daily',
+      everyNDays: h.everyNDays ?? 1,
       difficulty: h.difficulty ?? 'medium'
     })
     setIsOpen(true)
@@ -156,6 +159,7 @@ const HabitsPage: React.FC = () => {
                           <SelectContent className="bg-[#1a1f2e] border-white/10">
                             <SelectItem value="daily" className="text-white hover:bg-white/10">Ежедневно</SelectItem>
                             <SelectItem value="weekdays" className="text-white hover:bg-white/10">По будням</SelectItem>
+                            <SelectItem value="every_n_days" className="text-white hover:bg-white/10">Каждые N дней</SelectItem>
                             <SelectItem value="custom" className="text-white hover:bg-white/10">Выборочно</SelectItem>
                           </SelectContent>
                         </Select>
@@ -163,6 +167,30 @@ const HabitsPage: React.FC = () => {
                       </FormItem>
                     )}
                   />
+                  {form.watch('frequency') === 'every_n_days' && (
+                    <FormField
+                      control={form.control}
+                      name="everyNDays"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white/80">Каждые (дней)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min={1}
+                              max={365}
+                              {...field}
+                              onChange={(e) => field.onChange(Number.parseInt(e.target.value, 10))}
+                              className="bg-white/5 border-white/10 text-white"
+                              placeholder="например: 3"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                          <p className="text-xs text-white/50">Привычка будет повторяться каждые указанное количество дней</p>
+                        </FormItem>
+                      )}
+                    />
+                  )}
                   <FormField
                     control={form.control}
                     name="difficulty"
@@ -208,9 +236,10 @@ const HabitsPage: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {items.map((habit) => {
-              const frequencyLabels = {
+              const frequencyLabels: Record<string, string> = {
                 daily: 'Ежедневно',
                 weekdays: 'По будням',
+                every_n_days: habit.everyNDays ? `Каждые ${habit.everyNDays} дн.` : 'Каждые N дней',
                 custom: 'Выборочно'
               }
               const difficultyLabels = {

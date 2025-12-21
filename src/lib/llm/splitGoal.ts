@@ -1,5 +1,6 @@
 import type { GoalTask } from '@/types'
 import { callPerplexity } from '@/services/perplexityService'
+import { postprocessTasks, type GoalContext } from './taskValidation'
 
 const apiTimeout = 5000
 
@@ -168,6 +169,10 @@ export type SplitGoalOptions = {
   targetDate?: string
   forceDaily?: boolean
   tempo?: 'conservative' | 'normal' | 'aggressive'
+  tags?: string[]
+  userHistorySummary?: string
+  preferredDifficulty?: 'easy' | 'medium' | 'hard'
+  relatedGoals?: string[]
 }
 
 export async function splitGoal(detailedDescription: string, options?: SplitGoalOptions): Promise<GoalTask[]> {
@@ -214,21 +219,30 @@ export async function splitGoal(detailedDescription: string, options?: SplitGoal
   desiredMin = Math.max(1, Math.round(desiredMin * tempoFactor))
 
   const tempoNote = tempo === 'conservative' ? 'темп: консервативный — небольшие стабильные шаги.' : tempo === 'aggressive' ? 'темп: агрессивный — более мелкие и частые шаги.' : 'темп: нормальный.'
+
+  const tagsNote = options?.tags && options.tags.length > 0
+    ? `\n\nТеги цели: ${options.tags.join(', ')}. Учитывай эти темы при формировании задач.`
+    : ''
+
+  const difficultyNote = options?.preferredDifficulty
+    ? `\n\nПредпочтительная сложность: ${options.preferredDifficulty === 'easy' ? 'лёгкая' : options.preferredDifficulty === 'medium' ? 'средняя' : 'высокая'}.`
+    : ''
+
   const basePrompt = urgent
-    ? `Ты — ассистент, который разбивает любую цель на очень короткие, выполнимые микро‑задачи (дневные). ${ctxNote} Требования к ответу:
+    ? `Ты — ассистент, который разбивает любую цель на очень короткие, выполнимые микро‑задачи (дневные). ${ctxNote}${tagsNote}${difficultyNote} Требования к ответу:
 1) Верни МИНИМУМ ${desiredMin} микро‑задач, упорядоченных по дням (последовательность выполнения).
-2) Для каждой подзадачи верни: title (коротко), description (1-2 предложения), day_estimate (число дней, обычно 1), acceptance_criteria (как проверить, выполнена ли подзадача).
-3) Сделай шаги практическими и проверяемыми, избегай аморфных формулировок.
-4) Верни STRICT JSON: {"tasks":[{"title":"...","description":"...","day_estimate":1,"acceptance_criteria":"..."}]}.
+2) Для каждой подзадачи верни: title (коротко), description (1-2 предложения), day_estimate (число дней, обычно 1), acceptance_criteria (как проверить, выполнена ли подзадача), priority (high/medium/low).
+3) Сделай шаги практическими и проверяемыми, избегай аморфных формулировок. Не просто перефразируй цель, а разбей на конкретные действия.
+4) Верни STRICT JSON: {"tasks":[{"title":"...","description":"...","day_estimate":1,"acceptance_criteria":"...","priority":"high"}]}.
 ${tempoNote}
 
 Описание цели:
 ${detailedDescription}`
-    : `Ты — ассистент, который разбивает любую цель на короткие, понятные и выполнимые шаги по неделям. ${ctxNote} Требования к ответу:
+    : `Ты — ассистент, который разбивает любую цель на короткие, понятные и выполнимые шаги по неделям. ${ctxNote}${tagsNote}${difficultyNote} Требования к ответу:
 1) Верни МИНИМУМ ${desiredMin} шагов, упорядоченных последовательно.
-2) Для каждой подзадачи верни: title (коротко), description (1-2 предложения), week_estimate (число недель), acceptance_criteria (как проверить выполнение).
-3) Делай шаги практическими, конкретными и проверяемыми.
-4) Верни STRICT JSON: {"tasks":[{"title":"...","description":"...","week_estimate":1,"acceptance_criteria":"..."}]}.
+2) Для каждой подзадачи верни: title (коротко), description (1-2 предложения), week_estimate (число недель), acceptance_criteria (как проверить выполнение), priority (high/medium/low).
+3) Делай шаги практическими, конкретными и проверяемыми. Не просто перефразируй цель.
+4) Верни STRICT JSON: {"tasks":[{"title":"...","description":"...","week_estimate":1,"acceptance_criteria":"...","priority":"medium"}]}.
 ${tempoNote}
 
 Описание цели:
@@ -310,14 +324,44 @@ ${detailedDescription}`
           const strictPrompt = `НЕ ПОВТОРЯЙ исходную формулировку. Разбей цель на минимум ${desiredMin} конкретных, проверяемых шагов. Для каждой подзадачи верни title, description, ${schemaField} и acceptance_criteria. Пример правильного элемента: {"title":"Прочитать лекцию 1","description":"Просмотреть лекцию и выписать определения","${schemaField}":1,"acceptance_criteria":"Есть записи по ключевым определениям"}. Верни STRICT JSON: {"tasks":[...]}.\n\nОписание цели:\n${detailedDescription}`
           const rawStrict = await callPerplexity(strictPrompt)
           const parsedStrict = parseRawToTasks(rawStrict, detailedDescription)
-          if (parsedStrict && parsedStrict.length >= desiredMin) return parsedStrict
+          if (parsedStrict && parsedStrict.length >= desiredMin) {
+            const context: GoalContext = {
+              goalText: detailedDescription,
+              tags: options?.tags,
+              deadline: options?.targetDate,
+              userHistorySummary: options?.userHistorySummary,
+              preferredDifficulty: options?.preferredDifficulty,
+              relatedGoals: options?.relatedGoals
+            }
+            return postprocessTasks(parsedStrict, context)
+          }
         } catch (e) {
           console.warn('splitGoal: strict attempt failed', e)
         }
       }
-      if (tried.length >= desiredMin) return tried
+      if (tried.length >= desiredMin) {
+        const context: GoalContext = {
+          goalText: detailedDescription,
+          tags: options?.tags,
+          deadline: options?.targetDate,
+          userHistorySummary: options?.userHistorySummary,
+          preferredDifficulty: options?.preferredDifficulty,
+          relatedGoals: options?.relatedGoals
+        }
+        return postprocessTasks(tried, context)
+      }
       const expanded = expandTasksLocal(tried, detailedDescription, desiredMin)
-      if (expanded.length >= desiredMin) return expanded
+      if (expanded.length >= desiredMin) {
+        const context: GoalContext = {
+          goalText: detailedDescription,
+          tags: options?.tags,
+          deadline: options?.targetDate,
+          userHistorySummary: options?.userHistorySummary,
+          preferredDifficulty: options?.preferredDifficulty,
+          relatedGoals: options?.relatedGoals
+        }
+        return postprocessTasks(expanded, context)
+      }
       try {
         const schemaField = urgent ? 'day_estimate' : 'week_estimate'
         const expandPrompt = `Разверни и разбей существующие задачи до как минимум ${desiredMin} коротких выполнимых шагов. Верни STRICT JSON формата: {"tasks":[{"title":"...","description":"...","${schemaField}":1}]}.
@@ -329,15 +373,42 @@ ${detailedDescription}`
  ${detailedDescription}`
         const raw2 = await callPerplexity(expandPrompt)
         const parsed2 = parseRawToTasks(raw2, detailedDescription)
-        if (parsed2 && parsed2.length >= desiredMin) return parsed2
+        if (parsed2 && parsed2.length >= desiredMin) {
+          const context: GoalContext = {
+            goalText: detailedDescription,
+            tags: options?.tags,
+            deadline: options?.targetDate,
+            userHistorySummary: options?.userHistorySummary,
+            preferredDifficulty: options?.preferredDifficulty,
+            relatedGoals: options?.relatedGoals
+          }
+          return postprocessTasks(parsed2, context)
+        }
       } catch (e) {
         console.warn('splitGoal: expand attempt failed', e)
       }
-      return expandTasksLocal(tried, detailedDescription, desiredMin)
+      const context: GoalContext = {
+        goalText: detailedDescription,
+        tags: options?.tags,
+        deadline: options?.targetDate,
+        userHistorySummary: options?.userHistorySummary,
+        preferredDifficulty: options?.preferredDifficulty,
+        relatedGoals: options?.relatedGoals
+      }
+      return postprocessTasks(expandTasksLocal(tried, detailedDescription, desiredMin), context)
     }
   } catch (err) {
     console.warn('splitGoal: retries failed', err)
   }
 
-  return generateFromHeuristics(detailedDescription, desiredMin, urgent)
+  const fallbackTasks = generateFromHeuristics(detailedDescription, desiredMin, urgent)
+  const context: GoalContext = {
+    goalText: detailedDescription,
+    tags: options?.tags,
+    deadline: options?.targetDate,
+    userHistorySummary: options?.userHistorySummary,
+    preferredDifficulty: options?.preferredDifficulty,
+    relatedGoals: options?.relatedGoals
+  }
+  return postprocessTasks(fallbackTasks, context)
  }

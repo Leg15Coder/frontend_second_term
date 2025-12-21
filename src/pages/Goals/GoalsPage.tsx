@@ -8,8 +8,9 @@ import { Textarea } from '../../components/ui/textarea'
 import { Button } from '../../components/ui/button'
 import { toast } from 'sonner'
 import { splitGoal } from '../../lib/llm/splitGoal'
-import { useNavigate } from 'react-router-dom'
-import type { GoalTask } from '../../types'
+import { suggestHabitsForGoal } from '../../services/aiService'
+import HabitSuggestionCard from '../../components/HabitSuggestionCard'
+import type { GoalTask, Habit } from '../../types'
 
 const GoalsPage: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -19,14 +20,14 @@ const GoalsPage: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
   const [detailedDescription, setDetailedDescription] = useState('')
   const [progress, setProgress] = useState(0)
   const [tasks, setTasks] = useState<GoalTask[]>([])
   const [generatingTasks, setGeneratingTasks] = useState(false)
   const [generationError, setGenerationError] = useState<string | null>(null)
   const [suggestHabits, setSuggestHabits] = useState(true)
-  const navigate = useNavigate()
+  const [suggestedHabits, setSuggestedHabits] = useState<Habit[]>([])
+  const [generatingHabits, setGeneratingHabits] = useState(false)
 
   useEffect(() => {
     if (userId) {
@@ -40,7 +41,6 @@ const GoalsPage: React.FC = () => {
       if (goal) {
         setEditingId(goalId)
         setTitle(goal.title)
-        setDescription(goal.description || '')
         setDetailedDescription(goal.detailedDescription || '')
         setProgress(goal.progress || 0)
         setTasks(goal.tasks || [])
@@ -48,7 +48,6 @@ const GoalsPage: React.FC = () => {
     } else {
       setEditingId(null)
       setTitle('')
-      setDescription('')
       setDetailedDescription('')
       setProgress(0)
       setTasks([])
@@ -84,12 +83,44 @@ const GoalsPage: React.FC = () => {
     }
   }
 
-  const handleToggleTask = (taskId: string) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId ? { ...task, done: !task.done } : task
+  const handleToggleTask = async (taskId: string, goalId?: string) => {
+    if (!goalId) {
+      setTasks((prev) =>
+        prev.map((task) =>
+          task.id === taskId ? { ...task, done: !task.done } : task
+        )
       )
+      return
+    }
+
+    if (!userId) return
+
+    const goal = items.find(g => g.id === goalId)
+    if (!goal?.tasks) return
+
+    const currentTasks = goal.tasks
+    const updatedTasks = currentTasks.map((task) =>
+      task.id === taskId ? { ...task, done: !task.done } : task
     )
+
+    const updatedProgress = updatedTasks.length > 0
+      ? Math.round((updatedTasks.filter((t) => t.done).length / updatedTasks.length) * 100)
+      : 0
+
+    try {
+      await dispatch(updateGoal({
+        id: goalId,
+        data: {
+          tasks: updatedTasks,
+          progress: updatedProgress
+        }
+      })).unwrap()
+
+      toast.success('Задача обновлена!')
+    } catch (error) {
+      toast.error('Не удалось обновить задачу')
+      console.error('Failed to toggle task:', error)
+    }
   }
 
   const attemptAutoGenerate = async (): Promise<void> => {
@@ -125,7 +156,6 @@ const GoalsPage: React.FC = () => {
           id: editingId,
           data: {
             title,
-            description,
             detailedDescription,
             progress: calculatedProgress,
             tasks
@@ -135,7 +165,6 @@ const GoalsPage: React.FC = () => {
       } else {
         await dispatch(addGoal({
           title,
-          description,
           detailedDescription,
           progress: calculatedProgress,
           completed: false,
@@ -146,13 +175,9 @@ const GoalsPage: React.FC = () => {
       setIsDialogOpen(false)
       setEditingId(null)
       setTitle('')
-      setDescription('')
       setDetailedDescription('')
       setProgress(0)
       setTasks([])
-      if (suggestHabits && tasks.length > 0) {
-        navigate('/habits')
-      }
     } catch {
       toast.error('Ошибка при сохранении цели')
     }
@@ -201,17 +226,7 @@ const GoalsPage: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label htmlFor="goal-description" className="text-white/80 text-sm mb-2 block">Краткое описание (опционально)</label>
-                  <Input
-                    id="goal-description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="bg-white/5 border-white/10 text-white"
-                    placeholder="Краткое описание цели..."
-                  />
-                </div>
-                <div>
-                  <label htmlFor="goal-detailed" className="text-white/80 text-sm mb-2 block">Подробное описание</label>
+                  <label htmlFor="goal-detailed" className="text-white/80 text-sm mb-2 block">Описание</label>
                   <Textarea
                     id="goal-detailed"
                     value={detailedDescription}
@@ -306,8 +321,11 @@ const GoalsPage: React.FC = () => {
                         <span className="material-symbols-outlined text-accent">check_circle</span>
                       )}
                     </div>
-                    {goal.description && (
-                      <p className="text-white/60 text-sm">{goal.description}</p>
+                    {goal.detailedDescription && (
+                      <p className="text-white/60 text-sm">
+                        {goal.detailedDescription.slice(0, 100)}
+                        {goal.detailedDescription.length > 100 ? '...' : ''}
+                      </p>
                     )}
 
                     {hasTasks && (
@@ -317,19 +335,26 @@ const GoalsPage: React.FC = () => {
                         </p>
                         <div className="space-y-1">
                           {goal.tasks!.slice(0, 3).map((task) => (
-                            <div key={task.id} className="flex items-center gap-2 text-xs">
+                            <button
+                              key={task.id}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleToggleTask(task.id, goal.id)
+                              }}
+                              className="flex items-center gap-2 text-xs w-full hover:bg-white/5 p-1 rounded transition-colors"
+                            >
                               <span className={`material-symbols-outlined text-sm ${task.done ? 'text-accent' : 'text-white/30'}`}>
                                 {task.done ? 'check_circle' : 'radio_button_unchecked'}
                               </span>
                               <span className={`text-white/70 ${task.done ? 'line-through' : ''}`}>
                                 {task.title.slice(0, 40)}{task.title.length > 40 ? '...' : ''}
                               </span>
-                            </div>
+                            </button>
                           ))}
-                          {goal.tasks!.length > 3 && (
-                            <p className="text-white/50 text-xs ml-6">+{goal.tasks!.length - 3} ещё...</p>
-                          )}
                         </div>
+                        {goal.tasks!.length > 3 && (
+                          <p className="text-white/50 text-xs ml-6">+{goal.tasks!.length - 3} ещё...</p>
+                        )}
                       </div>
                     )}
 

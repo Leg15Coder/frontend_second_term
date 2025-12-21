@@ -12,6 +12,8 @@ const Sidebar: React.FC = () => {
     { path: '/goals', icon: 'flag', label: 'Цели' },
     { path: '/todos', icon: 'task_alt', label: 'Задачи' },
     { path: '/challenges', icon: 'shield', label: 'Вызовы' },
+    { path: '/groups', icon: 'groups', label: 'Группы' },
+    { path: '/calendar', icon: 'calendar_month', label: 'Календарь' },
   ]
 
   const isActive = (path: string) => location.pathname === path

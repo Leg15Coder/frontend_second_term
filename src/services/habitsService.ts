@@ -71,19 +71,37 @@ export const habitsService = {
     writeHabits(userId, list.filter((item) => item.id !== id))
   },
 
-  async checkInHabit(id: string, date: string, userId: string): Promise<void> {
+  async checkInHabit(id: string, date: string, userId: string): Promise<Habit> {
     const list = readHabits(userId)
+    let updatedHabit: Habit | null = null
+
     const updated = list.map((item) => {
       if (item.id !== id) return item
+
       const dates = new Set(item.datesCompleted ?? [])
-      dates.add(date)
-      return {
-        ...item,
-        datesCompleted: Array.from(dates),
-        updatedAt: new Date().toISOString(),
-        streak: (item.streak ?? 0) + 1,
+      const hadDate = dates.has(date)
+
+      if (hadDate) {
+        dates.delete(date)
+      } else {
+        dates.add(date)
       }
+
+      const datesArray = Array.from(dates)
+      const newHabit: Habit = {
+        ...item,
+        datesCompleted: datesArray,
+        completed: dates.has(date),
+        updatedAt: new Date().toISOString(),
+        streak: hadDate ? Math.max(0, (item.streak ?? 0) - 1) : (item.streak ?? 0) + 1,
+      }
+
+      updatedHabit = newHabit
+      return newHabit
     })
+
     writeHabits(userId, updated)
+    if (!updatedHabit) throw new Error('Habit not found')
+    return updatedHabit
   },
 }

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '../app/store'
-import { fetchChallenges, joinChallenge, leaveChallenge, checkInChallenge } from '../features/challenges/challengesSlice'
+import { fetchChallenges, joinChallenge, leaveChallenge, checkInChallenge, undoCheckIn } from '../features/challenges/challengesSlice'
 import { toast } from 'sonner'
 
 const ChallengeWidget: React.FC = () => {
@@ -88,6 +88,19 @@ const ChallengeWidget: React.FC = () => {
     }
   }
 
+  const handleUndoCheckIn = async () => {
+    if (!userId) {
+      toast.error('Необходимо авторизоваться')
+      return
+    }
+    try {
+      await dispatch(undoCheckIn({ challengeId: currentChallenge.id, userId })).unwrap()
+      toast.success('Отметка отменена')
+    } catch {
+      toast.error('Не удалось отменить отметку')
+    }
+  }
+
   return (
     <div className="glass-panel p-6">
       <div className="flex items-center justify-between mb-4">
@@ -136,6 +149,15 @@ const ChallengeWidget: React.FC = () => {
               >
                 {checkedInToday ? '✓ Отмечено сегодня' : 'Отметить день'}
               </button>
+              {checkedInToday && (
+                <button
+                  onClick={handleUndoCheckIn}
+                  aria-label="Отменить отметку"
+                  className="px-4 py-2 rounded-lg bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 transition-colors"
+                >
+                  Отменить
+                </button>
+              )}
               <button
                 onClick={handleLeave}
                 aria-label="Покинуть вызов"

@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { toast } from "sonner";
 import { useAppDispatch } from "@/app/store";
 import { setUser } from "@/features/user/userSlice";
+import { showErrorToast, showSuccessToast } from "@/lib/toast";
 
 const loginSchema = z.object({
   email: z.string().email("Неверный email адрес"),
@@ -18,10 +18,6 @@ const loginSchema = z.object({
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
-
-function getErrorMessage(err: unknown): string {
-  return err instanceof Error ? err.message : String(err);
-}
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -46,10 +42,10 @@ export default function LoginPage() {
         name: user.displayName,
         photoURL: user.photoURL
       }));
-      toast.success("Вход выполнен успешно");
+      showSuccessToast("Вход выполнен успешно");
       navigate("/dashboard");
     } catch (err: unknown) {
-      toast.error(getErrorMessage(err) || "Ошибка входа");
+      showErrorToast(err, { context: 'Login' });
     } finally {
       setIsLoading(false);
     }
@@ -65,10 +61,10 @@ export default function LoginPage() {
         name: user.displayName,
         photoURL: user.photoURL
       }));
-      toast.success("Вход через Google выполнен");
+      showSuccessToast("Вход через Google выполнен");
       navigate("/dashboard");
     } catch (err: unknown) {
-      toast.error(getErrorMessage(err) || "Ошибка входа через Google");
+      showErrorToast(err, { context: 'Google Login' });
     } finally {
       setIsLoading(false);
     }

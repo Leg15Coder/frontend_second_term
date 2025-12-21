@@ -26,6 +26,9 @@ import TodosPage from "./pages/Todos/TodosPage";
 import ChallengesPage from "./pages/Challenges/ChallengesPage";
 import SettingsPage from "./pages/Settings/SettingsPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
+import CalendarPage from "./pages/Calendar/CalendarPage";
+import GroupsPage from "./pages/Groups/GroupsPage";
+import GroupDetail from "./pages/Groups/GroupDetail";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +65,9 @@ const App: React.FC = () => {
             <Route path="/goals" element={<ProtectedRoute><GoalsPage /></ProtectedRoute>} />
             <Route path="/todos" element={<ProtectedRoute><TodosPage /></ProtectedRoute>} />
             <Route path="/challenges" element={<ProtectedRoute><ChallengesPage /></ProtectedRoute>} />
+            <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
+            <Route path="/groups" element={<ProtectedRoute><GroupsPage /></ProtectedRoute>} />
+            <Route path="/groups/:id" element={<ProtectedRoute><GroupDetail /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
 

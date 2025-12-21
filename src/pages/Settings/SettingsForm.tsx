@@ -7,6 +7,7 @@ import { Button } from '../../components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
+import { showErrorToast, showSuccessToast } from '../../lib/toast'
 
 const SettingsForm: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -16,6 +17,8 @@ const SettingsForm: React.FC = () => {
   const [displayName, setDisplayName] = useState('')
   const [photoURL, setPhotoURL] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showReauthDialog, setShowReauthDialog] = useState(false)
+  const [reauthPassword, setReauthPassword] = useState('')
 
   useEffect(() => {
     if (user?.id) {
@@ -58,16 +61,6 @@ const SettingsForm: React.FC = () => {
     }
   }
 
-  const handleChangeTheme = async (theme: 'light' | 'dark') => {
-    if (!user?.id) return
-    try {
-      const newSettings = await settingsService.updateSettings(user.id, { theme })
-      setSettings(newSettings)
-      toast.success(`Тема изменена на ${theme === 'dark' ? 'тёмную' : 'светлую'}`)
-    } catch {
-      toast.error('Ошибка при изменении темы')
-    }
-  }
 
   const handleChangeVisibility = async (visibility: 'public' | 'private') => {
     if (!user?.id) return
@@ -83,17 +76,44 @@ const SettingsForm: React.FC = () => {
   const handleDeleteAccount = async () => {
     if (!user?.id) return
     const confirmed = window.confirm(
-      'Вы уверены, что хотите удалить аккаунт? Все локальные данные будут безвозвратно удалены.'
+      'Вы уверены, что хотите удалить аккаунт? Все данные будут безвозвратно удалены из Firebase.'
     )
     if (!confirmed) return
 
+    setLoading(true)
     try {
       await settingsService.deleteAccount(user.id)
       await dispatch(logoutUser()).unwrap()
-      toast.success('Аккаунт удалён')
+      showSuccessToast('Аккаунт успешно удалён')
       navigate('/login')
-    } catch {
-      toast.error('Ошибка при удалении аккаунта')
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 'auth/requires-recent-login') {
+        toast.error('Для удаления аккаунта требуется повторный вход')
+        setShowReauthDialog(true)
+      } else {
+        showErrorToast(error, { context: 'Delete Account' })
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleReauthenticate = async () => {
+    if (!user?.email || !reauthPassword) {
+      toast.error('Введите пароль')
+      return
+    }
+
+    setLoading(true)
+    try {
+      await settingsService.reauthenticate(user.email, reauthPassword)
+      setShowReauthDialog(false)
+      setReauthPassword('')
+      showSuccessToast('Повторная аутентификация успешна. Попробуйте удалить аккаунт снова.')
+    } catch (error: unknown) {
+      showErrorToast(error, { context: 'Reauthenticate' })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -163,23 +183,6 @@ const SettingsForm: React.FC = () => {
       </div>
 
       <div className="glass-panel p-6">
-        <h2 className="text-white text-xl font-bold mb-4">Тема</h2>
-        <Select onValueChange={handleChangeTheme} defaultValue={settings.theme}>
-          <SelectTrigger className="bg-white/5 border-white/10 text-white">
-            <SelectValue placeholder="Выберите тему" />
-          </SelectTrigger>
-          <SelectContent className="bg-[#1a1f2e] border-white/10">
-            <SelectItem value="dark" className="text-white hover:bg-white/10">
-              Тёмная
-            </SelectItem>
-            <SelectItem value="light" className="text-white hover:bg-white/10">
-              Светлая
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="glass-panel p-6">
         <h2 className="text-white text-xl font-bold mb-4">Приватность</h2>
         <div>
           <label htmlFor="visibility" className="text-white/80 text-sm mb-2 block">
@@ -207,15 +210,57 @@ const SettingsForm: React.FC = () => {
       <div className="glass-panel p-6 border-red-500/20">
         <h2 className="text-red-400 text-xl font-bold mb-4">Опасная зона</h2>
         <p className="text-white/60 text-sm mb-4">
-          Удаление аккаунта приведёт к полной потере всех локальных данных (привычки, цели, настройки).
+          Удаление аккаунта приведёт к полной потере всех данных (привычки, цели, настройки). Это действие необратимо.
         </p>
         <Button
           onClick={handleDeleteAccount}
+          disabled={loading}
           className="bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/50"
         >
-          Удалить аккаунт
+          {loading ? 'Удаление...' : 'Удалить аккаунт'}
         </Button>
       </div>
+
+      {/* Reauthentication Dialog */}
+      {showReauthDialog && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="glass-panel p-6 max-w-md w-full mx-4">
+            <h3 className="text-white text-xl font-bold mb-4">Подтверждение личности</h3>
+            <p className="text-white/60 text-sm mb-4">
+              Для удаления аккаунта требуется повторный вход. Введите ваш пароль:
+            </p>
+            <Input
+              type="password"
+              value={reauthPassword}
+              onChange={(e) => setReauthPassword(e.target.value)}
+              placeholder="Введите пароль"
+              className="bg-white/5 border-white/10 text-white mb-4"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleReauthenticate()
+              }}
+            />
+            <div className="flex gap-3">
+              <Button
+                onClick={handleReauthenticate}
+                disabled={loading}
+                className="flex-1 bg-primary text-white"
+              >
+                {loading ? 'Проверка...' : 'Подтвердить'}
+              </Button>
+              <Button
+                onClick={() => {
+                  setShowReauthDialog(false)
+                  setReauthPassword('')
+                }}
+                disabled={loading}
+                className="flex-1 bg-white/10 text-white"
+              >
+                Отмена
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -56,13 +56,13 @@ export const deleteHabit = createAsyncThunk<string, string>('habits/delete', asy
   return id
 })
 
-export const checkInHabit = createAsyncThunk<{ id: string; date: string }, { id: string; date: string }>(
+export const checkInHabit = createAsyncThunk<Habit, { id: string; date: string }>(
   'habits/checkIn',
   async ({ id, date }) => {
     const userId = auth.currentUser?.uid
     if (!userId) throw new Error('Not authenticated')
-    await habitsService.checkInHabit(id, date, userId)
-    return { id, date }
+    const updated = await habitsService.checkInHabit(id, date, userId)
+    return updated
   }
 )
 
@@ -101,12 +101,8 @@ const slice = createSlice({
         state.items = state.items.filter((h) => h.id !== action.payload)
       })
       .addCase(checkInHabit.fulfilled, (state, action) => {
-        const { id, date } = action.payload
-        const item = state.items.find((h) => h.id === id)
-        if (item) {
-          item.datesCompleted ??= []
-          if (!item.datesCompleted.includes(date)) item.datesCompleted.push(date)
-        }
+        const idx = state.items.findIndex((h) => h.id === action.payload.id)
+        if (idx >= 0) state.items[idx] = action.payload
       })
   },
 })
