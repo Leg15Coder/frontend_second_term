@@ -107,5 +107,7 @@ const slice = createSlice({
   },
 })
 
-export const { toggleLocalComplete } = slice.actions
+export function toggleLocalComplete(id: string) {
+  return slice.actions.toggleLocalComplete(id)
+}
 export default slice.reducer
