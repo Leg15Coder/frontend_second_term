@@ -78,7 +78,6 @@ export async function suggestHabitsForGoal(
   const prompt = `Ты — ассистент по формированию привычек. Для указанной цели предложи 1-3 полезные привычки, которые помогут её достичь.
 
 Цель: ${goal.title}
-${goal.description ? `Описание: ${goal.description}` : ''}
 ${goal.detailedDescription ? `Детали: ${goal.detailedDescription}` : ''}
 
 ${existingHabits.length > 0 ? `Существующие привычки пользователя: ${existingHabits.map(h => h.title).join(', ')}` : ''}
@@ -150,4 +149,3 @@ ${existingHabits.length > 0 ? `Существующие привычки пол�
     }]
   }
 }
-

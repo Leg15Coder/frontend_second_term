@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "engines": {
-    "node": "18.x"
+    "node": "24.x"
   },
   "homepage": "https://Leg15Coder.github.io/frontend_second_term",
   "scripts": {
@@ -25,7 +25,8 @@
     "test:screenshots": "loki test --storybook-url http://localhost:6006",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
-    "test:rules": "node ./tests/firestore.rules.test.js"
+    "test:rules": "node ./tests/firestore.rules.test.js",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -68,7 +69,6 @@
     "firebase": "^12.6.0",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.462.0",
-    "next-themes": "^0.3.0",
     "react": "^19.2.0",
     "react-day-picker": "^8.10.1",
     "react-dom": "^19.2.0",
@@ -89,6 +89,7 @@
     "@chromatic-com/storybook": "^4.1.2",
     "@eslint/js": "^9.39.1",
     "@firebase/rules-unit-testing": "^5.0.0",
+    "@rollup/wasm-node": "^4.54.0",
     "@storybook/addon-a11y": "^10.0.7",
     "@storybook/addon-controls": "^9.0.8",
     "@storybook/addon-docs": "^10.0.7",
@@ -130,7 +131,8 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.2",
-    "vitest": "^4.0.8"
+    "vitest": "^4.0.8",
+    "patch-package": "^6.5.1"
   },
   "husky": {
     "hooks": {

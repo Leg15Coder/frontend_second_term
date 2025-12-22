@@ -39,7 +39,7 @@ const GoalDetail: React.FC = () => {
               <Link to="/public/goals" className="px-3 py-1 rounded bg-white/10">Back</Link>
             </div>
           </div>
-          <p className="mt-4 text-white/70">{goal.description ?? 'No description provided.'}</p>
+          <p className="mt-4 text-white/70">{goal.detailedDescription ?? 'No description provided.'}</p>
           <div className="mt-6">
             <h4 className="font-semibold">Progress</h4>
             <div className="w-full bg-black/20 rounded-full h-3 mt-2"><div className="bg-primary h-3 rounded-full" style={{ width: `${progress}%` }} /></div>

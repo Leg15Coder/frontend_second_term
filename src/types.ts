@@ -132,3 +132,18 @@ export interface GroupsState {
   loading: boolean
   error: string | null
 }
+
+export interface GroupChallenge {
+  id: string
+  groupId: string
+  title: string
+  description?: string
+  days: number
+  startDate?: string
+  participants?: string[]
+  dailyChecks?: Record<string, string[]>
+  createdAt: string
+  updatedAt?: string
+  mode?: 'cumulative' | 'streak'
+  lastResetDate?: string
+}

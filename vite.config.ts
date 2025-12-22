@@ -11,7 +11,7 @@ const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(file
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig(({ mode }) => {
-  const base = mode === 'production' ? '/frontend_second_term/' : '/';
+  const base = '/';
   return {
     base,
     plugins: [react()],
@@ -27,7 +27,6 @@ export default defineConfig(({ mode }) => {
         output: {
           manualChunks(id) {
             if (id.includes('node_modules')) {
-              if (id.includes('react')) return 'vendor-react'
               return 'vendor'
             }
           }

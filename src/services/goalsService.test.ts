@@ -36,7 +36,7 @@ describe('goalsService', () => {
   it('should add a new goal', async () => {
     const newGoal = {
       title: 'Test Goal',
-      description: 'Test Description',
+      detailedDescription: 'Test Description',
       progress: 0,
       completed: false,
       userId,
