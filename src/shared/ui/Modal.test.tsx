@@ -9,7 +9,7 @@ describe('Modal', () => {
     expect(getByText('T')).toBeTruthy()
   })
   it('renders children', () => {
-    const { getByText } = render(<Modal open={false} onClose={() => {}} title="X"><div>Hi</div></Modal>)
+    const { getByText } = render(<Modal open={true} onClose={() => {}} title="X"><div>Hi</div></Modal>)
     expect(getByText('Hi')).toBeTruthy()
   })
 })

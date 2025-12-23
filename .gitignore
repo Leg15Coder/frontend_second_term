@@ -63,3 +63,5 @@ desktop.ini
 storybook-static/
 
 .github/ISSUES
+docs/
+.vercel

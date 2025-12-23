@@ -9,14 +9,14 @@ const GoalCreateEdit: React.FC = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
+  const [detailedDescription, setDetailedDescription] = useState('')
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim()) return
     const payload: Omit<Goal, 'id' | 'createdAt' | 'updatedAt'> = {
       title,
-      description,
+      detailedDescription,
       progress: 0,
       completed: false,
     }
@@ -35,8 +35,8 @@ const GoalCreateEdit: React.FC = () => {
               <input value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 p-3 rounded bg-white/5" aria-label="goal title" />
             </label>
             <label className="flex flex-col">
-              <span className="text-sm text-white/70">Description</span>
-              <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="mt-1 p-3 rounded bg-white/5" rows={4} aria-label="goal description" />
+              <span className="text-sm text-white/70">Details</span>
+              <textarea value={detailedDescription} onChange={(e) => setDetailedDescription(e.target.value)} className="mt-1 p-3 rounded bg-white/5" rows={4} aria-label="goal details" />
             </label>
             <div className="flex gap-3">
               <button type="submit" className="btn-accent">Create</button>

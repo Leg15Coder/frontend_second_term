@@ -27,7 +27,7 @@ const goals: Goal[] = [
   {
     id: 'g1',
     title: 'Learn TypeScript',
-    description: 'Complete a course',
+    detailedDescription: 'Complete a course',
     progress: 40,
     completed: false,
     createdAt: new Date().toISOString(),
@@ -79,7 +79,7 @@ export function createHandlers(rest: typeof import('msw').rest) {
       const newGoal: Goal = {
         id: `g${Math.random().toString(36).slice(2, 9)}`,
         title: body.title ?? 'Untitled Goal',
-        description: body.description,
+        detailedDescription: (body as Partial<Goal>).detailedDescription,
         progress: body.progress ?? 0,
         completed: false,
         createdAt: new Date().toISOString(),

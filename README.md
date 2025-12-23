@@ -88,6 +88,26 @@ npm run test:unit
 npm run test:coverage
 ```
 
+- Запустить E2E тесты (Cypress)
+
+```bash
+npm run cypress:open  # Открыть Cypress UI
+npm run cypress:run   # Запустить headless
+```
+
+**Структура тестов:**
+- `src/services/*.test.ts` — unit-тесты для сервисов (habitsService, goalsService, challengesService)
+- `src/features/*/*.test.ts` — unit-тесты для Redux слайсов
+- `tests/smoke.test.tsx` — smoke-тесты для проверки рендеринга основных страниц
+- `cypress/e2e/*.cy.ts` — E2E тесты для полных пользовательских сценариев
+
+**Покрытие:**
+Unit-тесты покрывают основной функционал работы с localStorage через сервисы, включая:
+- Создание, чтение, обновление и удаление привычек
+- Создание, чтение, обновление и удаление целей
+- Присоединение/выход из челленджей, отметка дней
+- Работа с подзадачами целей
+
 5) Линт и форматирование
 
 ```bash
@@ -173,8 +193,23 @@ Notes / распространённые проблемы
 - Проект использует CSS-уровень (Tailwind-подобные классы и SCSS модули можно подключать при необходимости). Для глобального стиля используйте `src/index.css`.
 - Поддерживается light/dark через CSS media query `prefers-color-scheme`.
 
-Безопасность и секреты
-- Никогда не храните секреты/креденшелы в репозитории. Используйте `.env` и CI secrets.
+## Безопасность окружения и секреты
+
+- Не храните секреты в репозитории. Используйте `.env.local` для локальной разработки и храните продакшн-ключи в CI/CD (GitHub Secrets / Netlify Environment Variables).
+- В корне проекта присутствует `.env.example` с перечнем необходимых Vite-переменных (VITE_FIREBASE_*, VITE_SENTRY_DSN и т.д.). Скопируйте его в `.env.local` и заполните значениями.
+
+Пример (PowerShell):
+
+```powershell
+cp .env.example .env.local
+# Откройте .env.local и вставьте значения
+npm run dev
+```
+
+- Для безопасного деплоя добавьте переменные окружения в Netlify/CI и не коммитьте `.env.local`.
+
+- В production рекомендуется отключать sourcemaps и не включать dev-only пакеты в бандл. Это уже настроено в `vite.config.ts` (sourcemap отключены в production).
+
 
 Что ещё можно сделать (roadmap)
 - Полный набор Storybook stories для всех страниц и состояний.

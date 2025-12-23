@@ -2,6 +2,7 @@ import * as js from "@eslint/js";
 import * as globals from "globals";
 import * as tseslint from "typescript-eslint";
 import * as pluginReact from "eslint-plugin-react";
+import * as jsxA11y from "eslint-plugin-jsx-a11y";
 import { defineConfig } from "eslint/config";
 
 export default defineConfig([
@@ -14,4 +15,5 @@ export default defineConfig([
   js.configs.recommended,
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
+  jsxA11y.configs.recommended,
 ]);
