@@ -49,6 +49,12 @@ jobs:
         env:
           CI: true
 
+      - name: Show built artifacts (diagnostics)
+        run: |
+          echo "Node version:"; node -v || true
+          echo "NPM version:"; npm -v || true
+          echo "dist existence and listing:"; if [ -d dist ]; then ls -la dist || true; else echo 'dist not found'; fi
+
       - name: Verify Cypress (install/cache)
         run: npx cypress verify || true
 
