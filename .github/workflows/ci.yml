@@ -18,21 +18,26 @@ jobs:
           node-version: '24.x'
           cache: 'npm'
 
+      - name: Verify Node / NPM versions
+        run: |
+          node -v
+          npm -v
+
       - name: Cache NPM
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            npm-${{ runner.os }}-
+            ${{ runner.os }}-npm-
 
       - name: Cache Cypress binary
         uses: actions/cache@v4
         with:
           path: ~/.cache/Cypress
-          key: cypress-${{ runner.os }}-v14-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-cypress-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            cypress-${{ runner.os }}-v14-
+            ${{ runner.os }}-cypress-
 
       - name: Install dependencies
         run: npm ci
@@ -44,23 +49,42 @@ jobs:
         env:
           CI: true
 
-      - name: Verify Cypress
+      - name: Verify Cypress (install/cache)
         run: npx cypress verify || true
-
-      - name: Serve dist
-        run: npx serve -s dist -l 5173 &
-
-      - name: Wait for site
-        run: npx wait-on http://localhost:5173 --timeout 60000
 
       - name: Run unit tests
         run: npm run test:unit
 
-      - name: Run Cypress tests
-        uses: cypress-io/github-action@v4
-        with:
-          start: npx serve -s dist -l 5173
-          wait-on: 'http://localhost:5173'
-          wait-on-timeout: 60
-          browser: chrome
+      - name: Start server
+        run: npx serve -s dist -l 5173 &
+        env:
+          CI: true
 
+      - name: Wait for server to be ready
+        run: |
+          for i in {1..20}; do
+            if curl -sS http://localhost:5173/ > /dev/null; then
+              echo 'server ready' && break
+            fi
+            echo 'waiting...'; sleep 1
+          done
+
+      - name: Server diagnostics
+        run: |
+          echo '--- curl index.html ---'; curl -I http://localhost:5173/ || true
+          echo '--- curl JS asset (if exists) ---'; ls dist | sed -n '1,200p' || true; 
+          ASSET=$(ls dist | grep -E "assets/.*\.js" || true); if [ -n "$ASSET" ]; then echo "asset found: $ASSET"; curl -I http://localhost:5173/$ASSET || true; else echo 'no js asset found in dist/assets'; fi
+          echo '--- ps aux (top processes) ---'; ps aux | head -n 50 || true
+
+      - name: Install Cypress
+        run: npx cypress install
+
+      - name: Cypress diagnostics
+        run: |
+          echo 'Cypress version:'; npx cypress --version || true
+          echo 'Cypress binary location:'; ls -la ~/.cache/Cypress || true
+
+      - name: Run Cypress tests (static dist)
+        run: npx cypress run --browser chrome
+        env:
+          CI: true
