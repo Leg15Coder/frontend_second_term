@@ -37,10 +37,15 @@ const Header = () => {
             </div>
 
             <div className="hidden md:block">
-              <Link to="/dashboard" className="btn-magic py-2 px-6 text-sm flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
-                Демо
-              </Link>
+              <div className="flex items-center gap-3">
+                <Link to="/signup" className="btn-outline-magic py-2 px-4 text-sm">
+                  Регистрация
+                </Link>
+                <Link to="/login" className="btn-magic py-2 px-6 text-sm flex items-center gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  Войти
+                </Link>
+              </div>
             </div>
 
             <button
@@ -63,9 +68,12 @@ const Header = () => {
                   {item.label}
                 </a>
               ))}
-              <Link to="/dashboard" className="btn-magic w-full py-2 text-sm flex items-center justify-center gap-2" onClick={() => setIsOpen(false)}>
+              <Link to="/login" className="btn-magic w-full py-2 text-sm flex items-center justify-center gap-2" onClick={() => setIsOpen(false)}>
                 <Sparkles className="w-4 h-4" />
-                Демо
+                Войти
+              </Link>
+              <Link to="/signup" className="btn-outline-magic w-full py-2 text-sm flex items-center justify-center gap-2" onClick={() => setIsOpen(false)}>
+                Регистрация
               </Link>
             </div>
           )}

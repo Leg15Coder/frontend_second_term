@@ -13,7 +13,8 @@ describe('Challenge Check-in and Undo', () => {
     cy.visit('/challenges')
     cy.url().should('include', '/challenges')
 
-    cy.get('[class*="glass-panel"]').first().within(() => {
+    cy.get('[class*="glass-panel"]').should('have.length.at.least', 1)
+    cy.get('[class*="glass-panel"]').first().should('be.visible').within(() => {
       cy.get('button').contains(/присоединиться/i).click()
     })
 
@@ -41,7 +42,8 @@ describe('Challenge Check-in and Undo', () => {
   it('should update progress when checking in', () => {
     cy.visit('/challenges')
 
-    cy.get('[class*="glass-panel"]').first().within(() => {
+    cy.get('[class*="glass-panel"]').should('have.length.at.least', 1)
+    cy.get('[class*="glass-panel"]').first().should('be.visible').within(() => {
       cy.get('button').contains(/присоединиться/i).then(($btn) => {
         if ($btn.text().match(/присоединиться/i)) {
           cy.wrap($btn).click()
@@ -50,7 +52,7 @@ describe('Challenge Check-in and Undo', () => {
       })
     })
 
-    cy.get('[class*="glass-panel"]').first().within(() => {
+    cy.get('[class*="glass-panel"]').first().should('be.visible').within(() => {
       cy.get('[class*="bg-accent"]').invoke('attr', 'style').as('initialProgress')
       cy.get('button').contains(/отметить день/i).click()
     })
@@ -68,7 +70,8 @@ describe('Challenge Check-in and Undo', () => {
   it('should persist check-in after page reload', () => {
     cy.visit('/challenges')
 
-    cy.get('[class*="glass-panel"]').first().within(() => {
+    cy.get('[class*="glass-panel"]').should('have.length.at.least', 1)
+    cy.get('[class*="glass-panel"]').first().should('be.visible').within(() => {
       cy.get('button').contains(/присоединиться|отметить день/i).then(($btn) => {
         const text = $btn.text()
         if (text.match(/присоединиться/i)) {
@@ -84,7 +87,8 @@ describe('Challenge Check-in and Undo', () => {
     cy.wait(500)
     cy.reload()
 
-    cy.get('[class*="glass-panel"]').first().within(() => {
+    cy.get('[class*="glass-panel"]').should('have.length.at.least', 1)
+    cy.get('[class*="glass-panel"]').first().should('be.visible').within(() => {
       cy.get('button').contains(/отменить/i).should('exist')
     })
   })

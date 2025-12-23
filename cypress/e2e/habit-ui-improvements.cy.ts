@@ -10,7 +10,8 @@ describe('Habit UI Improvements', () => {
   it('should display difficulty badge on habit card', () => {
     cy.visit('/habits')
 
-    cy.get('button').contains(/добавить.*привычку|add.*habit/i).click()
+    cy.get('button').contains(/добавить.*привычку|add.*habit/i).as('addHabitBtn').should('be.visible')
+    cy.get('@addHabitBtn').click()
     cy.get('input[placeholder*="например"]').first().type('Test Habit with Difficulty')
 
     cy.get('label').contains(/сложность|difficulty/i).parent().find('[role="combobox"]').click()
@@ -29,7 +30,8 @@ describe('Habit UI Improvements', () => {
   it('should support every_n_days frequency', () => {
     cy.visit('/habits')
 
-    cy.get('button').contains(/добавить/i).click()
+    cy.get('button').contains(/добавить/i).as('addHabitBtn').should('be.visible')
+    cy.get('@addHabitBtn').click()
     cy.get('input[placeholder*="например"]').first().type('Every 3 Days Habit')
 
     cy.get('label').contains(/периодичность|frequency/i).parent().find('[role="combobox"]').click()
@@ -49,7 +51,8 @@ describe('Habit UI Improvements', () => {
 
   it('should show everyNDays field only when every_n_days is selected', () => {
     cy.visit('/habits')
-    cy.get('button').contains(/добавить/i).click()
+    cy.get('button').contains(/добавить/i).as('addHabitBtn').should('be.visible')
+    cy.get('@addHabitBtn').click()
 
     cy.get('label').contains(/каждые/i).should('not.exist')
 
@@ -66,7 +69,8 @@ describe('Habit UI Improvements', () => {
 
   it('should validate everyNDays input range', () => {
     cy.visit('/habits')
-    cy.get('button').contains(/добавить/i).click()
+    cy.get('button').contains(/добавить/i).as('addHabitBtn').should('be.visible')
+    cy.get('@addHabitBtn').click()
 
     cy.get('input[placeholder*="например"]').first().type('Test')
     cy.get('label').contains(/периодичность/i).parent().find('[role="combobox"]').click()
@@ -81,7 +85,8 @@ describe('Habit UI Improvements', () => {
   it('should persist everyNDays value when editing habit', () => {
     cy.visit('/habits')
 
-    cy.get('button').contains(/добавить/i).click()
+    cy.get('button').contains(/добавить/i).as('addHabitBtn').should('be.visible')
+    cy.get('@addHabitBtn').click()
     cy.get('input[placeholder*="например"]').first().type('Edit Test')
     cy.get('label').contains(/периодичность/i).parent().find('[role="combobox"]').click()
     cy.get('[role="option"]').contains(/каждые.*дн/i).click()
@@ -107,7 +112,8 @@ describe('Habit UI Improvements', () => {
     ]
 
     cy.wrap(difficulties).each((diff) => {
-      cy.get('button').contains(/добавить/i).click()
+      cy.get('button').contains(/добавить/i).as('addHabitBtn').should('be.visible')
+      cy.get('@addHabitBtn').click()
       cy.get('input[placeholder*="например"]').first().type(`${diff.value} Habit`)
 
       cy.get('label').contains(/сложность/i).parent().find('[role="combobox"]')

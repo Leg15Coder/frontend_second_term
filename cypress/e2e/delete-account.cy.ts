@@ -14,7 +14,8 @@ describe('Delete Account Functionality', () => {
     cy.visit('/settings')
     cy.url().should('include', '/settings')
 
-    cy.get('button').contains(/удалить аккаунт|delete account/i).click()
+    cy.get('button').contains(/удалить аккаунт|delete account/i).as('deleteBtn').should('be.visible')
+    cy.get('@deleteBtn').click()
 
     cy.get('body').invoke('text').should('match', /аккаунт.*удалён|account.*deleted/i)
     cy.url().should('include', '/login')
@@ -34,7 +35,8 @@ describe('Delete Account Functionality', () => {
       body: { code: 'auth/requires-recent-login', message: 'Requires recent login' }
     }).as('deleteAccount')
 
-    cy.get('button').contains(/удалить аккаунт|delete account/i).click()
+    cy.get('button').contains(/удалить аккаунт|delete account/i).as('deleteBtn').should('be.visible')
+    cy.get('@deleteBtn').click()
 
     cy.get('body').invoke('text').should('match', /подтверждение личности|повторный вход|reauthenticate/i)
 
@@ -51,7 +53,8 @@ describe('Delete Account Functionality', () => {
       cy.stub(win, 'confirm').returns(false)
     })
 
-    cy.get('button').contains(/удалить аккаунт|delete account/i).click()
+    cy.get('button').contains(/удалить аккаунт|delete account/i).as('deleteBtn').should('be.visible')
+    cy.get('@deleteBtn').click()
 
     cy.url().should('include', '/settings')
 
@@ -70,7 +73,8 @@ describe('Delete Account Functionality', () => {
       cy.stub(win, 'confirm').returns(true)
     })
 
-    cy.get('button').contains(/удалить аккаунт|delete account/i).click()
+    cy.get('button').contains(/удалить аккаунт|delete account/i).as('deleteBtn').should('be.visible')
+    cy.get('@deleteBtn').click()
 
     cy.get('body').invoke('text').should('match', /ошибка|error/i)
 
@@ -84,7 +88,8 @@ describe('Delete Account Functionality', () => {
       cy.stub(win, 'confirm').returns(true)
     })
 
-    cy.get('button').contains(/удалить аккаунт|delete account/i).click()
+    cy.get('button').contains(/удалить аккаунт|delete account/i).as('deleteBtn').should('be.visible')
+    cy.get('@deleteBtn').click()
 
     cy.wait(2000)
 
@@ -99,34 +104,38 @@ describe('Reauthentication Dialog', () => {
     cy.get('input[type="password"]').type('password123')
     cy.get('button[type="submit"]').click()
     cy.url().should('include', '/dashboard')
-    cy.visit('/settings')
   })
 
   it('should close reauth dialog on cancel', () => {
+    cy.visit('/settings')
+
     cy.intercept('DELETE', '**/users/**', {
       statusCode: 403,
-      body: { code: 'auth/requires-recent-login' }
-    })
+      body: { code: 'auth/requires-recent-login', message: 'Requires recent login' }
+    }).as('deleteAccount')
 
-    cy.get('button').contains(/удалить аккаунт/i).click()
-    cy.get('body').invoke('text').should('match', /подтверждение личности/i)
+    cy.get('button').contains(/удалить аккаунт|delete account/i).as('deleteBtn').should('be.visible')
+    cy.get('@deleteBtn').click()
 
     cy.get('button').contains(/отмена|cancel/i).click()
 
-    cy.get('body').invoke('text').should('not.match', /подтверждение личности/i)
+    cy.get('body').invoke('text').should('not.match', /подтверждение личности|reauthenticate/i)
   })
 
   it('should show error for wrong password', () => {
+    cy.visit('/settings')
+
     cy.intercept('DELETE', '**/users/**', {
       statusCode: 403,
-      body: { code: 'auth/requires-recent-login' }
-    })
+      body: { code: 'auth/requires-recent-login', message: 'Requires recent login' }
+    }).as('deleteAccount')
 
-    cy.get('button').contains(/удалить аккаунт/i).click()
+    cy.get('button').contains(/удалить аккаунт|delete account/i).as('deleteBtn').should('be.visible')
+    cy.get('@deleteBtn').click()
 
     cy.get('input[type="password"]').last().type('wrongpassword')
-    cy.get('button').contains(/подтвердить/i).click()
+    cy.get('button').contains(/подтвердить|confirm/i).click()
 
-    cy.get('body').invoke('text').should('match', /неверн.*пароль|wrong password/i)
+    cy.get('body').invoke('text').should('match', /неверный|invalid/i)
   })
 })

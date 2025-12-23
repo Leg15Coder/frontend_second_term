@@ -2,7 +2,7 @@ import type { GoalTask } from '@/types'
 import { callPerplexity } from '@/services/perplexityService'
 import { postprocessTasks, type GoalContext } from './taskValidation'
 
-const apiTimeout = 5000
+const apiTimeout = 10000
 
 function createId() {
   return crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)

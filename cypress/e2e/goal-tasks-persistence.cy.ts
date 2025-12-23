@@ -11,9 +11,10 @@ describe('Goal Tasks Persistence', () => {
     cy.visit('/goals')
     cy.url().should('include', '/goals')
 
-    cy.get('button').contains(/добавить|add|new|создать/i).click()
-    cy.get('input[aria-label*="title"], input[placeholder*="title"], input[name="title"]').type('Test Goal with Tasks')
-    cy.get('textarea[id="goal-detailed"]').type('- Task 1\n- Task 2\n- Task 3')
+    cy.get('button').contains(/добавить|add|new|создать/i).as('addGoalBtn').should('be.visible')
+    cy.get('@addGoalBtn').click()
+    cy.get('input[placeholder*="Выучить TypeScript"]').type('Test Goal with Tasks')
+    cy.get('textarea').type('- Task 1\n- Task 2\n- Task 3')
 
     cy.get('button').contains(/разбить|generate/i).click()
     cy.wait(2000) // Wait for AI generation
@@ -42,7 +43,8 @@ describe('Goal Tasks Persistence', () => {
   it('should show error and rollback on failed task toggle', () => {
     cy.visit('/goals')
 
-    cy.get('[class*="glass-panel"]').first().within(() => {
+    cy.get('[class*="glass-panel"]').should('have.length.at.least', 1)
+    cy.get('[class*="glass-panel"]').first().should('be.visible').within(() => {
       cy.get('button').first().click()
     })
 
@@ -52,12 +54,13 @@ describe('Goal Tasks Persistence', () => {
   it('should update task status in edit dialog without saving to DB immediately', () => {
     cy.visit('/goals')
 
-    cy.get('[class*="glass-panel"]').first().within(() => {
+    cy.get('[class*="glass-panel"]').should('have.length.at.least', 1)
+    cy.get('[class*="glass-panel"]').first().should('be.visible').within(() => {
       cy.get('button').contains(/edit|редактировать/i).click()
     })
 
-    cy.get('[role="dialog"]').within(() => {
-      cy.get('input[type="checkbox"]').first().check()
+    cy.get('[role="dialog"]').should('be.visible').within(() => {
+      cy.get('input[type="checkbox"]').first().check({ force: true })
 
       cy.get('button[aria-label*="close"], button[title*="close"]').click()
     })
@@ -66,7 +69,8 @@ describe('Goal Tasks Persistence', () => {
   it('should calculate and update goal progress when toggling tasks', () => {
     cy.visit('/goals')
 
-    cy.get('[class*="glass-panel"]').contains(/подзадач|tasks/i).within(() => {
+    cy.get('[class*="glass-panel"]').should('have.length.at.least', 1)
+    cy.get('[class*="glass-panel"]').contains(/подзадач|tasks/i).parents('[class*="glass-panel"]').within(() => {
       cy.get('[class*="bg-primary"]').invoke('attr', 'style').as('initialProgress')
 
       cy.get('button').first().click()
@@ -76,6 +80,7 @@ describe('Goal Tasks Persistence', () => {
 
     cy.get('@initialProgress').then((initial) => {
       cy.get('[class*="glass-panel"]').contains(/подзадач|tasks/i)
+        .parents('[class*="glass-panel"]')
         .find('[class*="bg-primary"]')
         .invoke('attr', 'style')
         .should('not.equal', initial)

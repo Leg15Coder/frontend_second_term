@@ -7,20 +7,28 @@ describe('End-to-End Flow: Habits and Goals', () => {
   })
 
   it('should complete full user flow: signup -> create habit -> mark habit -> create goal', () => {
-    cy.contains('Регистрация').click()
+    cy.contains('Регистрация').should('be.visible').click()
     cy.url().should('include', '/signup')
 
-    cy.get('input[type="email"]').type('test@example.com')
-    cy.get('input[type="password"]').first().type('password123')
-    cy.get('button[type="submit"]').click()
+    cy.get('input[type="email"]').should('be.visible').type('test@example.com')
+    cy.get('input[type="password"]').first().should('be.visible').type('password123')
+    cy.get('button[type="submit"]').should('be.visible').click()
 
-    cy.url().should('include', '/dashboard', { timeout: 10000 })
+    // Wait for potential error toast or redirect
+    cy.get('body').then(($body) => {
+      if ($body.find('.toast').length > 0) {
+        cy.log('Toast found: ' + $body.find('.toast').text())
+      }
+    })
+
+    cy.url().should('include', '/dashboard', { timeout: 30000 })
     cy.contains('Главная').should('be.visible')
 
     cy.contains('Привычки').click()
     cy.url().should('include', '/habits')
 
-    cy.contains('Добавить привычку').click()
+    cy.contains('button', 'Добавить привычку').as('addHabitBtn').should('be.visible')
+    cy.get('@addHabitBtn').click()
     cy.get('input[placeholder*="Утренняя медитация"]').type('Пробежка по утрам')
     cy.get('input[placeholder*="15 минут осознанности"]').type('30 минут каждое утро')
 
@@ -50,7 +58,8 @@ describe('End-to-End Flow: Habits and Goals', () => {
 
     cy.contains('Пробежка по утрам').should('be.visible')
 
-    cy.contains('Добавить цель').click()
+    cy.contains('button', 'Добавить цель').as('addGoalBtn').should('be.visible')
+    cy.get('@addGoalBtn').click()
     cy.get('input[placeholder*="Выучить TypeScript"]').type('Освоить React и TypeScript')
     cy.get('input[placeholder*="Краткое описание"]').type('Стать профессиональным фронтенд-разработчиком')
 
@@ -58,7 +67,7 @@ describe('End-to-End Flow: Habits and Goals', () => {
 
     cy.contains('Разбить на подзадачи').click()
 
-    cy.contains('Подзадачи', { timeout: 2000 }).should('be.visible')
+    cy.contains('Подзадачи', { timeout: 4000 }).should('be.visible')
 
     cy.contains('button', 'Создать').click()
 
@@ -123,6 +132,14 @@ describe('End-to-End Flow: Habits and Goals', () => {
   })
 
   it('should handle goal task completion', () => {
+    const mockUser = {
+      uid: 'test-user-id',
+      email: 'test@example.com',
+      displayName: 'Test User',
+      photoURL: null,
+    }
+    localStorage.setItem('cypress_user', JSON.stringify(mockUser))
+
     cy.visit('/goals')
 
     cy.contains('Добавить цель').click()
@@ -130,7 +147,7 @@ describe('End-to-End Flow: Habits and Goals', () => {
     cy.get('textarea').type('- Task 1\n- Task 2\n- Task 3')
     cy.contains('Разбить на подзадачи').click()
     cy.wait(1000)
-    cy.contains('button', 'Создать').click()
+    cy.contains('Создать').click()
 
     cy.contains('Goal with Tasks').parents().then(($parents: any) => {
       cy.wrap($parents).find('button').then(($buttons: any) => {

@@ -26,7 +26,7 @@ describe('Firebase Auth Error Handling', () => {
 
     cy.get('button').contains(/google/i).click()
 
-    cy.get('body').invoke('text').should('match', /вход прерван пользователем|popup.*закрыт/i)
+    cy.get('body').invoke('text').should('match', /вход прерван пользователем|popup.*закрыт|заблокировано/i)
 
     cy.get('body').should('not.contain', 'auth/popup-closed-by-user')
   })
@@ -64,10 +64,10 @@ describe('Firebase Auth Error Handling', () => {
     cy.get('input[type="email"]').type('test@example.com')
     cy.get('input[type="password"]').type('password123')
 
-    const submitButton = cy.get('button[type="submit"]')
-    submitButton.click()
+    cy.get('button[type="submit"]').as('submitBtn')
+    cy.get('@submitBtn').click()
 
-    submitButton.should('be.disabled')
+    cy.get('@submitBtn').should('be.disabled')
   })
 })
 

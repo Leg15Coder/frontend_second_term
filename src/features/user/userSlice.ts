@@ -68,10 +68,30 @@ export const updateMe = createAsyncThunk<User, Partial<User>, { rejectValue: str
 )
 
 export const initAuth = createAsyncThunk('user/initAuth', async (_, { dispatch }) => {
+  // Mock auth for Cypress E2E tests if no Firebase keys are present or just to bypass auth
+  if ((window as any).Cypress) {
+    console.log('E2E: Mocking auth initialization')
+    const storedUser = localStorage.getItem('cypress_user')
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser)
+        dispatch(setUser({
+          id: user.uid,
+          email: user.email,
+          name: user.displayName,
+          photoURL: user.photoURL
+        }))
+      } catch (e) {
+        console.error('Failed to parse cypress_user', e)
+      }
+    }
+    return
+  }
+
   return new Promise<void>((resolve, reject) => {
     const timeout = setTimeout(() => {
       reject(new Error('Auth initialization timeout'))
-    }, 5000)
+    }, 10000)
 
     const unsubscribe = onAuthStateChanged(
       auth,

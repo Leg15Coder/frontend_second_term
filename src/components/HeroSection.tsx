@@ -35,9 +35,12 @@ const HeroSection = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Link to="/dashboard" className="btn-magic flex items-center justify-center gap-2 group" aria-label="Try demo">
+              <Link to="/signup" className="btn-outline-magic flex items-center justify-center gap-2" aria-label="Sign up">
+                Регистрация
+              </Link>
+              <Link to="/login" className="btn-magic flex items-center justify-center gap-2 group" aria-label="Try demo">
                 <Sparkles className="w-5 h-5" />
-                Попробовать демо
+                Войти
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <button className="btn-outline-magic flex items-center justify-center gap-2" aria-label="Watch how it works">
