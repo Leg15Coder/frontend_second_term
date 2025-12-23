@@ -1,226 +1,97 @@
-# Habit Quest — SPA на React + TypeScript
+# Habit Quest
 
-Проект — SPA-приложение для трекинга привычек, целей и челленджей. Это шаблон и простая реализация архитектуры, пригодной для масштабируемого фронтенда: React + TypeScript + Redux Toolkit + React Router + Vite. В проекте также настроены Storybook для UI и Vitest для unit-тестов.
+SPA-приложение для трекинга привычек, целей и челленджей. Помогает пользователям формировать полезные привычки, ставить цели и отслеживать прогресс в игровой форме.
 
-Главная идея
-- Представить гибкую архитектуру для продуктовой frontend-части: отдельные страницы (public макеты), повторно используемые UI-компоненты, слайсы Redux Toolkit для доменной логики и лёгкая интеграция с REST API.
-- Удобство разработки: быстрый запуск через Vite, визуальная проверка компонентов через Storybook и автоматические тесты/CI.
+[Посмотреть демо](https://frontend-second-term.vercel.app/)
 
-Ключевые технологии
-- React 19 + TypeScript
-- Vite (dev сервер и сборка)
-- Redux Toolkit (createSlice, createAsyncThunk)
-- React Router (внутренний роутинг, маршруты `/public/*`)
-- Axios для REST вызовов
-- Storybook (UI-документация и визуальные тесты)
-- Vitest + Testing Library (юнит/смоук тесты, покрытие)
-- MSW (mock server) — можно включить для разработки и тестов
-
-Архитектура и структура проекта
-```
-src/
-  app/
-    store.ts            # конфигурация Redux store, хелперы useAppDispatch/useAppSelector
-    api.ts              # базовый axios-инстанс для вызовов API
-  features/             # Redux-слайсы (habits, goals, user)
-  pages/
-    Public/             # public-страницы, макеты и MockLayout
-    Dashboard/ ...
-  shared/
-    public/             # повторно используемые публичные UI (PublicHero, GoalCard...)
-    ui/                 # общие UI элементы (Modal, Toast, Button)
-  stories/              # Storybook stories для визуального тестирования
-  types.ts              # общие интерфейсы: Habit, Goal, User
-  index.css             # глобальные стили
-vite.config.ts
-package.json
-.storybook/             # storybook конфиг
-vitest.config.ts        # конфиг vitest
-
-public/                 # статические макеты (HTML/изображения)
-```
-
-Основные конвенции
-- TypeScript-first: все типы описаны в `src/types.ts` и используются в слайсах/компонентах.
-- Redux Toolkit: один слайс = одна доменная сущность (habits, goals, user).
-- Public макеты: `src/pages/Public` — верстка сконцентрирована здесь и доступна через `/public/*` роуты.
-- Storybook: каждый ключевой UI и страница имеет story для быстрого визуального осмотра.
-
-Установка и быстрый старт
-Требования: Node.js 18+ и npm (или pnpm/yarn). В репозитории используется npm-скрипты.
-
-1) Установить зависимости
+## Как получить исходники
 
 ```bash
-npm ci
+git clone https://github.com/Leg15Coder/frontend_second_term.git
+cd frontend_second_term
 ```
 
-2) Запустить dev-сервер (Vite)
+## Требования
+
+- **Node.js**: версия 24.x (LTS)
+- **Пакетный менеджер**: npm
+- **База данных**: Firebase (Firestore, Authentication)
+- **Опционально**: Firebase Emulators для локальной разработки (требуется Java)
+
+## Запуск проекта
+
+### 1. Установка зависимостей
+
+```bash
+npm install
+```
+
+### 2. Настройка окружения
+
+Создайте файл `.env` в корне проекта, скопировав пример:
+
+```bash
+cp .env.example .env
+```
+
+Заполните переменные окружения в файле `.env` вашими данными от Firebase проекта:
+
+```env
+VITE_FIREBASE_API_KEY=...
+VITE_FIREBASE_AUTH_DOMAIN=...
+VITE_FIREBASE_PROJECT_ID=...
+VITE_FIREBASE_STORAGE_BUCKET=...
+VITE_FIREBASE_MESSAGING_SENDER_ID=...
+VITE_FIREBASE_APP_ID=...
+```
+
+> Значения можно получить в консоли Firebase: Project Settings -> General -> Your apps.
+
+### 3. Запуск приложения
 
 ```bash
 npm run dev
 ```
-Откройте http://localhost:5173 и проверьте страницы.
 
-3) Storybook (визуальная инспекция компонентов)
+Приложение будет доступно по адресу: [http://localhost:5173](http://localhost:5173)
 
-```bash
-npm run storybook
-```
-Откройте http://localhost:6006
+## Основной сценарий использования
 
-4) Тесты
-- Запустить все тесты
+Чтобы проверить работу основного функционала приложения:
 
-```bash
-npm test
-```
+1.  **Регистрация/Вход**:
+    *   Откройте приложение.
+    *   Нажмите "Зарегистрироваться" или войдите через Google (если настроено).
+    *   После входа вы попадете на Дашборд.
 
-- Запустить unit tests (run)
+2.  **Создание привычки**:
+    *   На Дашборде нажмите кнопку "Добавить привычку" (или "+" в секции привычек).
+    *   Заполните название (например, "Пить воду"), выберите частоту и сложность.
+    *   Нажмите "Сохранить".
 
-```bash
-npm run test:unit
-```
+3.  **Отметка выполнения**:
+    *   Найдите созданную привычку на Дашборде или в разделе "Привычки".
+    *   Нажмите на чекбокс/кнопку выполнения, чтобы отметить прогресс за сегодня.
+    *   Убедитесь, что прогресс обновился.
 
-- Сбор покрытия
+4.  **Создание цели**:
+    *   Перейдите в раздел "Цели".
+    *   Нажмите "Добавить цель".
+    *   Введите название и дедлайн.
+    *   Цель появится в списке активных целей.
 
-```bash
-npm run test:coverage
-```
+## Структура приложения
 
-- Запустить E2E тесты (Cypress)
+Проект организован в соответствии с Feature-Sliced Design (упрощенная версия):
 
-```bash
-npm run cypress:open  # Открыть Cypress UI
-npm run cypress:run   # Запустить headless
-```
+- `src/app/` — Инициализация приложения (стор Redux, настройки провайдеров).
+- `src/pages/` — Компоненты страниц (Dashboard, Habits, Goals, Auth и др.) и их маршрутизация.
+- `src/features/` — Реализация бизнес-фич (слайсы Redux, асинхронные экшены, специфичные компоненты), например `auth`, `habits`, `goals`.
+- `src/entities/` — Бизнес-сущности (типы, модели данных).
+- `src/shared/` — Переиспользуемый код, не привязанный к конкретной бизнес-логике:
+    - `ui/` — Библиотека UI-компонентов (кнопки, инпуты, модалки).
+    - `api/` — Настройки Axios и API клиентов.
+    - `hooks/` — Общие хуки.
+- `src/routes/` — Конфигурация роутинга приложения.
+- `public/` — Статические файлы и HTML шаблоны.
 
-**Структура тестов:**
-- `src/services/*.test.ts` — unit-тесты для сервисов (habitsService, goalsService, challengesService)
-- `src/features/*/*.test.ts` — unit-тесты для Redux слайсов
-- `tests/smoke.test.tsx` — smoke-тесты для проверки рендеринга основных страниц
-- `cypress/e2e/*.cy.ts` — E2E тесты для полных пользовательских сценариев
-
-**Покрытие:**
-Unit-тесты покрывают основной функционал работы с localStorage через сервисы, включая:
-- Создание, чтение, обновление и удаление привычек
-- Создание, чтение, обновление и удаление целей
-- Присоединение/выход из челленджей, отметка дней
-- Работа с подзадачами целей
-
-5) Линт и форматирование
-
-```bash
-npm run lint
-npm run format
-```
-
-6) Сборка
-
-```bash
-npm run build
-```
-
-# Состояние сборки и покрытие
-
-[![CI](https://github.com/Leg15Coder/frontend_second_term/actions/workflows/ci.yml/badge.svg)](https://github.com/Leg15Coder/frontend_second_term/actions/workflows/ci.yml)
-[![Storybook](https://github.com/Leg15Coder/frontend_second_term/actions/workflows/deploy_storybook.yml/badge.svg)](https://leg15coder.github.io/frontend_second_term)
-[![Coverage](https://codecov.io/gh/Leg15Coder/frontend_second_term/branch/main/graph/badge.svg)](https://codecov.io/gh/Leg15Coder/frontend_second_term)
-
-## Пример API
-
-В проекте используется `axios` и базовый экземпляр `src/app/api.ts`.
-
-Пример простого REST-запроса к списку привычек:
-
-```ts
-import api from '../app/api'
-import type { Habit } from '../types'
-
-export async function loadHabits(): Promise<Habit[]> {
-  const res = await api.get<Habit[]>('/habits')
-  return res.data
-}
-```
-
-Пример создания ресурса (POST):
-
-```ts
-export async function createHabit(payload: Omit<Habit, 'id' | 'createdAt' | 'updatedAt'>) {
-  const res = await api.post<Habit>('/habits', payload)
-  return res.data
-}
-```
-
-Пример обработки ошибок с try/catch:
-
-```ts
-try {
-  const habit = await createHabit({ title: 'Meditate', description: '10 min' })
-} catch (err) {
-  console.error('API error', err)
-}
-```
-
-## Шаблон Pull Request
-
-Используйте простой шаблон PR, который помогает ревьюерам быстро понять изменения:
-
-- Заголовок (title): краткое описание фичи/фикса.
-- Описание (body): что сделано, почему, какие файлы затронуты.
-- Список чеков:
-  - [ ] Код отформатирован (Prettier)
-  - [ ] Линт пройден (ESLint)
-  - [ ] Тесты добавлены/обновлены
-  - [ ] Storybook-стори добавлены для новых компонентов
-
-Файл шаблона PR добавлен в `.github/PULL_REQUEST_TEMPLATE.md`.
-
-CI (GitHub Actions)
-- В проект добавлён workflow: `.github/workflows/ci.yml`. Он выполняет `npm ci`, линт, тесты с покрытием и билд Storybook.
-
-Notes / распространённые проблемы
-- Если `vitest` жалуется на отсутствие `jsdom`, убедитесь, что `jsdom` установлен как devDependency (в нашем package.json уже добавлен). Выполните `npm ci`.
-- В конфиге `vitest.config.ts` используется окружение `jsdom` и выделенный setup-файл `src/setupTests.ts`.
-- Storybook конфиг минимален; при проблемах с аддонами (msw-storybook-addon) временно отключайте проблемный аддон.
-
-Рекомендации по разработке и расширению
-- Для добавления новой public-страницы: положите React-компонент в `src/pages/Public`, добавьте экспорт в `src/pages/Public/index.ts` и маршрут в `src/App.tsx`.
-- Добавляйте stories для новых UI-компонентов — это облегчит ревью и визуальные тесты.
-- Для асинхронных операций используйте `createAsyncThunk` и мокируйте ответы в тестах через MSW.
-
-Производительность и стили
-- Проект использует CSS-уровень (Tailwind-подобные классы и SCSS модули можно подключать при необходимости). Для глобального стиля используйте `src/index.css`.
-- Поддерживается light/dark через CSS media query `prefers-color-scheme`.
-
-## Безопасность окружения и секреты
-
-- Не храните секреты в репозитории. Используйте `.env.local` для локальной разработки и храните продакшн-ключи в CI/CD (GitHub Secrets / Netlify Environment Variables).
-- В корне проекта присутствует `.env.example` с перечнем необходимых Vite-переменных (VITE_FIREBASE_*, VITE_SENTRY_DSN и т.д.). Скопируйте его в `.env.local` и заполните значениями.
-
-Пример (PowerShell):
-
-```powershell
-cp .env.example .env.local
-# Откройте .env.local и вставьте значения
-npm run dev
-```
-
-- Для безопасного деплоя добавьте переменные окружения в Netlify/CI и не коммитьте `.env.local`.
-
-- В production рекомендуется отключать sourcemaps и не включать dev-only пакеты в бандл. Это уже настроено в `vite.config.ts` (sourcemap отключены в production).
-
-
-Что ещё можно сделать (roadmap)
-- Полный набор Storybook stories для всех страниц и состояний.
-- MSW handlers для всех API-вызовов для локальной разработки и Storybook.
-- Добавить e2e тесты (Playwright/Cypress) для ключевых пользовательских сценариев.
-- Настроить автоматический деплой Storybook (GitHub Pages / Chromatic).
-
-Контрибьюция
-- Открывайте PR в одну ветку с логичной одному функционалу. В PR указывайте scope, summary и тесты.
-
-Контакты и авторство
-- Проект создан как учебный/шаблонный репозиторий для практики SPA-архитектур и UI-разработки.
-
----

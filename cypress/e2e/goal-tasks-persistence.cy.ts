@@ -1,8 +1,14 @@
 describe('Goal Tasks Persistence', () => {
+  let testEmail = ''
+  const testPassword = 'password123'
+
   beforeEach(() => {
+    testEmail = `test-goal-persist${Date.now()}@example.com`
+    cy.createUser(testEmail, testPassword)
+
     cy.visit('/login')
-    cy.get('input[type="email"]').type('test@example.com')
-    cy.get('input[type="password"]').type('password123')
+    cy.get('input[type="email"]').type(testEmail)
+    cy.get('input[type="password"]').type(testPassword)
     cy.get('button[type="submit"]').click()
     cy.url().should('include', '/dashboard')
   })
@@ -43,6 +49,14 @@ describe('Goal Tasks Persistence', () => {
   it('should show error and rollback on failed task toggle', () => {
     cy.visit('/goals')
 
+    // Create a goal first
+    cy.get('button').contains(/добавить|add|new|создать/i).click()
+    cy.get('input[placeholder*="Выучить TypeScript"]').type('Goal for Error Test')
+    cy.get('textarea').type('- Task 1')
+    cy.get('button').contains(/разбить|generate/i).click()
+    cy.wait(2000)
+    cy.get('button').contains(/сохранить|save|create/i).click()
+
     cy.get('[class*="glass-panel"]').should('have.length.at.least', 1)
     cy.get('[class*="glass-panel"]').first().should('be.visible').within(() => {
       cy.get('button').first().click()
@@ -53,6 +67,14 @@ describe('Goal Tasks Persistence', () => {
 
   it('should update task status in edit dialog without saving to DB immediately', () => {
     cy.visit('/goals')
+
+    // Create a goal first
+    cy.get('button').contains(/добавить|add|new|создать/i).click()
+    cy.get('input[placeholder*="Выучить TypeScript"]').type('Goal for Edit Test')
+    cy.get('textarea').type('- Task 1')
+    cy.get('button').contains(/разбить|generate/i).click()
+    cy.wait(2000)
+    cy.get('button').contains(/сохранить|save|create/i).click()
 
     cy.get('[class*="glass-panel"]').should('have.length.at.least', 1)
     cy.get('[class*="glass-panel"]').first().should('be.visible').within(() => {
@@ -68,6 +90,14 @@ describe('Goal Tasks Persistence', () => {
 
   it('should calculate and update goal progress when toggling tasks', () => {
     cy.visit('/goals')
+
+    // Create a goal first
+    cy.get('button').contains(/добавить|add|new|создать/i).click()
+    cy.get('input[placeholder*="Выучить TypeScript"]').type('Goal for Progress Test')
+    cy.get('textarea').type('- Task 1\n- Task 2')
+    cy.get('button').contains(/разбить|generate/i).click()
+    cy.wait(2000)
+    cy.get('button').contains(/сохранить|save|create/i).click()
 
     cy.get('[class*="glass-panel"]').should('have.length.at.least', 1)
     cy.get('[class*="glass-panel"]').contains(/подзадач|tasks/i).parents('[class*="glass-panel"]').within(() => {
