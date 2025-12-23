@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modals & Dialogs - The Mystic Path</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0e1e 0%, #1a1530 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 40px;
+            font-size: 32px;
+        }
+
+        .modals-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .modal-trigger {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(168, 230, 207, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-trigger:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(168, 230, 207, 0.3);
+        }
+
+        .trigger-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            color: #0f0e1e;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .trigger-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(168, 230, 207, 0.3);
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background: linear-gradient(135deg, rgba(168, 230, 207, 0.08), rgba(143, 211, 211, 0.03));
+            border: 1px solid rgba(168, 230, 207, 0.2);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 450px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(168, 230, 207, 0.15);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+
+        .close-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            color: #a8e6cf;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(168, 230, 207, 0.2);
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-description {
+            font-size: 14px;
+            color: #b0b0b0;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #a8e6cf;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(168, 230, 207, 0.3);
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #a8e6cf;
+            background: rgba(168, 230, 207, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 10px;
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            color: #0f0e1e;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(168, 230, 207, 0.3);
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #a8e6cf;
+            border: 1px solid rgba(168, 230, 207, 0.3);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(168, 230, 207, 0.1);
+            border-color: #a8e6cf;
+        }
+
+        .btn-danger {
+            flex: 1;
+            background: rgba(255, 100, 100, 0.15);
+            color: #ff9999;
+            border: 1px solid rgba(255, 100, 100, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(255, 100, 100, 0.25);
+            border-color: #ff9999;
+        }
+
+        /* Confirmation Modal */
+        .confirmation-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(255, 153, 153, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin: 0 auto 20px;
+        }
+
+        .confirmation-text {
+            text-align: center;
+            font-size: 14px;
+            color: #b0b0b0;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        /* Quick Item Modal */
+        .quick-item-list {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .quick-item {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .quick-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .remove-item {
+            background: rgba(255, 100, 100, 0.2);
+            border: none;
+            color: #ff9999;
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .remove-item:hover {
+            background: rgba(255, 100, 100, 0.4);
+        }
+
+        .modal-trigger h3 {
+            font-size: 16px;
+            color: #e0e0e0;
+            margin-bottom: 8px;
+        }
+
+        .modal-trigger p {
+            font-size: 12px;
+            color: #8fd3d3;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Modals & Dialogs Showcase</h1>
+
+        <div class="modals-showcase">
+            <!-- Confirmation Modal -->
+            <div class="modal-trigger">
+                <h3>Confirmation Dialog</h3>
+                <p>Confirm destructive actions like deletion</p>
+                <button class="trigger-btn" onclick="openModal('confirmModal')">Open Confirmation</button>
+            </div>
+
+            <!-- Create Quick Item Modal -->
+            <div class="modal-trigger">
+                <h3>Quick Create Modal</h3>
+                <p>Add items quickly without leaving current page</p>
+                <button class="trigger-btn" onclick="openModal('quickCreateModal')">Open Quick Create</button>
+            </div>
+
+            <!-- Info/Alert Modal -->
+            <div class="modal-trigger">
+                <h3>Info Modal</h3>
+                <p>Display important information or announcements</p>
+                <button class="trigger-btn" onclick="openModal('infoModal')">Open Info Modal</button>
+            </div>
+
+            <!-- Form Modal -->
+            <div class="modal-trigger">
+                <h3>Form Modal</h3>
+                <p>Complex forms in modal context</p>
+                <button class="trigger-btn" onclick="openModal('formModal')">Open Form</button>
+            </div>
+        </div>
+
+        <!-- CONFIRMATION MODAL -->
+        <div class="modal-overlay" id="confirmModal" onclick="closeModal('confirmModal')">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header">
+                    <div class="modal-title">Delete Habit?</div>
+                    <button class="close-btn" onclick="closeModal('confirmModal')">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="confirmation-icon">⚠️</div>
+                    <div class="confirmation-text">
+                        Are you sure you want to delete "Morning Meditation"? This action cannot be undone. All progress data will be permanently removed.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" onclick="closeModal('confirmModal')">Cancel</button>
+                    <button class="btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUICK CREATE MODAL -->
+        <div class="modal-overlay" id="quickCreateModal" onclick="closeModal('quickCreateModal')">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header">
+                    <div class="modal-title">Quick Add Habit</div>
+                    <button class="close-btn" onclick="closeModal('quickCreateModal')">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="habitName">Habit Name</label>
+                        <input type="text" id="habitName" placeholder="e.g., Drink water">
+                    </div>
+                    <div class="form-group">
+                        <label for="frequency">Frequency</label>
+                        <select id="frequency">
+                            <option>Daily</option>
+                            <option>Weekly</option>
+                            <option>Custom</option>
+                        </select>
+                    </div>
+                    <div class="quick-item-list" id="itemList" style="display: none;">
+                        <div class="quick-item">
+                            <span>Morning Meditation</span>
+                            <button class="remove-item">×</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" onclick="closeModal('quickCreateModal')">Cancel</button>
+                    <button class="btn-primary">Add Habit</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- INFO MODAL -->
+        <div class="modal-overlay" id="infoModal" onclick="closeModal('infoModal')">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header">
+                    <div class="modal-title">🎉 Achievement Unlocked!</div>
+                    <button class="close-btn" onclick="closeModal('infoModal')">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div style="font-size: 64px; margin-bottom: 15px;">⭐</div>
+                        <div style="font-size: 18px; font-weight: 600; color: #a8e6cf; margin-bottom: 10px;">Milestone Master</div>
+                        <div style="font-size: 13px; color: #b0b0b0;">You've achieved 30 consecutive days of habits!</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-primary" style="flex: 1;" onclick="closeModal('infoModal')">Awesome!</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- FORM MODAL -->
+        <div class="modal-overlay" id="formModal" onclick="closeModal('formModal')">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header">
+                    <div class="modal-title">Create New Challenge</div>
+                    <button class="close-btn" onclick="closeModal('formModal')">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="challengeName">Challenge Name *</label>
+                        <input type="text" id="challengeName" placeholder="e.g., 100 Days of Code">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" placeholder="Describe your challenge..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="duration">Duration (days)</label>
+                        <input type="text" id="duration" placeholder="30">
+                    </div>
+                    <div class="form-group">
+                        <label for="difficulty">Difficulty</label>
+                        <select id="difficulty">
+                            <option>Easy</option>
+                            <option>Medium</option>
+                            <option>Hard</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" onclick="closeModal('formModal')">Cancel</button>
+                    <button class="btn-primary">Create Challenge</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

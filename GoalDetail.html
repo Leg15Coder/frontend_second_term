@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goal Detail - The Mystic Path</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0e1e 0%, #1a1530 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-back {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-back:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .material-icons {
+            font-size: 24px;
+            color: #a8e6cf;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #a8e6cf;
+        }
+
+        .icon-btn:hover {
+            background: rgba(168, 230, 207, 0.2);
+        }
+
+        .goal-card {
+            background: linear-gradient(135deg, rgba(168, 230, 207, 0.1), rgba(143, 211, 211, 0.05));
+            border: 1px solid rgba(168, 230, 207, 0.2);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .goal-info h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: #e0e0e0;
+        }
+
+        .goal-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 13px;
+            color: #8fd3d3;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .deadline-badge {
+            background: rgba(255, 184, 102, 0.2);
+            color: #ffd89b;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .goal-description {
+            color: #b0b0b0;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(168, 230, 207, 0.2), transparent);
+            margin: 20px 0;
+        }
+
+        .progress-section {
+            margin-top: 20px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .progress-label-text {
+            color: #a8e6cf;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-value {
+            color: #e0e0e0;
+            font-size: 16px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #a8e6cf, #8fd3d3);
+            width: 65%;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(168, 230, 207, 0.4);
+            transition: width 0.3s ease;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(168, 230, 207, 0.2);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #a8e6cf;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .milestone-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .milestone-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(168, 230, 207, 0.15);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .milestone-item:hover {
+            background: rgba(168, 230, 207, 0.08);
+            border-color: rgba(168, 230, 207, 0.3);
+        }
+
+        .milestone-item.completed {
+            opacity: 0.7;
+        }
+
+        .milestone-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(168, 230, 207, 0.4);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 2px;
+        }
+
+        .milestone-item:hover .milestone-checkbox {
+            border-color: #a8e6cf;
+        }
+
+        .milestone-item.completed .milestone-checkbox {
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            border-color: #a8e6cf;
+        }
+
+        .milestone-item.completed .milestone-checkbox span {
+            color: #0f0e1e;
+        }
+
+        .milestone-content {
+            flex: 1;
+        }
+
+        .milestone-title {
+            font-weight: 600;
+            color: #e0e0e0;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .milestone-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #8fd3d3;
+        }
+
+        .milestone-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(168, 230, 207, 0.15);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #8fd3d3;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 10px 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timeline-marker {
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            border-radius: 50%;
+            margin-top: 6px;
+            flex-shrink: 0;
+            box-shadow: 0 0 8px rgba(168, 230, 207, 0.4);
+        }
+
+        .timeline-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 24px;
+            width: 2px;
+            height: calc(100% + 8px);
+            background: rgba(168, 230, 207, 0.2);
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            color: #8fd3d3;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .timeline-event {
+            font-size: 13px;
+            color: #e0e0e0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            color: #0f0e1e;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(168, 230, 207, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #a8e6cf;
+            border: 1px solid rgba(168, 230, 207, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(168, 230, 207, 0.1);
+            border-color: #a8e6cf;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            color: #8fd3d3;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <div class="header-back">
+                    <span class="material-icons">arrow_back</span>
+                </div>
+                <h1>Goal Details</h1>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn">
+                    <span class="material-icons">edit</span>
+                </button>
+                <button class="icon-btn">
+                    <span class="material-icons">more_vert</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Goal Card -->
+        <div class="goal-card">
+            <div class="goal-header">
+                <div class="goal-info">
+                    <h2>Learn Spanish Fluently</h2>
+                    <div class="goal-meta">
+                        <div class="meta-item">
+                            <span class="material-icons" style="font-size: 16px;">schedule</span>
+                            <span>Started: Sep 1, 2024</span>
+                        </div>
+                        <div class="deadline-badge">
+                            <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">calendar_today</span>
+                            Due: Dec 31, 2024 (73 days left)
+                        </div>
+                    </div>
+                </div>
+                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #a8e6cf, #8fd3d3); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <span class="material-icons" style="font-size: 32px; color: #0f0e1e;">school</span>
+                </div>
+            </div>
+
+            <p class="goal-description">
+                Achieve conversational fluency in Spanish through daily practice, cultural immersion, and structured learning. Target: B2 level proficiency by end of year.
+            </p>
+
+            <div class="divider"></div>
+
+            <div class="progress-section">
+                <div class="progress-label">
+                    <span class="progress-label-text">Progress to Goal</span>
+                    <span class="progress-value">65%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 65%;"></div>
+                </div>
+                <div style="font-size: 12px; color: #8fd3d3; margin-top: 8px;">
+                    Target: B2 Proficiency • Current: A2+ (65/100 points)
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="section">
+            <div class="section-title">
+                <span class="material-icons">analytics</span>
+                Key Metrics
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">Total Days Effort</span>
+                    <span class="stat-value">78</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Consistency</span>
+                    <span class="stat-value">82%</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Hours Invested</span>
+                    <span class="stat-value">124</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Days Remaining</span>
+                    <span class="stat-value">73</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Milestones -->
+        <div class="section">
+            <div class="section-title">
+                <span class="material-icons">flag</span>
+                Milestones
+            </div>
+
+            <div class="milestone-list">
+                <div class="milestone-item completed">
+                    <div class="milestone-checkbox">
+                        <span class="material-icons" style="font-size: 16px;">check</span>
+                    </div>
+                    <div class="milestone-content">
+                        <div class="milestone-title">Complete Unit 1-5 (A1 Level)</div>
+                        <div class="milestone-meta">
+                            <div class="milestone-meta-item">
+                                <span class="material-icons" style="font-size: 12px;">calendar_today</span>
+                                <span>Completed Sep 30</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="milestone-item completed">
+                    <div class="milestone-checkbox">
+                        <span class="material-icons" style="font-size: 16px;">check</span>
+                    </div>
+                    <div class="milestone-content">
+                        <div class="milestone-title">Complete Unit 6-10 (A2 Level)</div>
+                        <div class="milestone-meta">
+                            <div class="milestone-meta-item">
+                                <span class="material-icons" style="font-size: 12px;">calendar_today</span>
+                                <span>Completed Oct 31</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="milestone-item">
+                    <div class="milestone-checkbox"></div>
+                    <div class="milestone-content">
+                        <div class="milestone-title">Complete Unit 11-15 (A2+ Level)</div>
+                        <div class="milestone-meta">
+                            <div class="milestone-meta-item">
+                                <span class="material-icons" style="font-size: 12px;">calendar_today</span>
+                                <span>Target: Nov 30</span>
+                            </div>
+                            <div class="milestone-meta-item">
+                                <span class="material-icons" style="font-size: 12px;">schedule</span>
+                                <span>In Progress (8/15)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="milestone-item">
+                    <div class="milestone-checkbox"></div>
+                    <div class="milestone-content">
+                        <div class="milestone-title">Complete Unit 16-20 (B1 Level)</div>
+                        <div class="milestone-meta">
+                            <div class="milestone-meta-item">
+                                <span class="material-icons" style="font-size: 12px;">calendar_today</span>
+                                <span>Target: Dec 15</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="milestone-item">
+                    <div class="milestone-checkbox"></div>
+                    <div class="milestone-content">
+                        <div class="milestone-title">Complete Unit 21-25 (B2 Level)</div>
+                        <div class="milestone-meta">
+                            <div class="milestone-meta-item">
+                                <span class="material-icons" style="font-size: 12px;">calendar_today</span>
+                                <span>Target: Dec 31</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline & Key Dates -->
+        <div class="section">
+            <div class="section-title">
+                <span class="material-icons">event</span>
+                Timeline
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Sep 1, 2024 • Start</div>
+                        <div class="timeline-event">Goal created. Started with A1 fundamentals.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Sep 30, 2024 • Milestone 1</div>
+                        <div class="timeline-event">Completed A1 level - basic conversations unlocked.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Oct 31, 2024 • Milestone 2</div>
+                        <div class="timeline-event">Advanced to A2 level - increased fluency.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Nov 30, 2024 • Target</div>
+                        <div class="timeline-event">Expected to reach A2+ / B1 level milestone.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Dec 31, 2024 • Deadline</div>
+                        <div class="timeline-event">Target B2 fluency level achievement.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="button-group">
+            <button class="btn-secondary">Edit Goal</button>
+            <button class="btn-primary">Update Progress</button>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.milestone-item').forEach(item => {
+            item.addEventListener('click', () => {
+                item.classList.toggle('completed');
+                const checkbox = item.querySelector('.milestone-checkbox');
+                if (item.classList.contains('completed')) {
+                    checkbox.innerHTML = '<span class="material-icons" style="font-size: 16px;">check</span>';
+                } else {
+                    checkbox.innerHTML = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

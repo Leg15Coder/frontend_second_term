@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Habit - The Mystic Path</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0e1e 0%, #1a1530 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+
+        .header-back {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-back:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .material-icons {
+            font-size: 24px;
+            color: #a8e6cf;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(168, 230, 207, 0.2);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #a8e6cf;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(168, 230, 207, 0.3);
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #a8e6cf;
+            background: rgba(168, 230, 207, 0.1);
+            box-shadow: 0 0 0 3px rgba(168, 230, 207, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .frequency-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .frequency-btn {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(168, 230, 207, 0.2);
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .frequency-btn:hover {
+            border-color: #a8e6cf;
+            background: rgba(168, 230, 207, 0.1);
+        }
+
+        .frequency-btn.active {
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            color: #0f0e1e;
+            border-color: #a8e6cf;
+        }
+
+        .time-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .time-input input {
+            flex: 1;
+        }
+
+        .reminder-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            background: rgba(168, 230, 207, 0.1);
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #a8e6cf;
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.selected {
+            border-color: #fff;
+            box-shadow: 0 0 15px rgba(168, 230, 207, 0.5);
+        }
+
+        .color-1 { background: #a8e6cf; }
+        .color-2 { background: #ffd89b; }
+        .color-3 { background: #ff9999; }
+        .color-4 { background: #b5a7ff; }
+        .color-5 { background: #6dd5ff; }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            color: #0f0e1e;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(168, 230, 207, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #a8e6cf;
+            border: 1px solid rgba(168, 230, 207, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(168, 230, 207, 0.1);
+            border-color: #a8e6cf;
+        }
+
+        .info-text {
+            font-size: 12px;
+            color: #8fd3d3;
+            margin-top: 6px;
+            opacity: 0.8;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(168, 230, 207, 0.3), transparent);
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-back">
+                <span class="material-icons">arrow_back</span>
+            </div>
+            <h1>Create Habit</h1>
+        </div>
+
+        <form>
+            <!-- Basic Information -->
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="habitName">Habit Name *</label>
+                    <input type="text" id="habitName" placeholder="e.g., Morning Meditation" required>
+                    <div class="info-text">Give your habit a meaningful name</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" placeholder="Describe your habit and why it matters to you..."></textarea>
+                    <div class="info-text">Optional. Add context for motivation</div>
+                </div>
+            </div>
+
+            <!-- Frequency & Schedule -->
+            <div class="form-section">
+                <label>Frequency *</label>
+                <div class="frequency-group">
+                    <button type="button" class="frequency-btn active" data-freq="daily">Daily</button>
+                    <button type="button" class="frequency-btn" data-freq="weekly">Weekly</button>
+                    <button type="button" class="frequency-btn" data-freq="custom">Custom</button>
+                    <button type="button" class="frequency-btn" data-freq="once">One-time</button>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="form-group">
+                    <label for="startTime">Preferred Time</label>
+                    <div class="time-input">
+                        <input type="text" placeholder="HH:MM" pattern="\d{2}:\d{2}">
+                        <select>
+                            <option>Morning</option>
+                            <option>Afternoon</option>
+                            <option>Evening</option>
+                        </select>
+                    </div>
+                    <div class="info-text">When do you want to be reminded?</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="duration">Duration (minutes)</label>
+                    <input type="number" id="duration" placeholder="e.g., 30" min="1">
+                    <div class="info-text">How long should this habit take?</div>
+                </div>
+            </div>
+
+            <!-- Reminders -->
+            <div class="form-section">
+                <label>Reminders</label>
+                <div class="reminder-options">
+                    <label class="checkbox-item">
+                        <input type="checkbox" checked>
+                        <span>Enable push notifications</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox">
+                        <span>Email reminder</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox">
+                        <span>SMS reminder</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Color & Category -->
+            <div class="form-section">
+                <label>Choose Color</label>
+                <div class="color-picker">
+                    <div class="color-option color-1 selected"></div>
+                    <div class="color-option color-2"></div>
+                    <div class="color-option color-3"></div>
+                    <div class="color-option color-4"></div>
+                    <div class="color-option color-5"></div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category">
+                        <option>Health & Fitness</option>
+                        <option>Learning</option>
+                        <option>Productivity</option>
+                        <option>Personal Growth</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="button-group">
+                <button type="button" class="btn-secondary">Cancel</button>
+                <button type="submit" class="btn-primary">Create Habit</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.querySelectorAll('.frequency-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.frequency-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.color-option').forEach(color => {
+            color.addEventListener('click', () => {
+                document.querySelectorAll('.color-option').forEach(c => c.classList.remove('selected'));
+                color.classList.add('selected');
+            });
+        });
+    </script>
+</body>
+</html>

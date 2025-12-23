@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - The Mystic Path</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0e1e 0%, #1a1530 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .header-back {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-back:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .material-icons {
+            font-size: 24px;
+            color: #a8e6cf;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(168, 230, 207, 0.2);
+            border-radius: 16px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            padding: 16px 20px;
+            background: linear-gradient(135deg, rgba(168, 230, 207, 0.1), rgba(143, 211, 211, 0.05));
+            border-bottom: 1px solid rgba(168, 230, 207, 0.15);
+            font-size: 13px;
+            font-weight: 600;
+            color: #a8e6cf;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .setting-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(168, 230, 207, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .setting-name {
+            font-weight: 500;
+            color: #e0e0e0;
+        }
+
+        .setting-desc {
+            font-size: 12px;
+            color: #8fd3d3;
+        }
+
+        .toggle {
+            width: 50px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(168, 230, 207, 0.2);
+            border-radius: 14px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .toggle.active {
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            border-color: #a8e6cf;
+        }
+
+        .toggle-ball {
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle.active .toggle-ball {
+            left: 24px;
+        }
+
+        .select-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        select {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(168, 230, 207, 0.2);
+            color: #a8e6cf;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            cursor: pointer;
+            min-width: 120px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #a8e6cf;
+            background: rgba(168, 230, 207, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            color: #0f0e1e;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(168, 230, 207, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #a8e6cf;
+            border: 1px solid rgba(168, 230, 207, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(168, 230, 207, 0.1);
+            border-color: #a8e6cf;
+        }
+
+        .btn-danger {
+            background: rgba(255, 100, 100, 0.15);
+            color: #ff9999;
+            border: 1px solid rgba(255, 100, 100, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(255, 100, 100, 0.25);
+            border-color: #ff9999;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(168, 230, 207, 0.15), transparent);
+            margin: 20px 0;
+        }
+
+        .notification-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #a8e6cf;
+        }
+
+        .notification-option label {
+            cursor: pointer;
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-label {
+            color: #e0e0e0;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .integration-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(168, 230, 207, 0.15);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .integration-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .integration-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0f0e1e;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .integration-details {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .integration-name {
+            font-weight: 600;
+            color: #e0e0e0;
+            font-size: 13px;
+        }
+
+        .integration-status {
+            font-size: 11px;
+            color: #8fd3d3;
+        }
+
+        .integration-status.connected {
+            color: #a8e6cf;
+        }
+
+        .connect-btn {
+            background: rgba(168, 230, 207, 0.15);
+            border: 1px solid rgba(168, 230, 207, 0.3);
+            color: #a8e6cf;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .connect-btn:hover {
+            background: rgba(168, 230, 207, 0.25);
+            border-color: #a8e6cf;
+        }
+
+        .connect-btn.connected {
+            background: rgba(168, 230, 207, 0.2);
+            border-color: #a8e6cf;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-back">
+                <span class="material-icons">arrow_back</span>
+            </div>
+            <h1>Settings</h1>
+        </div>
+
+        <!-- Profile Settings -->
+        <div class="section">
+            <div class="section-title">
+                <span class="material-icons">person</span>
+                Profile
+            </div>
+            <div class="setting-item">
+                <div class="setting-label">
+                    <div class="setting-name">Edit Profile</div>
+                    <div class="setting-desc">Change name, avatar, email</div>
+                </div>
+                <span class="material-icons" style="cursor: pointer; color: #8fd3d3;">chevron_right</span>
+            </div>
+            <div class="setting-item">
+                <div class="setting-label">
+                    <div class="setting-name">Account Status</div>
+                    <div class="setting-desc">Premium • Active since Sep 2024</div>
+                </div>
+                <span style="color: #a8e6cf; font-size: 12px; font-weight: 600;">✓ ACTIVE</span>
+            </div>
+        </div>
+
+        <!-- Notification Settings -->
+        <div class="section">
+            <div class="section-title">
+                <span class="material-icons">notifications</span>
+                Notifications
+            </div>
+            <div style="padding: 16px 20px;">
+                <div class="notification-option">
+                    <input type="checkbox" id="push" checked>
+                    <label for="push" class="notification-label">Push Notifications</label>
+                </div>
+                <div class="notification-option">
+                    <input type="checkbox" id="email" checked>
+                    <label for="email" class="notification-label">Email Reminders</label>
+                </div>
+                <div class="notification-option">
+                    <input type="checkbox" id="streak">
+                    <label for="streak" class="notification-label">Streak Alerts</label>
+                </div>
+                <div class="notification-option">
+                    <input type="checkbox" id="achievements" checked>
+                    <label for="achievements" class="notification-label">Achievement Updates</label>
+                </div>
+                <div class="notification-option">
+                    <input type="checkbox" id="social" checked>
+                    <label for="social" class="notification-label">Social Activity</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Display Settings -->
+        <div class="section">
+            <div class="section-title">
+                <span class="material-icons">palette</span>
+                Display
+            </div>
+            <div class="setting-item">
+                <div class="setting-label">
+                    <div class="setting-name">Theme</div>
+                    <div class="setting-desc">App appearance</div>
+                </div>
+                <div class="select-wrapper">
+                    <select>
+                        <option>Dark (Default)</option>
+                        <option>Light</option>
+                        <option>Auto</option>
+                    </select>
+                </div>
+            </div>
+            <div class="setting-item">
+                <div class="setting-label">
+                    <div class="setting-name">Language</div>
+                    <div class="setting-desc">Interface language</div>
+                </div>
+                <div class="select-wrapper">
+                    <select>
+                        <option>English</option>
+                        <option>Русский</option>
+                        <option>Español</option>
+                    </select>
+                </div>
+            </div>
+            <div class="setting-item">
+                <div class="setting-label">
+                    <div class="setting-name">Compact View</div>
+                    <div class="setting-desc">Reduce spacing and sizes</div>
+                </div>
+                <div class="toggle">
+                    <div class="toggle-ball"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Privacy & Security -->
+        <div class="section">
+            <div class="section-title">
+                <span class="material-icons">security</span>
+                Privacy & Security
+            </div>
+            <div class="setting-item">
+                <div class="setting-label">
+                    <div class="setting-name">Two-Factor Authentication</div>
+                    <div class="setting-desc">Enhance account security</div>
+                </div>
+                <div class="toggle">
+                    <div class="toggle-ball"></div>
+                </div>
+            </div>
+            <div class="setting-item">
+                <div class="setting-label">
+                    <div class="setting-name">Profile Visibility</div>
+                    <div class="setting-desc">Who can see your profile</div>
+                </div>
+                <div class="select-wrapper">
+                    <select>
+                        <option>Private</option>
+                        <option>Friends Only</option>
+                        <option>Public</option>
+                    </select>
+                </div>
+            </div>
+            <div class="setting-item">
+                <div class="setting-label">
+                    <div class="setting-name">Data Privacy</div>
+                    <div class="setting-desc">Manage data collection</div>
+                </div>
+                <span class="material-icons" style="cursor: pointer; color: #8fd3d3;">chevron_right</span>
+            </div>
+        </div>
+
+        <!-- Integrations -->
+        <div class="section">
+            <div class="section-title">
+                <span class="material-icons">link</span>
+                Integrations
+            </div>
+            <div style="padding: 16px 20px;">
+                <div class="integration-card">
+                    <div class="integration-info">
+                        <div class="integration-icon">G</div>
+                        <div class="integration-details">
+                            <div class="integration-name">Google Calendar</div>
+                            <div class="integration-status connected">✓ Connected</div>
+                        </div>
+                    </div>
+                    <button class="connect-btn connected">Disconnect</button>
+                </div>
+
+                <div class="integration-card">
+                    <div class="integration-info">
+                        <div class="integration-icon">S</div>
+                        <div class="integration-details">
+                            <div class="integration-name">Slack</div>
+                            <div class="integration-status">Not connected</div>
+                        </div>
+                    </div>
+                    <button class="connect-btn">Connect</button>
+                </div>
+
+                <div class="integration-card">
+                    <div class="integration-info">
+                        <div class="integration-icon">T</div>
+                        <div class="integration-details">
+                            <div class="integration-name">Todoist</div>
+                            <div class="integration-status">Not connected</div>
+                        </div>
+                    </div>
+                    <button class="connect-btn">Connect</button>
+                </div>
+
+                <div class="integration-card">
+                    <div class="integration-info">
+                        <div class="integration-icon">N</div>
+                        <div class="integration-details">
+                            <div class="integration-name">Notion</div>
+                            <div class="integration-status connected">✓ Connected</div>
+                        </div>
+                    </div>
+                    <button class="connect-btn connected">Disconnect</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="section">
+            <div class="section-title" style="color: #ff9999;">
+                <span class="material-icons">warning</span>
+                Danger Zone
+            </div>
+            <div class="setting-item">
+                <div class="setting-label">
+                    <div class="setting-name" style="color: #ff9999;">Delete Account</div>
+                    <div class="setting-desc">Permanently delete all data</div>
+                </div>
+                <button class="btn-danger" style="padding: 6px 12px; font-size: 11px;">Delete</button>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="button-group">
+            <button class="btn-secondary">Cancel</button>
+            <button class="btn-primary">Save Changes</button>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.toggle').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                toggle.classList.toggle('active');
+            });
+        });
+
+        document.querySelectorAll('.connect-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                btn.classList.toggle('connected');
+                btn.textContent = btn.classList.contains('connected') ? 'Disconnect' : 'Connect';
+            });
+        });
+
+        document.querySelector('.header-back').addEventListener('click', () => {
+            window.history.back();
+        });
+    </script>
+</body>
+</html>
