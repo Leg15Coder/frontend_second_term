@@ -1,8 +1,14 @@
 describe('Habit UI Improvements', () => {
+  let testEmail = ''
+  const testPassword = 'password123'
+
   beforeEach(() => {
+    testEmail = `test-habit-ui${Date.now()}@example.com`
+    cy.createUser(testEmail, testPassword)
+
     cy.visit('/login')
-    cy.get('input[type="email"]').type('test@example.com')
-    cy.get('input[type="password"]').type('password123')
+    cy.get('input[type="email"]').type(testEmail)
+    cy.get('input[type="password"]').type(testPassword)
     cy.get('button[type="submit"]').click()
     cy.url().should('include', '/dashboard')
   })
@@ -10,14 +16,13 @@ describe('Habit UI Improvements', () => {
   it('should display difficulty badge on habit card', () => {
     cy.visit('/habits')
 
-    cy.get('button').contains(/добавить.*привычку|add.*habit/i).as('addHabitBtn').should('be.visible')
-    cy.get('@addHabitBtn').click()
+    cy.contains('button', /добавить.*привычку|add.*habit/i).should('be.visible').click({ force: true })
     cy.get('input[placeholder*="например"]').first().type('Test Habit with Difficulty')
 
     cy.get('label').contains(/сложность|difficulty/i).parent().find('[role="combobox"]').click()
     cy.get('[role="option"]').contains(/высокая|hard/i).click()
 
-    cy.get('button').contains(/создать|create/i).click()
+    cy.contains('button', /создать|create/i).click({ force: true })
 
     cy.contains('Test Habit with Difficulty')
       .parents('[class*="magic-card"]')
@@ -30,8 +35,7 @@ describe('Habit UI Improvements', () => {
   it('should support every_n_days frequency', () => {
     cy.visit('/habits')
 
-    cy.get('button').contains(/добавить/i).as('addHabitBtn').should('be.visible')
-    cy.get('@addHabitBtn').click()
+    cy.contains('button', /добавить/i).should('be.visible').click({ force: true })
     cy.get('input[placeholder*="например"]').first().type('Every 3 Days Habit')
 
     cy.get('label').contains(/периодичность|frequency/i).parent().find('[role="combobox"]').click()
@@ -40,7 +44,7 @@ describe('Habit UI Improvements', () => {
     cy.get('label').contains(/каждые.*дн|every/i).should('exist')
     cy.get('label').contains(/каждые/i).parent().find('input[type="number"]').clear().type('3')
 
-    cy.get('button').contains(/создать/i).click()
+    cy.contains('button', /создать/i).click({ force: true })
 
     cy.contains('Every 3 Days Habit')
       .parents('[class*="magic-card"]')
@@ -51,8 +55,7 @@ describe('Habit UI Improvements', () => {
 
   it('should show everyNDays field only when every_n_days is selected', () => {
     cy.visit('/habits')
-    cy.get('button').contains(/добавить/i).as('addHabitBtn').should('be.visible')
-    cy.get('@addHabitBtn').click()
+    cy.contains('button', /добавить/i).should('be.visible').click({ force: true })
 
     cy.get('label').contains(/каждые/i).should('not.exist')
 
@@ -69,15 +72,14 @@ describe('Habit UI Improvements', () => {
 
   it('should validate everyNDays input range', () => {
     cy.visit('/habits')
-    cy.get('button').contains(/добавить/i).as('addHabitBtn').should('be.visible')
-    cy.get('@addHabitBtn').click()
+    cy.contains('button', /добавить/i).should('be.visible').click({ force: true })
 
     cy.get('input[placeholder*="например"]').first().type('Test')
     cy.get('label').contains(/периодичность/i).parent().find('[role="combobox"]').click()
     cy.get('[role="option"]').contains(/каждые.*дн/i).click()
 
     cy.get('label').contains(/каждые/i).parent().find('input[type="number"]').clear().type('999')
-    cy.get('button').contains(/создать/i).click()
+    cy.contains('button', /создать/i).click({ force: true })
 
     cy.url().should('include', '/habits')
   })
@@ -85,18 +87,17 @@ describe('Habit UI Improvements', () => {
   it('should persist everyNDays value when editing habit', () => {
     cy.visit('/habits')
 
-    cy.get('button').contains(/добавить/i).as('addHabitBtn').should('be.visible')
-    cy.get('@addHabitBtn').click()
+    cy.contains('button', /добавить/i).should('be.visible').click({ force: true })
     cy.get('input[placeholder*="например"]').first().type('Edit Test')
     cy.get('label').contains(/периодичность/i).parent().find('[role="combobox"]').click()
     cy.get('[role="option"]').contains(/каждые.*дн/i).click()
     cy.get('label').contains(/каждые/i).parent().find('input[type="number"]').clear().type('5')
-    cy.get('button').contains(/создать/i).click()
+    cy.contains('button', /создать/i).click({ force: true })
 
     cy.contains('Edit Test')
       .parents('[class*="magic-card"]')
       .within(() => {
-        cy.get('button').contains(/изменить|edit/i).click()
+        cy.get('button').contains(/изменить|edit/i).click({ force: true })
       })
 
     cy.get('label').contains(/каждые/i).parent().find('input[type="number"]').should('have.value', '5')

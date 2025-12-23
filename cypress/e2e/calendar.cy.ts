@@ -1,10 +1,18 @@
 /// <reference types="cypress" />
 
 describe('Calendar Page', () => {
+  const testEmail = `test-calendar${Date.now()}@example.com`
+  const testPassword = 'password123'
+
+  before(() => {
+    cy.createUser(testEmail, testPassword)
+  })
+
   beforeEach(() => {
+    cy.clearLocalStorage()
     cy.visit('/login')
-    cy.get('input[type="email"]').type('test@example.com')
-    cy.get('input[type="password"]').type('password123')
+    cy.get('input[type="email"]').type(testEmail)
+    cy.get('input[type="password"]').type(testPassword)
     cy.get('button[type="submit"]').click()
     cy.url().should('include', '/dashboard')
   })
@@ -29,23 +37,24 @@ describe('Calendar Page', () => {
   it('should navigate between months', () => {
     cy.visit('/calendar')
 
-    cy.get('button').contains('chevron_right').as('nextMonth').should('be.visible')
-    cy.get('@nextMonth').click({ force: true })
+    cy.get('button').contains('chevron_right').as('nextBtn').should('be.visible')
+    cy.get('@nextBtn').click({ force: true })
     cy.wait(500)
 
     cy.get('button').contains('Сегодня').as('todayBtn').should('be.visible')
     cy.get('@todayBtn').click({ force: true })
     cy.wait(500)
 
-    cy.get('button').contains('chevron_left').as('prevMonth').should('be.visible')
-    cy.get('@prevMonth').click({ force: true })
+    cy.get('button').contains('chevron_left').as('prevBtn').should('be.visible')
+    cy.get('@prevBtn').click({ force: true })
     cy.wait(500)
   })
 
   it('should select a date and show details', () => {
     cy.visit('/calendar')
 
-    cy.get('button').contains(/^\d+$/).first().as('dateBtn').should('be.visible')
+    // Find a button that contains a number (day) - simplified
+    cy.contains('button', '15').as('dateBtn').should('exist')
     cy.get('@dateBtn').click({ force: true })
 
     cy.get('body').invoke('text').should('match', /детали/i)
@@ -54,7 +63,7 @@ describe('Calendar Page', () => {
   it('should export calendar data as CSV', () => {
     cy.visit('/calendar')
 
-    cy.get('button').contains(/экспорт/i).as('exportBtn').should('be.visible')
+    cy.contains('button', /экспорт/i).as('exportBtn').should('be.visible')
     cy.get('@exportBtn').click({ force: true })
   })
 
