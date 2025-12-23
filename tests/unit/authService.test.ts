@@ -1,9 +1,8 @@
 import { describe, it, expect, vi } from 'vitest'
-import { authService } from '../../../src/services/authService'
-import * as firebaseAuth from 'firebase/auth'
+import { authService } from '../../src/services/authService'
 
 vi.mock('firebase/auth', async () => {
-  const actual = await vi.importActual('firebase/auth')
+  const actual = await vi.importActual<any>('firebase/auth')
   return {
     ...actual,
     signInWithEmailAndPassword: vi.fn().mockResolvedValue({ user: { uid: 'u1' } }),

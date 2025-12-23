@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import userReducer, { setUser, clearUser, setLoading, setError } from '../../../src/features/user/userSlice'
+import userReducer, { setUser, clearUser, setLoading, setError } from '../../src/features/user/userSlice'
 
 describe('userSlice reducers', () => {
   it('setUser sets me and isAuthenticated', () => {

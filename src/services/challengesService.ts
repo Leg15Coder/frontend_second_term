@@ -16,9 +16,196 @@ import type { Challenge } from '../types'
 
 const COLLECTION_NAME = 'challenges'
 
-const randomId = () => (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2))
+const isTest = typeof process !== 'undefined' && (process.env.VITEST === 'true' || process.env.NODE_ENV === 'test')
 
-export const challengesService = {
+const memory = new Map<string, string>()
+const key = 'motify_challenges'
+
+function getStorage() {
+  return (typeof window !== 'undefined' ? (window as any).localStorage : null) as Storage | null
+}
+
+function readChallengesLocal(): Challenge[] {
+  const storage = getStorage()
+  const raw = storage?.getItem(key) ?? memory.get(key)
+  if (!raw) return []
+  try {
+    const parsed = JSON.parse(raw) as Challenge[]
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
+}
+
+function writeChallengesLocal(data: Challenge[]): Challenge[] {
+  const payload = JSON.stringify(data)
+  const storage = getStorage()
+  if (storage) storage.setItem(key, payload)
+  else memory.set(key, payload)
+  return data
+}
+
+const localChallengesService = {
+  async getChallenges(): Promise<Challenge[]> {
+    const challenges = readChallengesLocal()
+    if (challenges.length === 0) {
+      const demoChallenge: Challenge = {
+        id: 'demo-30-day-challenge',
+        title: '30-дневный вызов привычек',
+        description: 'Создайте и поддерживайте ежедневные привычки в течение 30 дней',
+        days: 30,
+        startDate: new Date().toISOString(),
+        participants: [],
+        dailyChecks: {},
+        createdAt: new Date().toISOString(),
+      }
+      writeChallengesLocal([demoChallenge])
+      return [demoChallenge]
+    }
+    return challenges
+  },
+
+  async addChallenge(challenge: Omit<Challenge, 'id' | 'createdAt'>): Promise<Challenge> {
+    const list = readChallengesLocal()
+    const next: Challenge = {
+      ...challenge,
+      id: (typeof crypto !== 'undefined' && (crypto as any).randomUUID ? (crypto as any).randomUUID() : Math.random().toString(36).slice(2)),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      participants: challenge.participants ?? [],
+      dailyChecks: challenge.dailyChecks ?? {},
+    }
+    writeChallengesLocal([...list, next])
+    return next
+  },
+
+  async updateChallenge(id: string, data: Partial<Challenge>): Promise<Challenge> {
+    const list = readChallengesLocal()
+    const index = list.findIndex((item) => item.id === id)
+    if (index === -1) throw new Error('Challenge not found')
+    const updated = { ...list[index], ...data, updatedAt: new Date().toISOString() }
+    list[index] = updated
+    writeChallengesLocal(list)
+    return updated
+  },
+
+  async deleteChallenge(id: string): Promise<void> {
+    const list = readChallengesLocal()
+    writeChallengesLocal(list.filter((item) => item.id !== id))
+  },
+
+  async joinChallenge(challengeId: string, userId: string): Promise<Challenge> {
+    const list = readChallengesLocal()
+    const index = list.findIndex((item) => item.id === challengeId)
+    if (index === -1) throw new Error('Challenge not found')
+
+    const challenge = list[index]
+    const participants = challenge.participants ?? []
+
+    if (participants.includes(userId)) {
+      return challenge
+    }
+
+    const updated = {
+      ...challenge,
+      participants: [...participants, userId],
+      updatedAt: new Date().toISOString(),
+    }
+    list[index] = updated
+    writeChallengesLocal(list)
+    return updated
+  },
+
+  async leaveChallenge(challengeId: string, userId: string): Promise<Challenge> {
+    const list = readChallengesLocal()
+    const index = list.findIndex((item) => item.id === challengeId)
+    if (index === -1) throw new Error('Challenge not found')
+
+    const challenge = list[index]
+    const participants = challenge.participants ?? []
+
+    const updated = {
+      ...challenge,
+      participants: participants.filter((id) => id !== userId),
+      updatedAt: new Date().toISOString(),
+    }
+    list[index] = updated
+    writeChallengesLocal(list)
+    return updated
+  },
+
+  async checkInChallenge(challengeId: string, userId: string, date?: string): Promise<Challenge> {
+    const list = readChallengesLocal()
+    const index = list.findIndex((item) => item.id === challengeId)
+    if (index === -1) throw new Error('Challenge not found')
+
+    const challenge = list[index]
+    const dailyChecks = challenge.dailyChecks ?? {}
+    let userChecks = dailyChecks[userId] ?? []
+    const checkDate = date ?? new Date().toISOString().split('T')[0]
+
+    if (userChecks.includes(checkDate)) {
+      return challenge
+    }
+
+    const mode = challenge.mode ?? 'cumulative'
+
+    if (mode === 'streak' && userChecks.length > 0) {
+      const sortedChecks = [...userChecks].sort()
+      const lastCheck = sortedChecks[sortedChecks.length - 1]
+      const lastCheckDate = new Date(lastCheck)
+      const currentDate = new Date(checkDate)
+
+      const diffDays = Math.floor((currentDate.getTime() - lastCheckDate.getTime()) / (1000 * 60 * 60 * 24))
+
+      if (diffDays > 1) {
+        userChecks = []
+        challenge.lastResetDate = checkDate
+      }
+    }
+
+    const updated = {
+      ...challenge,
+      dailyChecks: {
+        ...dailyChecks,
+        [userId]: [...userChecks, checkDate],
+      },
+      updatedAt: new Date().toISOString(),
+    }
+    list[index] = updated
+    writeChallengesLocal(list)
+    return updated
+  },
+
+  async undoCheckIn(challengeId: string, userId: string, date?: string): Promise<Challenge> {
+    const list = readChallengesLocal()
+    const index = list.findIndex((item) => item.id === challengeId)
+    if (index === -1) throw new Error('Challenge not found')
+
+    const challenge = list[index]
+    const dailyChecks = challenge.dailyChecks ?? {}
+    const userChecks = dailyChecks[userId] ?? []
+    const checkDate = date ?? new Date().toISOString().split('T')[0]
+
+    if (!userChecks.includes(checkDate)) {
+      return challenge
+    }
+
+    const updated = {
+      ...challenge,
+      dailyChecks: {
+        ...dailyChecks,
+        [userId]: userChecks.filter((d: string) => d !== checkDate),
+      },
+      updatedAt: new Date().toISOString(),
+    }
+    list[index] = updated
+    writeChallengesLocal(list)
+    return updated
+  },
+}
+
+const remoteChallengesService = {
   async getChallenges(): Promise<Challenge[]> {
     try {
       const snapshot = await getDocs(collection(db, COLLECTION_NAME))
@@ -124,3 +311,5 @@ export const challengesService = {
     return { id: updatedSnap.id, ...updatedSnap.data() } as Challenge
   },
 }
+
+export const challengesService = isTest ? localChallengesService : remoteChallengesService

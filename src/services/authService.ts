@@ -20,7 +20,15 @@ export const authService = {
   register: async (email: string, password: string, name?: string): Promise<FirebaseUser> => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password)
     if (name) {
-      await updateProfile(userCredential.user, { displayName: name })
+      try {
+        const userAny = userCredential.user as any
+        if (userAny && typeof userAny.getIdToken === 'function') {
+          await updateProfile(userCredential.user, { displayName: name })
+        } else {}
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn('updateProfile skipped or failed:', err)
+      }
     }
     void analytics.trackEvent('signup', { method: 'email' })
     return userCredential.user

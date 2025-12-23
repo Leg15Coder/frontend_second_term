@@ -36,16 +36,19 @@ export function deduplicateTasks(tasks: GoalTask[]): GoalTask[] {
   const unique: GoalTask[] = []
 
   for (const task of tasks) {
-    const normalized = task.title.toLowerCase().trim().replace(/[^\w\s]/g, '')
+    let normalized = task.title.toLowerCase().trim()
+    normalized = normalized.replace(/[\p{P}\p{S}]+/gu, ' ')
+    normalized = normalized.replace(/\s+/g, ' ').trim()
+    const stopwords = ['the','a','an','to','for','and','of','in','on','at','complete','task','задача','срочная','срочно']
+    normalized = normalized.split(' ').filter(w => !stopwords.includes(w)).join(' ')
 
-    if (seen.has(normalized)) {
-      continue
-    }
+    if (seen.has(normalized)) continue
 
-    const similarityThreshold = 0.8
+    const similarityThreshold = 0.7
     let isDuplicate = false
 
     for (const existingNorm of seen) {
+      if (!existingNorm) continue
       if (calculateSimilarity(normalized, existingNorm) >= similarityThreshold) {
         isDuplicate = true
         break
@@ -100,7 +103,7 @@ export function prioritizeTasks(tasks: GoalTask[], context?: GoalContext): Valid
 
     const title = task.title.toLowerCase()
 
-    const urgentKeywords = ['срочно', 'сегодня', 'завтра', 'асап', 'важно', 'критично']
+    const urgentKeywords = ['срочно', 'срочная', 'сроч', 'сегодня', 'завтра', 'асап', 'важно', 'критично', 'urgent', 'asap']
     const hasUrgent = urgentKeywords.some(kw => title.includes(kw))
 
     if (hasUrgent) {
@@ -195,4 +198,3 @@ export function postprocessTasks(tasks: GoalTask[], context?: GoalContext): Vali
 
   return prioritized
 }
-

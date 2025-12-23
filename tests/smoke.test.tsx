@@ -21,16 +21,16 @@ const renderWithProviders = (component: React.ReactElement) => {
 describe('Smoke Tests - Pages render without crashing', () => {
   it('Dashboard should render', () => {
     renderWithProviders(<Dashboard />)
-    expect(screen.getByText(/Главная/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/Главная/i)[0]).toBeInTheDocument()
   })
 
   it('HabitsPage should render', () => {
     renderWithProviders(<HabitsPage />)
-    expect(screen.getByText(/Привычки/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/Привычки/i)[0]).toBeInTheDocument()
   })
 
   it('GoalsPage should render', () => {
     renderWithProviders(<GoalsPage />)
-    expect(screen.getByText(/Цели/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/Цели/i)[0]).toBeInTheDocument()
   })
 })
