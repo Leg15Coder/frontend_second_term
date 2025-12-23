@@ -147,3 +147,11 @@ export interface GroupChallenge {
   mode?: 'cumulative' | 'streak'
   lastResetDate?: string
 }
+
+export interface FriendRequest {
+  id: string
+  from: string
+  to: string
+  createdAt: string
+  status: 'pending' | 'accepted' | 'rejected'
+}
