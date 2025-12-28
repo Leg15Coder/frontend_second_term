@@ -1,10 +1,18 @@
 /// <reference types="cypress" />
 
 describe('Calendar Page', () => {
+  const testEmail = `test-calendar${Date.now()}@example.com`
+  const testPassword = 'password123'
+
+  before(() => {
+    cy.createUser(testEmail, testPassword)
+  })
+
   beforeEach(() => {
+    cy.clearLocalStorage()
     cy.visit('/login')
-    cy.get('input[type="email"]').type('test@example.com')
-    cy.get('input[type="password"]').type('password123')
+    cy.get('input[type="email"]').type(testEmail)
+    cy.get('input[type="password"]').type(testPassword)
     cy.get('button[type="submit"]').click()
     cy.url().should('include', '/dashboard')
   })

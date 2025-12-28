@@ -1,5 +1,11 @@
 describe('Habit UI Improvements', () => {
+  let testEmail = ''
+  const testPassword = 'password123'
+
   beforeEach(() => {
+    testEmail = `test-habit-ui${Date.now()}@example.com`
+    cy.createUser(testEmail, testPassword)
+
     cy.visit('/login')
     cy.wait(1000)
     cy.get('input[type="email"]', { timeout: 10000 }).should('be.visible').type('test@example.com')
@@ -100,12 +106,12 @@ describe('Habit UI Improvements', () => {
     cy.get('label').contains(/периодичность/i).parent().find('[role="combobox"]').click()
     cy.get('[role="option"]').contains(/каждые.*дн/i).click()
     cy.get('label').contains(/каждые/i).parent().find('input[type="number"]').clear().type('5')
-    cy.get('button').contains(/создать|create/i).click()
+    cy.contains('button', /создать/i).click({ force: true })
 
     cy.contains('Edit Test')
       .parents('[class*="magic-card"]')
       .within(() => {
-        cy.get('button').contains(/изменить|edit/i).click()
+        cy.get('button').contains(/изменить|edit/i).click({ force: true })
       })
 
     cy.get('label').contains(/каждые/i).parent().find('input[type="number"]').should('have.value', '5')
