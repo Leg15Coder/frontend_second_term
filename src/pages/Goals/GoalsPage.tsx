@@ -11,11 +11,13 @@ import { splitGoal } from '../../lib/llm/splitGoal'
 import { suggestHabitsForGoal } from '../../services/aiService'
 import HabitSuggestionCard from '../../components/HabitSuggestionCard'
 import type { GoalTask, Habit } from '../../types'
+import { useSearchParams } from 'react-router-dom'
 
 const GoalsPage: React.FC = () => {
   const dispatch = useAppDispatch()
   const { items, loading } = useAppSelector((s) => s.goals)
   const userId = useAppSelector((s) => s.user.me?.id)
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -34,6 +36,13 @@ const GoalsPage: React.FC = () => {
       dispatch(fetchGoals(userId))
     }
   }, [dispatch, userId])
+
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      handleOpenDialog()
+      setSearchParams({})
+    }
+  }, [searchParams, setSearchParams])
 
   const handleOpenDialog = (goalId?: string) => {
     if (goalId) {
@@ -314,7 +323,7 @@ const GoalsPage: React.FC = () => {
             {items.map((goal) => {
               const hasTasks = goal.tasks && goal.tasks.length > 0
               return (
-                <div key={goal.id} className="glass-panel p-6 hover:border-primary/50 transition-all">
+                <div key={goal.id} data-testid="goal-card" className="glass-panel p-6 hover:border-primary/50 transition-all">
                   <div className="flex flex-col gap-4">
                     <div className="flex items-start justify-between">
                       <h3 className="text-white text-xl font-bold">{goal.title}</h3>

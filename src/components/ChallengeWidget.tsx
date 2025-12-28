@@ -102,7 +102,7 @@ const ChallengeWidget: React.FC = () => {
   }
 
   return (
-    <div className="glass-panel p-6">
+    <div className="glass-panel p-6" data-testid="challenge-card">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-white text-xl font-bold">Текущий вызов</h3>
         {isParticipating && (
@@ -138,6 +138,7 @@ const ChallengeWidget: React.FC = () => {
 
             <div className="flex gap-2">
               <button
+                data-testid="challenge-checkin-btn"
                 onClick={handleCheckIn}
                 disabled={checkedInToday}
                 aria-label={checkedInToday ? 'Уже отмечено сегодня' : 'Отметить день как выполненный'}
@@ -151,6 +152,7 @@ const ChallengeWidget: React.FC = () => {
               </button>
               {checkedInToday && (
                 <button
+                  data-testid="challenge-undo-btn"
                   onClick={handleUndoCheckIn}
                   aria-label="Отменить отметку"
                   className="px-4 py-2 rounded-lg bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 transition-colors"

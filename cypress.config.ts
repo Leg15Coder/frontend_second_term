@@ -7,10 +7,10 @@ export default defineConfig({
     setupNodeEvents(on, config) {
       return config;
     },
-    defaultCommandTimeout: 40000,
-    requestTimeout: 40000,
-    responseTimeout: 240000,
-    pageLoadTimeout: 480000,
+    defaultCommandTimeout: 10000,
+    requestTimeout: 10000,
+    responseTimeout: 120000,
+    pageLoadTimeout: 160000,
     supportFile: "cypress/support/e2e.ts",
   },
 })

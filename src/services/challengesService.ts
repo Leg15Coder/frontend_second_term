@@ -16,7 +16,12 @@ import type { Challenge } from '../types'
 
 const COLLECTION_NAME = 'challenges'
 
-const isTest = typeof process !== 'undefined' && (process.env.VITEST === 'true' || process.env.NODE_ENV === 'test')
+const isTest = (typeof process !== 'undefined' && (process.env.VITEST === 'true' || process.env.NODE_ENV === 'test')) ||
+               (typeof window !== 'undefined' && (window as any).Cypress)
+
+if (typeof window !== 'undefined') {
+  console.log('[ChallengesService] isTest:', isTest, 'Cypress:', !!(window as any).Cypress)
+}
 
 const memory = new Map<string, string>()
 const key = 'motify_challenges'
@@ -47,7 +52,9 @@ function writeChallengesLocal(data: Challenge[]): Challenge[] {
 
 const localChallengesService = {
   async getChallenges(): Promise<Challenge[]> {
+    console.log('[localChallengesService] getChallenges called')
     const challenges = readChallengesLocal()
+    console.log('[localChallengesService] challenges from localStorage:', challenges.length)
     if (challenges.length === 0) {
       const demoChallenge: Challenge = {
         id: 'demo-30-day-challenge',
@@ -59,6 +66,7 @@ const localChallengesService = {
         dailyChecks: {},
         createdAt: new Date().toISOString(),
       }
+      console.log('[localChallengesService] No challenges found, creating demo')
       writeChallengesLocal([demoChallenge])
       return [demoChallenge]
     }

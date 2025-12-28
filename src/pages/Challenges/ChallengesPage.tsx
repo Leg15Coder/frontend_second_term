@@ -97,7 +97,7 @@ const ChallengesPage: React.FC = () => {
               const isCheckedToday = userChecks.includes(today)
 
               return (
-                <div key={challenge.id} className="glass-panel p-6 flex flex-col gap-4">
+                <div key={challenge.id} data-testid="challenge-card" className="glass-panel p-6 flex flex-col gap-4">
                   <div className="flex items-start justify-between">
                     <h3 className="text-white text-xl font-bold">{challenge.title}</h3>
                     {isParticipating && (
@@ -142,6 +142,7 @@ const ChallengesPage: React.FC = () => {
                           </button>
                         ) : (
                           <button
+                            data-testid="challenge-checkin-btn"
                             onClick={() => handleCheckIn(challenge.id)}
                             className="flex-1 px-4 py-2 rounded-lg bg-accent/20 text-accent hover:bg-accent/30 transition-colors flex items-center justify-center gap-2"
                           >

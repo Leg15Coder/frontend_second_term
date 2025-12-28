@@ -1,5 +1,5 @@
 import type { Habit, Goal } from '../types'
-import { callPerplexity } from './perplexityService'
+import { callMultiAI, isTestEnvironment, setProviderEnabled } from './multiAIService'
 
 export interface HabitSuggestion {
   title: string
@@ -110,8 +110,16 @@ ${existingHabits.length > 0 ? `Существующие привычки пол�
 Если для цели не подходят привычки, верни пустой массив habits: []`
 
   try {
-    const raw = await callPerplexity(prompt)
-    const suggestions = parseHabitSuggestions(raw, goal.title)
+    if (isTestEnvironment()) {
+      setProviderEnabled('perplexity', false)
+      setProviderEnabled('openai', false)
+      setProviderEnabled('mock', true)
+    }
+
+    const response = await callMultiAI(prompt, {
+      maxRetries: 3
+    })
+    const suggestions = parseHabitSuggestions(response.result, goal.title)
 
     return suggestions.map(suggestion => ({
       id: createId(),

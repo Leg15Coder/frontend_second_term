@@ -213,6 +213,7 @@ const SettingsForm: React.FC = () => {
           Удаление аккаунта приведёт к полной потере всех данных (привычки, цели, настройки). Это действие необратимо.
         </p>
         <Button
+          data-testid="delete-account-btn"
           onClick={handleDeleteAccount}
           disabled={loading}
           className="bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/50"
@@ -221,10 +222,9 @@ const SettingsForm: React.FC = () => {
         </Button>
       </div>
 
-      {/* Reauthentication Dialog */}
       {showReauthDialog && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="glass-panel p-6 max-w-md w-full mx-4">
+          <div data-testid="reauth-dialog" className="glass-panel p-6 max-w-md w-full mx-4">
             <h3 className="text-white text-xl font-bold mb-4">Подтверждение личности</h3>
             <p className="text-white/60 text-sm mb-4">
               Для удаления аккаунта требуется повторный вход. Введите ваш пароль:
@@ -248,6 +248,7 @@ const SettingsForm: React.FC = () => {
                 {loading ? 'Проверка...' : 'Подтвердить'}
               </Button>
               <Button
+                data-testid="reauth-cancel-btn"
                 onClick={() => {
                   setShowReauthDialog(false)
                   setReauthPassword('')

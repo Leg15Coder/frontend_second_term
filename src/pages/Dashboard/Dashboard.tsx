@@ -13,9 +13,11 @@ import { Textarea } from '../../components/ui/textarea'
 import { Button } from '../../components/ui/button'
 import { toast } from 'sonner'
 import type { Todo } from '../../types'
+import { useNavigate } from 'react-router-dom'
 
 const Dashboard: React.FC = () => {
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
   const { items: habits, loading: habitsLoading, error: habitsError } = useAppSelector((s: RootState) => s.habits)
   const { items: goals, loading: goalsLoading, error: goalsError } = useAppSelector((s: RootState) => s.goals)
   const { items: todos, loading: todosLoading } = useAppSelector((s: RootState) => s.todos)
@@ -166,59 +168,75 @@ const Dashboard: React.FC = () => {
       <div className="flex flex-col gap-8">
         <div className="flex flex-wrap justify-between items-center gap-4">
           <div className="flex flex-col gap-2">
-            <p className="text-white text-4xl font-black leading-tight tracking-[-0.033em]">Главная</p>
+            <p data-testid="dashboard-title" className="text-white text-4xl font-black leading-tight tracking-[-0.033em]">Главная</p>
             <p className="text-white/60 text-base font-normal leading-normal">Вот ваш прогресс на сегодня. Продолжайте!</p>
           </div>
 
-          <Dialog open={isTodoDialogOpen} onOpenChange={setIsTodoDialogOpen}>
-            <DialogTrigger asChild>
-              <button className="flex items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-accent/10 text-accent text-sm font-bold leading-normal tracking-[0.015em] border border-accent/80 shadow-glow-gold hover:shadow-glow-gold-hover transition-shadow duration-300">
-                <span className="truncate">+ Добавить задачу</span>
-              </button>
-            </DialogTrigger>
-            <DialogContent className="glass-panel border-white/20">
-              <DialogHeader>
-                <DialogTitle className="text-white">Создать новую задачу</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="dashboard-todo-title" className="text-white/80 text-sm mb-2 block">Название</label>
-                  <Input
-                    id="dashboard-todo-title"
-                    value={todoTitle}
-                    onChange={(e) => setTodoTitle(e.target.value)}
-                    className="bg-white/5 border-white/10 text-white"
-                    placeholder="Например: Купить продукты"
-                  />
+          <div className="flex gap-3">
+            <button
+              data-testid="add-habit-btn"
+              onClick={() => navigate('/habits?create=true')}
+              className="flex items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-accent/10 text-accent text-sm font-bold leading-normal tracking-[0.015em] border border-accent/80 shadow-glow-gold hover:shadow-glow-gold-hover transition-shadow duration-300"
+            >
+              <span className="truncate">+ Добавить привычку</span>
+            </button>
+            <button
+              data-testid="add-goal-btn"
+              onClick={() => navigate('/goals?create=true')}
+              className="flex items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-accent/10 text-accent text-sm font-bold leading-normal tracking-[0.015em] border border-accent/80 shadow-glow-gold hover:shadow-glow-gold-hover transition-shadow duration-300"
+            >
+              <span className="truncate">+ Добавить цель</span>
+            </button>
+            <Dialog open={isTodoDialogOpen} onOpenChange={setIsTodoDialogOpen}>
+              <DialogTrigger asChild>
+                <button data-testid="add-task-btn" className="flex items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-accent/10 text-accent text-sm font-bold leading-normal tracking-[0.015em] border border-accent/80 shadow-glow-gold hover:shadow-glow-gold-hover transition-shadow duration-300">
+                  <span className="truncate">+ Добавить задачу</span>
+                </button>
+              </DialogTrigger>
+              <DialogContent className="glass-panel border-white/20">
+                <DialogHeader>
+                  <DialogTitle className="text-white">Создать новую задачу</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="dashboard-todo-title" className="text-white/80 text-sm mb-2 block">Название</label>
+                    <Input
+                      id="dashboard-todo-title"
+                      value={todoTitle}
+                      onChange={(e) => setTodoTitle(e.target.value)}
+                      className="bg-white/5 border-white/10 text-white"
+                      placeholder="Например: Купить продукты"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="dashboard-todo-description" className="text-white/80 text-sm mb-2 block">Описание (опционально)</label>
+                    <Textarea
+                      id="dashboard-todo-description"
+                      value={todoDescription}
+                      onChange={(e) => setTodoDescription(e.target.value)}
+                      className="bg-white/5 border-white/10 text-white min-h-[80px]"
+                      placeholder="Детали задачи..."
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="dashboard-todo-deadline" className="text-white/80 text-sm mb-2 block">Дедлайн (опционально)</label>
+                    <Input
+                      id="dashboard-todo-deadline"
+                      type="datetime-local"
+                      value={todoDeadline}
+                      onChange={(e) => setTodoDeadline(e.target.value)}
+                      className="bg-white/5 border-white/10 text-white"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label htmlFor="dashboard-todo-description" className="text-white/80 text-sm mb-2 block">Описание (опционально)</label>
-                  <Textarea
-                    id="dashboard-todo-description"
-                    value={todoDescription}
-                    onChange={(e) => setTodoDescription(e.target.value)}
-                    className="bg-white/5 border-white/10 text-white min-h-[80px]"
-                    placeholder="Детали задачи..."
-                  />
-                </div>
-                <div>
-                  <label htmlFor="dashboard-todo-deadline" className="text-white/80 text-sm mb-2 block">Дедлайн (опционально)</label>
-                  <Input
-                    id="dashboard-todo-deadline"
-                    type="datetime-local"
-                    value={todoDeadline}
-                    onChange={(e) => setTodoDeadline(e.target.value)}
-                    className="bg-white/5 border-white/10 text-white"
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button onClick={handleAddTodo} className="bg-primary text-white hover:bg-primary/90">
-                  Создать
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                <DialogFooter>
+                  <Button onClick={handleAddTodo} className="bg-primary text-white hover:bg-primary/90">
+                    Создать
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -288,8 +306,9 @@ const Dashboard: React.FC = () => {
               ) : (
                 <div className="flex flex-col divide-y divide-white/10">
                   {todayHabits.map((habit) => (
-                    <label key={habit.id} className="flex gap-x-4 py-4 items-center cursor-pointer group">
+                    <label key={habit.id} data-testid="habit-card" className="flex gap-x-4 py-4 items-center cursor-pointer group">
                       <input
+                        data-testid="habit-complete-btn"
                         className="h-5 w-5 rounded-full border-white/30 border-2 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-0 focus:ring-offset-0 appearance-none transition-all duration-300 group-hover:border-primary cursor-pointer"
                         type="checkbox"
                         checked={habit.completed}
@@ -313,7 +332,7 @@ const Dashboard: React.FC = () => {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {activeGoals.map((goal) => (
-                    <div key={goal.id} className="p-4 rounded-lg bg-white/5 border border-white/10 flex flex-col gap-3">
+                    <div key={goal.id} data-testid="goal-card" className="p-4 rounded-lg bg-white/5 border border-white/10 flex flex-col gap-3">
                       <p className="text-white font-semibold">{goal.title}</p>
                       <div className="w-full bg-black/20 rounded-full h-2.5">
                         <div
