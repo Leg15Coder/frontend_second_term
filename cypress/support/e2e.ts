@@ -1,4 +1,5 @@
-/// <reference types="cypress" />
+export const __e2e_support_module = true
+;(globalThis as unknown as Record<string, unknown>).__e2e_support_module = __e2e_support_module
 
 interface WindowWithMSW {
   __msw_worker__?: { start?: (...args: unknown[]) => Promise<unknown>; stop?: () => void }
@@ -11,8 +12,6 @@ Cypress.on('uncaught:exception', (err) => {
       return false
     }
   } catch (err) {
-    // Log unexpected inspection errors to help CI debugging
-    // eslint-disable-next-line no-console
     console.warn('Error while inspecting uncaught exception message', err)
   }
   return true
@@ -29,7 +28,6 @@ before(() => {
           window.__msw_worker__ = mod.worker
         }
       } catch (err) {
-        // eslint-disable-next-line no-console
         console.error('Failed to start MSW worker from Cypress', String(err))
       }
     })()`)
@@ -49,9 +47,32 @@ after(() => {
   })
 })
 
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Cypress {
+    interface Chainable {
+      /**
+       * Custom command to log in programmatically
+       * @example cy.login('test@example.com', 'password123')
+       */
+      login(email: string, password: string): Cypress.Chainable
+    }
+  }
+}
+
+const loginCommand = (email: string, password: string): Cypress.Chainable => {
+  cy.visit('/login')
+  cy.wait(1000)
+  cy.get('input[type="email"]', { timeout: 10000 }).should('be.visible').type(email)
+  cy.get('input[type="password"]').should('be.visible').type(password)
+  cy.get('[data-testid="login-submit-btn"]').should('be.visible').click()
+  return cy.url().should('include', '/dashboard')
+}
+
+Cypress.Commands.add('login', loginCommand)
+
 beforeEach(() => {
   const specName = Cypress.spec.name
-  // List of specs that should start logged out or handle login themselves
   const authSpecs = [
     'auth-error-handling.cy.ts',
     '02-full-flow.cy.ts',
@@ -59,7 +80,6 @@ beforeEach(() => {
   ]
 
   if (!authSpecs.some(spec => specName.includes(spec))) {
-    // Auto-login for other specs by setting the mock user in localStorage
     const mockUser = {
       uid: 'test-user-id',
       email: 'test@example.com',

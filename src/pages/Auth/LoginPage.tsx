@@ -108,7 +108,12 @@ export default function LoginPage() {
                 )}
               />
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button
+                type="submit"
+                data-testid="login-submit-btn"
+                className="w-full"
+                disabled={isLoading}
+              >
                 {isLoading ? "Вход..." : "Войти"}
               </Button>
 

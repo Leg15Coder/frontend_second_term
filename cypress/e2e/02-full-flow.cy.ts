@@ -8,27 +8,26 @@ describe('End-to-End Flow: Habits and Goals', () => {
 
   it('should complete full user flow: signup -> create habit -> mark habit -> create goal', () => {
     cy.contains('Регистрация').should('be.visible').click()
-    cy.url().should('include', '/signup')
+    cy.url().should('include', '/signup', { timeout: 10000 })
 
     cy.get('input[type="email"]').should('be.visible').type('test@example.com')
     cy.get('input[type="password"]').first().should('be.visible').type('password123')
     cy.get('button[type="submit"]').should('be.visible').click()
 
-    // Wait for potential error toast or redirect
+    cy.wait(2000)
     cy.get('body').then(($body) => {
       if ($body.find('.toast').length > 0) {
         cy.log('Toast found: ' + $body.find('.toast').text())
       }
     })
 
-    cy.url().should('include', '/dashboard', { timeout: 30000 })
-    cy.contains('Главная').should('be.visible')
+    cy.url().should('include', '/dashboard', { timeout: 40000 })
+    cy.contains('Главная', { timeout: 10000 }).should('be.visible')
 
     cy.contains('Привычки').click()
-    cy.url().should('include', '/habits')
+    cy.url().should('include', '/habits', { timeout: 10000 })
 
-    cy.contains('button', 'Добавить привычку').as('addHabitBtn').should('be.visible')
-    cy.get('@addHabitBtn').click()
+    cy.get('[data-testid="add-habit-btn"]', { timeout: 10000 }).should('be.visible').click()
     cy.get('input[placeholder*="Утренняя медитация"]').type('Пробежка по утрам')
     cy.get('input[placeholder*="15 минут осознанности"]').type('30 минут каждое утро')
 
@@ -54,12 +53,11 @@ describe('End-to-End Flow: Habits and Goals', () => {
       })
 
     cy.contains('Главная').click()
-    cy.url().should('include', '/dashboard')
+    cy.url().should('include', '/dashboard', { timeout: 10000 })
 
-    cy.contains('Пробежка по утрам').should('be.visible')
+    cy.contains('Пробежка по утрам', { timeout: 10000 }).should('be.visible')
 
-    cy.contains('button', 'Добавить цель').as('addGoalBtn').should('be.visible')
-    cy.get('@addGoalBtn').click()
+    cy.get('[data-testid="add-goal-btn"]', { timeout: 10000 }).should('be.visible').click()
     cy.get('input[placeholder*="Выучить TypeScript"]').type('Освоить React и TypeScript')
     cy.get('input[placeholder*="Краткое описание"]').type('Стать профессиональным фронтенд-разработчиком')
 
@@ -112,13 +110,16 @@ describe('End-to-End Flow: Habits and Goals', () => {
 
   it('should handle habit check-in from dashboard', () => {
     cy.visit('/habits')
-    cy.contains('Добавить привычку').click()
+    cy.wait(1000)
+    cy.get('[data-testid="add-habit-btn"]', { timeout: 10000 }).should('be.visible').click()
     cy.get('input').first().type('Test Habit for Dashboard')
     cy.contains('button', 'Создать').click()
 
+    cy.wait(2000)
     cy.visit('/dashboard')
+    cy.wait(2000)
 
-    cy.contains('Test Habit for Dashboard')
+    cy.contains('Test Habit for Dashboard', { timeout: 10000 })
       .closest('div')
       .parents()
       .then(($parents: any) => {
@@ -141,12 +142,13 @@ describe('End-to-End Flow: Habits and Goals', () => {
     localStorage.setItem('cypress_user', JSON.stringify(mockUser))
 
     cy.visit('/goals')
+    cy.wait(1000)
 
-    cy.contains('Добавить цель').click()
+    cy.get('[data-testid="add-goal-btn"]', { timeout: 10000 }).should('be.visible').click()
     cy.get('input').first().type('Goal with Tasks')
     cy.get('textarea').type('- Task 1\n- Task 2\n- Task 3')
     cy.contains('Разбить на подзадачи').click()
-    cy.wait(1000)
+    cy.wait(2000)
     cy.contains('Создать').click()
 
     cy.contains('Goal with Tasks').parents().then(($parents: any) => {

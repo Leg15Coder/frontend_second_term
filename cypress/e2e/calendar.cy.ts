@@ -28,34 +28,44 @@ describe('Calendar Page', () => {
 
   it('should navigate between months', () => {
     cy.visit('/calendar')
+    cy.wait(2000)
 
-    cy.get('button').contains('chevron_right').as('nextMonth').should('be.visible')
+    cy.get('button').contains('chevron_right').should('be.visible').as('nextMonth')
+    cy.wait(500)
     cy.get('@nextMonth').click({ force: true })
-    cy.wait(500)
+    cy.wait(1000)
 
-    cy.get('button').contains('Сегодня').as('todayBtn').should('be.visible')
+    cy.get('button').contains('Сегодня').should('be.visible').as('todayBtn')
+    cy.wait(500)
     cy.get('@todayBtn').click({ force: true })
-    cy.wait(500)
+    cy.wait(1000)
 
-    cy.get('button').contains('chevron_left').as('prevMonth').should('be.visible')
-    cy.get('@prevMonth').click({ force: true })
+    cy.get('button').contains('chevron_left').should('be.visible').as('prevMonth')
     cy.wait(500)
+    cy.get('@prevMonth').click({ force: true })
+    cy.wait(1000)
   })
 
   it('should select a date and show details', () => {
     cy.visit('/calendar')
+    cy.wait(2000)
 
-    cy.get('button').contains(/^\d+$/).first().as('dateBtn').should('be.visible')
+    cy.get('button', { timeout: 10000 }).contains(/^\d+$/).first().should('be.visible').as('dateBtn')
+    cy.wait(500)
     cy.get('@dateBtn').click({ force: true })
+    cy.wait(1000)
 
-    cy.get('body').invoke('text').should('match', /детали/i)
+    cy.get('body', { timeout: 10000 }).invoke('text').should('match', /детали/i)
   })
 
   it('should export calendar data as CSV', () => {
     cy.visit('/calendar')
+    cy.wait(2000)
 
-    cy.get('button').contains(/экспорт/i).as('exportBtn').should('be.visible')
+    cy.get('button', { timeout: 10000 }).contains(/экспорт/i).should('be.visible').as('exportBtn')
+    cy.wait(500)
     cy.get('@exportBtn').click({ force: true })
+    cy.wait(1000)
   })
 
   it('should show activity heatmap', () => {

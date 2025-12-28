@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import Header from '@/components/Header';
-import HeroSection from '@/components/HeroSection';
+import { HeroSection } from '@/components/HeroSection';
 import ProblemSection from '@/components/ProblemSection';
 import FeaturesSection from '@/components/FeaturesSection';
 import ScenariosSection from '@/components/ScenariosSection';

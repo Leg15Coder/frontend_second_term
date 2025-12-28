@@ -106,6 +106,7 @@ const HabitsPage: React.FC = () => {
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
               <button
+                data-testid="add-habit-btn"
                 onClick={() => { setEditing(null); form.reset(); setIsOpen(true); }}
                 className="flex items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-accent/10 text-accent text-sm font-bold leading-normal tracking-[0.015em] border border-accent/80 shadow-glow-gold hover:shadow-glow-gold-hover transition-shadow duration-300"
               >

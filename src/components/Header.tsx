@@ -13,15 +13,20 @@ const Header = () => {
     { label: 'API', href: '#api' },
   ];
 
+  const scrollToTop = (e: React.MouseEvent) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
       <div className="mx-4 mt-4">
         <nav className="container mx-auto glass-card px-6 py-4">
           <div className="flex items-center justify-between">
-            <a href="#" className="flex items-center gap-3 group">
+            <button onClick={scrollToTop} className="flex items-center gap-3 group cursor-pointer bg-transparent border-none p-0" aria-label="Перейти вверх">
               <CrystalIcon className="w-8 h-8 group-hover:scale-110 transition-transform" glowColor="gold" />
               <span className="font-display text-xl font-bold text-foreground">Motify</span>
-            </a>
+            </button>
 
             <div className="hidden md:flex items-center gap-8">
               {navItems.map((item) => (
