@@ -65,3 +65,6 @@ storybook-static/
 .github/ISSUES
 docs/
 .vercel
+cypress/screenshots/
+cypress/videos/
+cypress/downloads/

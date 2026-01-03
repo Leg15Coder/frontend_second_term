@@ -14,7 +14,8 @@ import type { Habit } from '../types'
 
 const COLLECTION_NAME = 'habits'
 
-const isTest = typeof process !== 'undefined' && (process.env.VITEST === 'true' || process.env.NODE_ENV === 'test')
+const isTest = (typeof process !== 'undefined' && (process.env.VITEST === 'true' || process.env.NODE_ENV === 'test')) ||
+               (typeof window !== 'undefined' && (window as any).Cypress)
 
 const memory = new Map<string, string>()
 const habitsKey = (userId: string) => `motify_habits_${userId}`

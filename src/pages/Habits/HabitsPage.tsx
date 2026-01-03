@@ -11,6 +11,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { toast } from 'sonner'
+import { useSearchParams } from 'react-router-dom'
 
 const habitSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -28,6 +29,7 @@ const HabitsPage: React.FC = () => {
   const userId = useAppSelector((s) => s.user.me?.id)
   const [isOpen, setIsOpen] = useState(false)
   const [editing, setEditing] = useState<string | null>(null)
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const form = useForm<HabitFormValues>({
     resolver: zodResolver(habitSchema),
@@ -45,6 +47,15 @@ const HabitsPage: React.FC = () => {
       dispatch(fetchHabits(userId))
     }
   }, [dispatch, userId])
+
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      setEditing(null)
+      form.reset()
+      setIsOpen(true)
+      setSearchParams({})
+    }
+  }, [searchParams, setSearchParams, form])
 
   const onSubmit = async (values: HabitFormValues) => {
     if (editing) {
@@ -106,6 +117,7 @@ const HabitsPage: React.FC = () => {
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
               <button
+                data-testid="add-habit-btn"
                 onClick={() => { setEditing(null); form.reset(); setIsOpen(true); }}
                 className="flex items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-accent/10 text-accent text-sm font-bold leading-normal tracking-[0.015em] border border-accent/80 shadow-glow-gold hover:shadow-glow-gold-hover transition-shadow duration-300"
               >
@@ -254,7 +266,7 @@ const HabitsPage: React.FC = () => {
               }
 
               return (
-                <div key={habit.id} className="magic-card group">
+                <div key={habit.id} data-testid="habit-card" className="magic-card group">
                   <div className="flex flex-col items-center text-center">
                     <button
                       onClick={() => handleToggleHabit(habit.id)}

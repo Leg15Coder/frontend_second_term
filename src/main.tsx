@@ -8,6 +8,10 @@ import { initSentry } from './lib/sentry'
 const rootEl = document.getElementById("root");
 if (!rootEl) throw new Error("Root element not found");
 
+if ((window as any).Cypress) {
+  (window as any).store = store
+}
+
 rootEl.innerHTML = `
   <div style="padding:24px;color:#fff;background:#111;min-height:100vh;display:flex;flex-direction:column;gap:12px;">
     <div style="font-size:18px;">⚙️ Загрузка приложения…</div>

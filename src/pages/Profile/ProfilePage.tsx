@@ -1,14 +1,19 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../app/store'
-import { fetchMe, logoutUser } from '../../features/user/userSlice'
+import { fetchMe, logoutUser, deleteUserAccount } from '../../features/user/userSlice'
 import AppLayout from '../../components/Layout/AppLayout'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '../../components/ui/dialog'
+import { Button } from '../../components/ui/button'
+import { Input } from '../../components/ui/input'
 
 const ProfilePage: React.FC = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const { me, loading, error, isAuthenticated } = useAppSelector((s) => s.user)
+  const [isReauthOpen, setIsReauthOpen] = useState(false)
+  const [password, setPassword] = useState('')
 
   useEffect(() => {
     if (!isAuthenticated && !loading) {
@@ -27,6 +32,16 @@ const ProfilePage: React.FC = () => {
       navigate('/login')
     } catch {
       toast.error('Ошибка при выходе')
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    try {
+      await dispatch(deleteUserAccount()).unwrap()
+      toast.success('Аккаунт удален')
+      navigate('/')
+    } catch {
+      toast.error('Ошибка при удалении аккаунта')
     }
   }
 
@@ -99,6 +114,46 @@ const ProfilePage: React.FC = () => {
                   <span className="material-symbols-outlined">logout</span>
                   <span>Выйти из аккаунта</span>
                 </button>
+
+                <Dialog open={isReauthOpen} onOpenChange={setIsReauthOpen}>
+                  <DialogTrigger asChild>
+                    <button
+                      data-testid="delete-account-btn"
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                    >
+                      <span className="material-symbols-outlined">delete_forever</span>
+                      <span>Удалить аккаунт</span>
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="glass-panel border-white/20" data-testid="reauth-dialog">
+                    <DialogHeader>
+                      <DialogTitle className="text-white">Подтверждение удаления</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <p className="text-white/80">Для удаления аккаунта введите ваш пароль.</p>
+                      <Input
+                        type="password"
+                        name="password"
+                        placeholder="Пароль"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="bg-white/5 border-white/10 text-white"
+                      />
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setIsReauthOpen(false)} data-testid="reauth-cancel-btn">
+                        Отмена
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        onClick={handleDeleteAccount}
+                        disabled={!password}
+                      >
+                        Удалить навсегда
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
           </div>

@@ -9,6 +9,7 @@ import { initAuth } from "./features/user/userSlice";
 import SwaggerView from "./pages/Public/SwaggerView";
 import FeaturesPage from "./pages/Public/FeaturesPage";
 import RoadmapPage from "./pages/Public/RoadmapPage";
+import InvestmentPage from "./pages/Public/InvestmentPage";
 import About from "./pages/About";
 import Blog from "./pages/Blog";
 import Contacts from "./pages/Contacts";
@@ -55,6 +56,7 @@ const App: React.FC = () => {
             <Route path="/public/swagger" element={<SwaggerView />} />
             <Route path="/public/features" element={<FeaturesPage />} />
             <Route path="/public/roadmap" element={<RoadmapPage />} />
+            <Route path="/investment" element={<InvestmentPage />} />
             <Route path="/landing" element={<LandingPage />} />
             <Route path="/about" element={<About />} />
             <Route path="/blog" element={<Blog />} />

@@ -100,5 +100,16 @@ export const authService = {
     const userCredential = await signInWithPopup(auth, provider)
     void analytics.trackEvent('login', { method: 'google' })
     return userCredential.user
+  },
+
+  deleteAccount: async (): Promise<void> => {
+    if ((window as any).Cypress) {
+      console.log('E2E: Mocking deleteAccount')
+      return
+    }
+    const user = auth.currentUser
+    if (user) {
+      await user.delete()
+    }
   }
 }

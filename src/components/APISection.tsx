@@ -5,11 +5,9 @@ const APISection = () => {
 
   return (
     <section className="relative py-24 px-4 overflow-hidden">
-      {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-secondary/30 to-transparent" />
 
       <div className="container mx-auto relative z-10">
-        {/* Section Header */}
         <div className="text-center mb-16 space-y-4">
           <div className="inline-flex items-center gap-2 px-4 py-2 glass-card text-sm mb-4">
             <Code2 className="w-4 h-4 text-turquoise" />
@@ -77,14 +75,13 @@ const APISection = () => {
                   <Link to="/public/swagger" className="inline-block px-4 py-2 rounded bg-gold text-background font-medium">Открыть Swagger UI</Link>
                 </div>
 
-                {/* New developer info block */}
                 <div className="mt-6 glass-card p-4">
                   <h4 className="text-md font-semibold text-foreground mb-2">Для разработчиков</h4>
                   <p className="text-sm text-muted-foreground mb-3">Кратко об архитектуре и инструментах, которые используются в проекте:</p>
                   <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
                     <li>Frontend: React + TypeScript, Vite, Tailwind CSS.</li>
                     <li>State: Redux Toolkit (slices, createAsyncThunk) + React Router.</li>
-                    <li>Backend: Firebase (Firestore) / REST API (моки доступны через MSW).</li>
+                    <li>Backend: Firebase (Firestore) / REST API.</li>
                     <li>Tests & CI: Vitest (unit), Storybook + visual tests, Cypress (E2E), GitHub Actions для автоматизации.</li>
                   </ul>
                   <div className="mt-3">

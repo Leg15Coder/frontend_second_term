@@ -22,7 +22,6 @@ const TechStackSection = () => {
   return (
     <section className="relative py-24 px-4 overflow-hidden">
       <div className="container mx-auto relative z-10">
-        {/* Section Header */}
         <div className="text-center mb-16 space-y-4">
           <h2 className="section-title text-foreground">
             Формат <span className="text-gradient-gold">сдачи</span> и стек
@@ -33,7 +32,6 @@ const TechStackSection = () => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12">
-          {/* Tech Stack */}
           <div className="space-y-6">
             <h3 className="font-display text-xl font-bold text-foreground">Технологии</h3>
             
@@ -52,7 +50,6 @@ const TechStackSection = () => {
             </div>
           </div>
 
-          {/* MVP Format */}
           <div className="space-y-6">
             <h3 className="font-display text-xl font-bold text-foreground">MVP формат</h3>
             
@@ -63,14 +60,6 @@ const TechStackSection = () => {
                   <span className="text-foreground">{feature}</span>
                 </div>
               ))}
-            </div>
-
-            {/* Additional info */}
-            <div className="glass-card p-4 border-l-2 border-l-turquoise">
-              <p className="text-sm text-muted-foreground">
-                <span className="text-turquoise font-semibold">Примечание:</span> Проект 
-                использует mock API для демонстрации.
-              </p>
             </div>
           </div>
         </div>

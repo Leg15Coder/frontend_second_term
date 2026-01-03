@@ -12,6 +12,12 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    files: ["cypress/**/*.cy.ts"],
+    rules: {
+      "@typescript-eslint/no-unused-expressions": "off",
+    },
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,

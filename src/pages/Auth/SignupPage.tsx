@@ -123,7 +123,7 @@ export default function SignupPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" data-testid="signup-submit-btn" className="w-full" disabled={isLoading}>
                 {isLoading ? "Создание аккаунта..." : "Зарегистрироваться"}
               </Button>
             </form>

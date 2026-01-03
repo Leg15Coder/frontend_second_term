@@ -21,6 +21,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -34,6 +35,7 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
+    setError(null);
     try {
       const user = await authService.login(data.email, data.password);
       dispatch(setUser({
@@ -45,6 +47,8 @@ export default function LoginPage() {
       showSuccessToast("Вход выполнен успешно");
       navigate("/dashboard");
     } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
       showErrorToast(err, { context: 'Login' });
     } finally {
       setIsLoading(false);
@@ -53,6 +57,7 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const user = await authService.googleLogin();
       dispatch(setUser({
@@ -64,6 +69,8 @@ export default function LoginPage() {
       showSuccessToast("Вход через Google выполнен");
       navigate("/dashboard");
     } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg);
       showErrorToast(err, { context: 'Google Login' });
     } finally {
       setIsLoading(false);
@@ -80,6 +87,7 @@ export default function LoginPage() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {error && <div data-testid="auth-error" className="text-destructive text-sm font-medium text-center">{error}</div>}
               <FormField
                 control={form.control}
                 name="email"
@@ -108,7 +116,12 @@ export default function LoginPage() {
                 )}
               />
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button
+                type="submit"
+                data-testid="login-submit-btn"
+                className="w-full"
+                disabled={isLoading}
+              >
                 {isLoading ? "Вход..." : "Войти"}
               </Button>
 

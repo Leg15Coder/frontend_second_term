@@ -29,7 +29,6 @@ const CalendarPage: React.FC = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [calendarData, setCalendarData] = useState<CalendarData>({})
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
 
   const monthNames = [
     'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
@@ -48,7 +47,6 @@ const CalendarPage: React.FC = () => {
   }, [dispatch, user, currentMonth])
 
   const loadCalendarData = () => {
-    setLoading(true)
     try {
       const calData: CalendarData = {}
       const year = currentMonth.getFullYear()
@@ -86,8 +84,6 @@ const CalendarPage: React.FC = () => {
       setCalendarData(calData)
     } catch (error) {
       showErrorToast(error, { context: 'Load Calendar' })
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -175,7 +171,7 @@ const CalendarPage: React.FC = () => {
             </p>
           </div>
 
-          <Button onClick={handleExport} variant="outline" className="bg-accent/10 text-accent border-accent/50">
+          <Button data-testid="calendar-export-btn" onClick={handleExport} variant="outline" className="bg-accent/10 text-accent border-accent/50">
             <span className="material-symbols-outlined text-sm mr-2">download</span>
             Экспорт CSV
           </Button>
@@ -183,32 +179,27 @@ const CalendarPage: React.FC = () => {
 
         <div className="glass-panel p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-white text-2xl font-bold">
+            <h2 data-testid="calendar-month" className="text-white text-2xl font-bold">
               {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
             </h2>
             <div className="flex gap-2">
-              <Button onClick={handlePreviousMonth} variant="outline" size="sm">
+              <Button data-testid="calendar-prev-month" onClick={handlePreviousMonth} variant="outline" size="sm">
                 <span className="material-symbols-outlined">chevron_left</span>
               </Button>
-              <Button onClick={handleToday} variant="outline" size="sm">
+              <Button data-testid="calendar-today-btn" onClick={handleToday} variant="outline" size="sm">
                 Сегодня
               </Button>
-              <Button onClick={handleNextMonth} variant="outline" size="sm">
+              <Button data-testid="calendar-next-month" onClick={handleNextMonth} variant="outline" size="sm">
                 <span className="material-symbols-outlined">chevron_right</span>
               </Button>
             </div>
           </div>
 
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" />
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-7 gap-2 mb-4">
-                {weekDays.map(day => (
-                  <div key={day} className="text-center text-white/60 text-sm font-semibold py-2">
-                    {day}
+          <>
+            <div className="grid grid-cols-7 gap-2 mb-4">
+              {weekDays.map(day => (
+                <div key={day} className="text-center text-white/60 text-sm font-semibold py-2">
+                  {day}
                   </div>
                 ))}
               </div>
@@ -229,6 +220,8 @@ const CalendarPage: React.FC = () => {
                   return (
                     <button
                       key={day}
+                      data-testid="calendar-day"
+                      data-date={dateStr}
                       onClick={() => handleDateClick(day)}
                       className={`aspect-square rounded-lg p-2 transition-all hover:scale-105 ${
                         isToday ? 'ring-2 ring-accent' : ''
@@ -251,7 +244,6 @@ const CalendarPage: React.FC = () => {
                 })}
               </div>
             </>
-          )}
         </div>
 
         {selectedActivity && (

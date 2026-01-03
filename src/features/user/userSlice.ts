@@ -68,7 +68,6 @@ export const updateMe = createAsyncThunk<User, Partial<User>, { rejectValue: str
 )
 
 export const initAuth = createAsyncThunk('user/initAuth', async (_, { dispatch }) => {
-  // Mock auth for Cypress E2E tests if no Firebase keys are present or just to bypass auth
   if ((window as any).Cypress) {
     console.log('E2E: Mocking auth initialization')
     const storedUser = localStorage.getItem('cypress_user')
@@ -123,6 +122,17 @@ export const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
       await authService.logout()
     } catch (err: unknown) {
       return rejectWithValue(getErrorMessage(err) || 'Failed to logout')
+    }
+  }
+)
+
+export const deleteUserAccount = createAsyncThunk<void, void, { rejectValue: string }>(
+  'user/deleteAccount',
+  async (_, { rejectWithValue }) => {
+    try {
+      await authService.deleteAccount()
+    } catch (err: unknown) {
+      return rejectWithValue(getErrorMessage(err) || 'Failed to delete account')
     }
   }
 )
@@ -208,6 +218,20 @@ const userSlice = createSlice({
       .addCase(logoutUser.rejected, (state, action) => {
         state.loading = false
         state.error = (action.payload as string) || action.error.message || 'Logout failed'
+      })
+
+      .addCase(deleteUserAccount.pending, (state) => {
+        state.loading = true
+      })
+      .addCase(deleteUserAccount.fulfilled, (state) => {
+        state.me = null
+        state.isAuthenticated = false
+        state.loading = false
+        state.error = null
+      })
+      .addCase(deleteUserAccount.rejected, (state, action) => {
+        state.loading = false
+        state.error = (action.payload as string) || action.error.message || 'Delete account failed'
       })
   },
 })
