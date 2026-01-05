@@ -37,6 +37,14 @@ export const authService = {
       } as unknown as FirebaseUser
     }
     const userCredential = await signInWithEmailAndPassword(auth, email, password)
+
+    if (!userCredential.user.emailVerified) {
+      await signOut(auth)
+      const error = new Error('Email не подтвержден. Проверьте вашу почту и перейдите по ссылке из письма.') as any
+      error.code = 'auth/email-not-verified'
+      throw error
+    }
+
     void analytics.trackEvent('login', { method: 'email' })
     return userCredential.user
   },

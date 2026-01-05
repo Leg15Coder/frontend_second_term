@@ -7,6 +7,7 @@ import AppLayout from '../../components/Layout/AppLayout'
 import Status from '../../components/Status/Status'
 import ChallengeWidget from '../../components/ChallengeWidget'
 import EisenhowerMatrix from '../../components/EisenhowerMatrix'
+import UnverifiedEmailWarning from '@/components/Auth/UnverifiedEmailWarning'
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogFooter } from '../../components/ui/dialog'
 import { Input } from '../../components/ui/input'
 import { Textarea } from '../../components/ui/textarea'
@@ -166,6 +167,8 @@ const Dashboard: React.FC = () => {
   return (
     <AppLayout>
       <div className="flex flex-col gap-8">
+        <UnverifiedEmailWarning />
+
         <div className="flex flex-wrap justify-between items-center gap-4">
           <div className="flex flex-col gap-2">
             <p data-testid="dashboard-title" className="text-white text-4xl font-black leading-tight tracking-[-0.033em]">Главная</p>

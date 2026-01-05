@@ -12,6 +12,9 @@ export function mapFirebaseErrorToMessage(error: unknown): string {
   })
 
   switch (err.code) {
+    case 'auth/email-not-verified':
+      return 'Email не подтвержден. Проверьте вашу почту и перейдите по ссылке из письма'
+
     case 'auth/user-not-found':
     case 'auth/wrong-password':
     case 'auth/invalid-credential':
