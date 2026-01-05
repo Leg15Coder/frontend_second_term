@@ -68,21 +68,31 @@ export const updateMe = createAsyncThunk<User, Partial<User>, { rejectValue: str
 )
 
 export const initAuth = createAsyncThunk('user/initAuth', async (_, { dispatch }) => {
-  if ((window as any).Cypress) {
+  const isCypress = !!(window as any).Cypress || typeof (window as any).Cypress !== 'undefined'
+  
+  if (isCypress) {
     console.log('E2E: Mocking auth initialization')
     const storedUser = localStorage.getItem('cypress_user')
+    console.log('E2E: Stored user in localStorage:', storedUser)
+    
     if (storedUser) {
       try {
         const user = JSON.parse(storedUser)
+        console.log('E2E: Parsed user:', user)
+        
         dispatch(setUser({
           id: user.uid,
           email: user.email,
           name: user.displayName,
           photoURL: user.photoURL
         }))
+        
+        console.log('E2E: User set in Redux store')
       } catch (e) {
         console.error('Failed to parse cypress_user', e)
       }
+    } else {
+      console.log('E2E: No cypress_user found in localStorage')
     }
     return
   }

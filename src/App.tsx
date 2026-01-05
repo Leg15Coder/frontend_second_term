@@ -16,6 +16,8 @@ import Contacts from "./pages/Contacts";
 import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/Auth/LoginPage";
 import SignupPage from "./pages/Auth/SignupPage";
+import EmailVerificationPage from "./pages/Auth/EmailVerificationPage";
+import EmailVerifiedPage from "./pages/Auth/EmailVerifiedPage";
 import ApiDocs from "./pages/Public/ApiDocs";
 import LandingPage from "./pages/Public/LandingPage";
 import Index from "./pages/Index";
@@ -52,6 +54,8 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/verify-email" element={<EmailVerificationPage />} />
+            <Route path="/email-verified" element={<EmailVerifiedPage />} />
             <Route path="/public/api" element={<ApiDocs />} />
             <Route path="/public/swagger" element={<SwaggerView />} />
             <Route path="/public/features" element={<FeaturesPage />} />

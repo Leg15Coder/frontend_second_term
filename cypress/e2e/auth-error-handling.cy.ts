@@ -24,10 +24,7 @@ describe('Firebase Auth Error Handling', () => {
     cy.get('button').contains(/google/i).click()
     cy.wait(3000)
 
-    cy.url().should('satisfy', (url) => {
-      const path = url.split('localhost:5173')[1]
-      return path === '/login' || path === '/dashboard'
-    })
+    cy.url().should('match', /\/(login|dashboard)$/)
   })
 
   it('should redirect to dashboard on successful login', () => {

@@ -146,3 +146,27 @@ Cypress.Commands.add('mockFirestore', () => {
   }).as('firebaseAuth')
 })
 
+Cypress.Commands.add('loginBypassAuth', (userData?: { email?: string; name?: string }) => {
+  const mockUser = {
+    uid: 'cypress-test-user',
+    email: userData?.email || 'cypress@test.com',
+    displayName: userData?.name || 'Cypress Test User',
+    photoURL: null,
+    emailVerified: true
+  }
+
+  cy.visit('/')
+
+  cy.window().then((win) => {
+    (win as any).Cypress = true
+    win.localStorage.setItem('cypress_user', JSON.stringify(mockUser))
+  })
+
+  cy.wait(1500)
+
+  cy.window().then((win) => {
+    const stored = win.localStorage.getItem('cypress_user')
+    cy.log('Stored user:', stored)
+    expect(stored).to.not.be.null
+  })
+})
