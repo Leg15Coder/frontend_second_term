@@ -6,6 +6,7 @@ declare namespace Cypress {
     createUser(email: string, password: string): Chainable<void>
     initChallenges(): Chainable<void>
     mockFirestore(): Chainable<void>
+    loginBypassAuth(userData?: { email?: string; name?: string }): Chainable<void>
   }
 }
 

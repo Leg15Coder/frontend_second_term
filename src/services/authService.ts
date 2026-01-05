@@ -22,7 +22,7 @@ export const authService = {
       console.log('E2E: Mocking login', { email })
       if (email.includes('wrong') || email.includes('error') || password === 'short') {
         const error = new Error('Firebase: Error (auth/invalid-email).') as any
-        error.code = 'auth/invalid-credential' // Default mock error code
+        error.code = 'auth/invalid-credential'
         if (email.includes('user-not-found')) error.code = 'auth/user-not-found'
         if (password === 'short') error.code = 'auth/weak-password'
         throw error
@@ -33,6 +33,7 @@ export const authService = {
         email: email,
         displayName: 'Test User',
         photoURL: null,
+        emailVerified: true,
         getIdToken: async () => 'mock-token'
       } as unknown as FirebaseUser
     }
@@ -63,7 +64,7 @@ export const authService = {
         email: email,
         displayName: name || 'Test User',
         photoURL: null,
-        emailVerified: false,
+        emailVerified: true,
         getIdToken: async () => 'mock-token'
       } as unknown as FirebaseUser
     }

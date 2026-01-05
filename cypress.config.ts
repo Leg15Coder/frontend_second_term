@@ -2,7 +2,7 @@ import { defineConfig } from 'cypress'
 
 export default defineConfig({
   e2e: {
-    baseUrl: 'https://localhost:5173',
+    baseUrl: 'http://127.0.0.1:5173',
     specPattern: 'cypress/e2e/**/*.cy.ts',
     setupNodeEvents(on, config) {
       return config;
