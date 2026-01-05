@@ -11,19 +11,27 @@ import { playwright } from '@vitest/browser-playwright';
 const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ mode, command }) => {
   const base = '/';
+  const isServe = command === 'serve';
+  const useHttpsLocal = isServe && process.env.USE_LOCAL_HTTPS === '1';
+
   return {
     base,
     plugins: [react()],
-    server: {
-      host: 'localhost',
-      https: {
-        key: fs.readFileSync('./localhost+2-key.pem'),
-        cert: fs.readFileSync('./localhost+2.pem'),
-      },
-      port: 5173,
-    },
+    server: useHttpsLocal
+      ? {
+          host: 'localhost',
+          https: {
+            key: fs.readFileSync('./localhost+2-key.pem'),
+            cert: fs.readFileSync('./localhost+2.pem'),
+          },
+          port: 5173,
+        }
+      : {
+          host: 'localhost',
+          port: 5173,
+        },
     resolve: {
       alias: {
         "@": path.resolve(dirname, "./src"),
