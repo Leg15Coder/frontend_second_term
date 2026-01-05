@@ -28,6 +28,15 @@ function getConfig() {
     }
   }
 
+  if (!import.meta.env.PROD) {
+    console.log('Firebase Config:', {
+      apiKey: cfg.apiKey ? `${cfg.apiKey.substring(0, 10)}...` : 'missing',
+      authDomain: cfg.authDomain,
+      projectId: cfg.projectId,
+      appId: cfg.appId ? `${cfg.appId.substring(0, 20)}...` : 'missing'
+    })
+  }
+
   return cfg
 }
 

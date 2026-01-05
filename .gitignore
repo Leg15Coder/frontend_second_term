@@ -33,6 +33,10 @@ report/
 .env.*.local
 .env.local
 
+# SSL certificates (mkcert)
+*.pem
+mkcert.exe
+
 # Logs
 logs
 *.log
