@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../app/store'
-import { fetchHabits, createHabit, updateHabit, deleteHabit, toggleLocalComplete } from '../../features/habits/habitsSlice'
+import { fetchHabits, createHabit, updateHabit, deleteHabit, checkInHabit, applyLocalCheckIn } from '../../features/habits/habitsSlice'
 import AppLayout from '../../components/Layout/AppLayout'
 import { Button } from '../../components/ui/button'
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogFooter } from '../../components/ui/dialog'
@@ -89,19 +89,27 @@ const HabitsPage: React.FC = () => {
   }
 
   const handleToggleHabit = async (id: string) => {
-    const habit = items.find((h) => h.id === id)
-    if (!habit || !userId) return
+    const { auth } = await import('../../firebase')
+    const actualUserId = auth.currentUser?.uid
+    if (!actualUserId) {
+      toast.error('Необходима авторизация')
+      return
+    }
 
-    dispatch(toggleLocalComplete(id))
+    const habit = items.find((h) => h.id === id)
+    if (!habit) return
+
+    const today = new Date().toISOString().split('T')[0]
+
+    dispatch(applyLocalCheckIn({ id, date: today }))
 
     try {
-      await dispatch(updateHabit({
-        id,
-        data: { completed: !habit.completed, userId }
-      })).unwrap()
-    } catch {
-      dispatch(toggleLocalComplete(id))
-      toast.error('Ошибка при обновлении привычки')
+      await dispatch(checkInHabit({ id, date: today })).unwrap()
+      toast.success('Привычка обновлена')
+    } catch (err: unknown) {
+      console.error('Failed to toggle habit on HabitsPage:', err)
+      toast.error('Не удалось обновить привычку')
+      await dispatch(fetchHabits(actualUserId))
     }
   }
 
@@ -248,12 +256,14 @@ const HabitsPage: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {items.map((habit) => {
+              const today = new Date().toISOString().split('T')[0]
               const frequencyLabels: Record<string, string> = {
                 daily: 'Ежедневно',
                 weekdays: 'По будням',
                 every_n_days: habit.everyNDays ? `Каждые ${habit.everyNDays} дн.` : 'Каждые N дней',
                 custom: 'Выборочно'
               }
+              const isCompletedToday = (habit.datesCompleted?.includes(today) || false)
               const difficultyLabels = {
                 low: 'Низкая',
                 medium: 'Средняя',
@@ -272,8 +282,8 @@ const HabitsPage: React.FC = () => {
                       onClick={() => handleToggleHabit(habit.id)}
                       className="mb-4 transition-transform hover:scale-110"
                     >
-                      <span className={`material-symbols-outlined text-6xl ${habit.completed ? 'text-accent' : 'text-white/50'}`}>
-                        {habit.completed ? 'check_circle' : 'radio_button_unchecked'}
+                      <span className={`material-symbols-outlined text-6xl ${isCompletedToday ? 'text-accent' : 'text-white/50'}`}>
+                        {isCompletedToday ? 'check_circle' : 'radio_button_unchecked'}
                       </span>
                     </button>
                     <h2 className="text-xl font-bold tracking-wider text-white">{habit.title}</h2>

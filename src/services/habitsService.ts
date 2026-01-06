@@ -8,14 +8,17 @@ import {
   deleteDoc,
   query,
   where,
-  getDoc
+  getDoc,
+  arrayUnion,
+  arrayRemove,
 } from 'firebase/firestore'
 import type { Habit } from '../types'
 
 const COLLECTION_NAME = 'habits'
 
 const isTest = (typeof process !== 'undefined' && (process.env.VITEST === 'true' || process.env.NODE_ENV === 'test')) ||
-               (typeof window !== 'undefined' && (window as any).Cypress)
+               (typeof window !== 'undefined' && typeof (window as any).Cypress !== 'undefined' && (window as any).Cypress === true)
+const isDev = typeof process !== 'undefined' ? process.env.NODE_ENV !== 'production' : true
 
 const memory = new Map<string, string>()
 const habitsKey = (userId: string) => `motify_habits_${userId}`
@@ -124,16 +127,37 @@ const localHabitsService = {
   },
 }
 
+function toDateKey(v: any): string {
+  if (!v && v !== 0) return String(v)
+  try {
+    if (typeof v === 'object' && typeof (v as any).toDate === 'function') {
+      return (v as any).toDate().toISOString().split('T')[0]
+    }
+    if (v instanceof Date) return v.toISOString().split('T')[0]
+    if (typeof v === 'string') return v.split('T')[0]
+    return String(v)
+  } catch (e) {
+    return String(v)
+  }
+}
+
 const remoteHabitsService = {
   async getHabits(userId: string): Promise<Habit[]> {
     if (!userId) return []
     try {
       const q = query(collection(db, COLLECTION_NAME), where('userId', '==', userId))
       const snapshot = await getDocs(q)
-      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Habit))
+      const result = snapshot.docs.map(doc => {
+        const data = doc.data() as any
+        const dates = Array.isArray(data.datesCompleted) ? data.datesCompleted.map(toDateKey) : []
+        const completed = (typeof data.completed === 'boolean') ? data.completed : dates.length > 0
+        return ({ id: doc.id, ...data, datesCompleted: dates, completed } as Habit)
+      })
+      try { writeHabitsLocal(userId, result) } catch (e) { /* ignore */ }
+      return result
     } catch (error) {
-      console.error('Error fetching habits:', error)
-      return []
+      console.error('Error fetching habits from Firestore, falling back to local:', error)
+      return await localHabitsService.getHabits(userId)
     }
   },
 
@@ -158,12 +182,31 @@ const remoteHabitsService = {
     }
     const { id: _, ...cleanData } = updateData as any
 
-    await updateDoc(docRef, cleanData)
-
-    const snap = await getDoc(docRef)
-    if (!snap.exists()) throw new Error('Habit not found')
-
-    return { id: snap.id, ...snap.data() } as Habit
+    try {
+      console.log(`[remoteHabitsService] Updating habit ${id} with`, cleanData)
+      await updateDoc(docRef, cleanData)
+      const snap = await getDoc(docRef)
+      if (!snap.exists()) throw new Error('Habit not found after update')
+      console.log(`[remoteHabitsService] Habit ${id} updated successfully`)
+      const sdata = snap.data() as any
+      const sdates = Array.isArray(sdata.datesCompleted) ? sdata.datesCompleted.map(toDateKey) : []
+      const scompleted = (typeof sdata.completed === 'boolean') ? sdata.completed : sdates.length > 0
+      return { id: snap.id, ...sdata, datesCompleted: sdates, completed: scompleted } as Habit
+    } catch (err: any) {
+      console.error(`[remoteHabitsService] Failed to update habit ${id}:`, err)
+      const msg = String(err?.code || err?.message || err)
+      if (msg.toLowerCase().includes('permission') || msg.toLowerCase().includes('insufficient')) {
+        console.warn('[remoteHabitsService] Permission error — falling back to local update')
+        try {
+          const localUpdated = await localHabitsService.updateHabit(id, data)
+          return localUpdated
+        } catch (le) {
+          console.error('[remoteHabitsService] Local fallback update failed:', le)
+          throw err
+        }
+      }
+      throw err
+    }
   },
 
   async deleteHabit(id: string, _userId: string): Promise<void> {
@@ -172,31 +215,82 @@ const remoteHabitsService = {
 
   async checkInHabit(id: string, date: string, _userId: string): Promise<Habit> {
     const docRef = doc(db, COLLECTION_NAME, id)
-    const snap = await getDoc(docRef)
-    if (!snap.exists()) throw new Error('Habit not found')
+    try {
+      const snap = await getDoc(docRef)
+      if (!snap.exists()) throw new Error('Habit not found')
 
-    const item = snap.data() as Habit
-    const dates = new Set(item.datesCompleted ?? [])
-    const hadDate = dates.has(date)
+      const item = snap.data() as any
+      const datesList = Array.isArray(item.datesCompleted) ? item.datesCompleted.map(toDateKey) : []
+      const dates = new Set(datesList)
+      const hadDate = dates.has(date)
 
-    if (hadDate) {
-      dates.delete(date)
-    } else {
-      dates.add(date)
+      console.log(`[remoteHabitsService] checkInHabit ${id} current dates:`, datesList)
+      console.log(`[remoteHabitsService] checkInHabit ${id} hadDate:`, hadDate)
+
+      const newHabitData = {
+        datesCompleted: Array.from(dates),
+        completed: dates.has(date),
+        updatedAt: new Date().toISOString(),
+        streak: hadDate ? Math.max(0, (item.streak ?? 0) - 1) : (item.streak ?? 0) + 1,
+      }
+
+      console.log(`[remoteHabitsService] checkInHabit ${id} update:`, newHabitData)
+      const storedAreTimestamps = Array.isArray(item.datesCompleted) && item.datesCompleted.some((x: any) => typeof x === 'object' && typeof x?.toDate === 'function')
+      try {
+        if (storedAreTimestamps) {
+          console.log('[remoteHabitsService] detected Timestamp entries in stored dates — using full-array update')
+          await updateDoc(docRef, newHabitData)
+        } else {
+          if (hadDate) {
+            await updateDoc(docRef, { updatedAt: newHabitData.updatedAt, datesCompleted: arrayRemove(date), completed: newHabitData.completed, streak: newHabitData.streak })
+          } else {
+            await updateDoc(docRef, { updatedAt: newHabitData.updatedAt, datesCompleted: arrayUnion(date), completed: newHabitData.completed, streak: newHabitData.streak })
+          }
+        }
+      } catch (atomicErr) {
+        console.warn('[remoteHabitsService] Atomic arrayOp failed or full-array update failed, falling back to full array set:', atomicErr)
+        await updateDoc(docRef, newHabitData)
+      }
+       const updatedSnap = await getDoc(docRef)
+       if (!updatedSnap.exists()) throw new Error('Habit not found after update')
+       console.log(`[remoteHabitsService] checkInHabit ${id} completed`)
+       console.log('[remoteHabitsService] updatedSnap raw dates:', updatedSnap.data()?.datesCompleted)
+       const udata = updatedSnap.data() as any
+       const udates = Array.isArray(udata.datesCompleted) ? udata.datesCompleted.map(toDateKey) : []
+       const ucompleted = (typeof udata.completed === 'boolean') ? udata.completed : udates.length > 0
+      if (isDev) console.log('[remoteHabitsService] updated normalized dates:', udates)
+
+       try {
+         const uid = udata.userId || _userId || ''
+         if (uid) {
+           const existing = readHabitsLocal(uid)
+           const merged = existing.map((h) => (h.id === updatedSnap.id ? ({ id: updatedSnap.id, ...udata, datesCompleted: udates } as Habit) : h))
+           const has = merged.some(m => m.id === updatedSnap.id)
+           const finalList = has ? merged : [{ id: updatedSnap.id, ...udata, datesCompleted: udates } as Habit].concat(merged)
+           writeHabitsLocal(uid, finalList)
+         }
+       } catch (e) {}
+       return { id: updatedSnap.id, ...udata, datesCompleted: udates, completed: ucompleted } as Habit
+    } catch (err: any) {
+      console.error(`[remoteHabitsService] Failed to check-in habit ${id}:`, err)
+      const msg = String(err?.code || err?.message || err)
+      if (msg.toLowerCase().includes('permission') || msg.toLowerCase().includes('insufficient')) {
+        console.warn('[remoteHabitsService] Permission error — falling back to local check-in')
+        try {
+          const { auth } = await import('../firebase')
+          const actualUserId = auth.currentUser?.uid
+          if (!actualUserId) throw new Error('No authenticated user for local fallback')
+          const localUpdated = await localHabitsService.checkInHabit(id, date, actualUserId)
+          return localUpdated
+        } catch (le) {
+          console.error('[remoteHabitsService] Local fallback check-in failed:', le)
+          throw err
+        }
+      }
+      throw err
     }
-
-    const datesArray = Array.from(dates)
-    const newHabitData = {
-      datesCompleted: datesArray,
-      completed: dates.has(date),
-      updatedAt: new Date().toISOString(),
-      streak: hadDate ? Math.max(0, (item.streak ?? 0) - 1) : (item.streak ?? 0) + 1,
-    }
-
-    await updateDoc(docRef, newHabitData)
-
-    return { ...item, ...newHabitData, id }
   },
+
 }
 
 export const habitsService = isTest ? localHabitsService : remoteHabitsService

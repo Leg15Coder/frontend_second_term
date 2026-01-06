@@ -167,6 +167,7 @@ Cypress.Commands.add('loginBypassAuth', (userData?: { email?: string; name?: str
   cy.window().then((win) => {
     const stored = win.localStorage.getItem('cypress_user')
     cy.log('Stored user:', stored)
+    // @ts-expect-error
     expect(stored).to.not.be.null
   })
 })

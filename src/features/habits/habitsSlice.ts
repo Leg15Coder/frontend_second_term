@@ -8,12 +8,14 @@ type State = {
   items: Habit[]
   loading: boolean
   error: string | null
+  pending: Record<string, number>
 }
 
 const initialState: State = {
   items: [],
   loading: false,
   error: null,
+  pending: {},
 }
 
 export const fetchHabits = createAsyncThunk<Habit[], string | undefined, {}>(
@@ -73,7 +75,33 @@ const slice = createSlice({
     toggleLocalComplete(state, action: PayloadAction<string>) {
       const id = action.payload
       const item = state.items.find((h) => h.id === id)
-      if (item) item.completed = !item.completed
+      if (!item) return
+      const today = new Date().toISOString().split('T')[0]
+      const dates = new Set(item.datesCompleted ?? [])
+      if (dates.has(today)) {
+        dates.delete(today)
+      } else {
+        dates.add(today)
+      }
+      item.datesCompleted = Array.from(dates)
+      item.completed = dates.size > 0
+      item.updatedAt = new Date().toISOString()
+      state.pending[id] = Date.now()
+    },
+    applyLocalCheckIn(state, action: PayloadAction<{ id: string; date: string }>) {
+      const { id, date } = action.payload
+      const item = state.items.find((h) => h.id === id)
+      if (!item) return
+      const dates = new Set(item.datesCompleted ?? [])
+      if (dates.has(date)) {
+        dates.delete(date)
+      } else {
+        dates.add(date)
+      }
+      item.datesCompleted = Array.from(dates)
+      item.completed = dates.size > 0
+      item.updatedAt = new Date().toISOString()
+      state.pending[id] = Date.now()
     },
   },
   extraReducers: (builder) => {
@@ -84,7 +112,40 @@ const slice = createSlice({
       })
       .addCase(fetchHabits.fulfilled, (state, action) => {
         state.loading = false
-        state.items = action.payload
+        const incoming: Habit[] = action.payload
+        const map = new Map<string, Habit>()
+        for (const ex of state.items) map.set(ex.id, ex)
+        for (const inc of incoming) {
+          const ex = map.get(inc.id)
+          const incDates = new Set(inc.datesCompleted ?? [])
+          if (!ex) {
+            const pendingTs = state.pending[inc.id]
+            const incTime = inc.updatedAt ? Date.parse(inc.updatedAt) : 0
+            if (pendingTs && pendingTs > incTime) continue
+            map.set(inc.id, inc)
+            continue
+          }
+          const pendingTs = state.pending[inc.id]
+          const incTime = inc.updatedAt ? Date.parse(inc.updatedAt) : 0
+          if (pendingTs && pendingTs > incTime) {
+            map.set(ex.id, ex)
+            continue
+          }
+          const mergedDatesSet = new Set([...(ex.datesCompleted ?? []), ...(inc.datesCompleted ?? [])])
+          const mergedDates = Array.from(mergedDatesSet).sort()
+          const mergedCompleted = mergedDates.length > 0
+          const exTime = ex.updatedAt ? Date.parse(ex.updatedAt) : 0
+          const finalUpdatedAt = (inc.updatedAt && Date.parse(inc.updatedAt) > exTime) ? inc.updatedAt : ex.updatedAt
+          const merged: Habit = {
+            ...ex,
+            ...inc,
+            datesCompleted: mergedDates,
+            completed: mergedCompleted,
+            updatedAt: finalUpdatedAt,
+          }
+          map.set(inc.id, merged)
+        }
+        state.items = Array.from(map.values())
       })
       .addCase(fetchHabits.rejected, (state, action) => {
         state.loading = false
@@ -101,8 +162,32 @@ const slice = createSlice({
         state.items = state.items.filter((h) => h.id !== action.payload)
       })
       .addCase(checkInHabit.fulfilled, (state, action) => {
-        const idx = state.items.findIndex((h) => h.id === action.payload.id)
-        if (idx >= 0) state.items[idx] = action.payload
+        const updated = action.payload
+        const idx = state.items.findIndex((h) => h.id === updated.id)
+        if (idx >= 0) {
+          const existing = state.items[idx]
+          const exTime = existing.updatedAt ? Date.parse(existing.updatedAt) : 0
+          const updTime = updated.updatedAt ? Date.parse(updated.updatedAt) : 0
+          if (updTime >= exTime) {
+            state.items[idx] = {
+              ...existing,
+              datesCompleted: updated.datesCompleted ?? existing.datesCompleted,
+              completed: typeof updated.completed === 'boolean' ? updated.completed : (updated.datesCompleted ? updated.datesCompleted.length > 0 : existing.completed),
+              updatedAt: updated.updatedAt ?? existing.updatedAt,
+              streak: typeof updated.streak === 'number' ? updated.streak : existing.streak,
+            }
+          } else {
+            state.items[idx] = { ...existing }
+          }
+        } else {
+          state.items.push(updated)
+        }
+        if (updated.id && state.pending[updated.id]) delete state.pending[updated.id]
+      })
+      .addCase(checkInHabit.rejected, (state, action) => {
+        const arg = (action.meta && (action.meta as any).arg) || null
+        const id = arg ? (arg as any).id : null
+        if (id && state.pending[id]) delete state.pending[id]
       })
   },
 })
@@ -110,4 +195,5 @@ const slice = createSlice({
 export function toggleLocalComplete(id: string) {
   return slice.actions.toggleLocalComplete(id)
 }
+export const { applyLocalCheckIn } = slice.actions
 export default slice.reducer

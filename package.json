@@ -26,6 +26,7 @@
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "test:rules": "node ./tests/firestore.rules.test.js",
+    "deploy:rules": "firebase deploy --only firestore:rules",
     "postinstall": "patch-package"
   },
   "dependencies": {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector, type RootState } from '../../app/store'
-import { fetchHabits, checkInHabit } from '../../features/habits/habitsSlice'
+import { fetchHabits, checkInHabit, updateHabit, applyLocalCheckIn } from '../../features/habits/habitsSlice'
 import { fetchGoals } from '../../features/goals/goalsSlice'
 import { fetchTodos, addTodo, toggleTodo, deleteTodo, updateTodo } from '../../features/todos/todosSlice'
 import AppLayout from '../../components/Layout/AppLayout'
@@ -35,12 +35,16 @@ const Dashboard: React.FC = () => {
   const [editDeadline, setEditDeadline] = useState('')
 
   useEffect(() => {
-    if (userId) {
+    if (userId && habits.length === 0) {
       dispatch(fetchHabits(userId))
       dispatch(fetchGoals(userId))
       dispatch(fetchTodos(userId))
     }
-  }, [dispatch, userId])
+  }, [dispatch, userId, habits.length])
+
+  useEffect(() => {
+    console.log('[Dashboard] habits changed:', habits)
+  }, [habits])
 
   const loading = habitsLoading || goalsLoading || todosLoading
   const error = habitsError ?? goalsError
@@ -122,16 +126,50 @@ const Dashboard: React.FC = () => {
     }
   }
 
-  const handleToggleHabit = async (id: string) => {
+  const handleToggleHabit = async (habitId: string) => {
+    const { auth } = await import('../../firebase')
+    const actualUserId = auth.currentUser?.uid
+    if (!actualUserId) {
+      toast.error('Необходима авторизация')
+      return
+    }
+
     if (!userId) return
+
+    const habit = habits.find(h => h.id === habitId)
+    if (!habit) {
+      console.error('Habit not found:', habitId)
+      return
+    }
+
     const today = new Date().toISOString().split('T')[0]
+    const isCompleted = habit.datesCompleted?.includes(today) || false
+
+    console.log('Toggling habit:', {
+      habitId,
+      today,
+      isCompleted,
+      datesCompleted: habit.datesCompleted,
+      reduxUserId: userId,
+      actualUserId
+    })
+
+    dispatch(applyLocalCheckIn({ id: habitId, date: today }))
 
     try {
-      await dispatch(checkInHabit({ id, date: today })).unwrap()
-      toast.success('Привычка обновлена!')
-    } catch (error) {
-      toast.error('Не удалось обновить привычку')
-      console.error('Failed to check in habit:', error)
+      await dispatch(checkInHabit({ id: habitId, date: today })).unwrap()
+      toast.success(isCompleted ? 'Привычка отмечена как невыполненная' : 'Привычка выполнена!')
+
+    } catch (error: unknown) {
+      console.error('Failed to toggle habit:', error)
+      const msg = error instanceof Error ? error.message : String(error)
+      const low = msg.toLowerCase()
+      if (low.includes('permission') || low.includes('insufficient') || low.includes('missing or insufficient')) {
+        toast.error('Нет прав на обновление привычки в Firestore. Проверьте правила безопасности Firestore.')
+      } else {
+        toast.error('Не удалось обновить привычку')
+      }
+      await dispatch(fetchHabits(actualUserId))
     }
   }
 
@@ -308,20 +346,25 @@ const Dashboard: React.FC = () => {
                 <div className="text-white/60">Нет привычек. Создайте первую привычку чтобы начать!</div>
               ) : (
                 <div className="flex flex-col divide-y divide-white/10">
-                  {todayHabits.map((habit) => (
-                    <label key={habit.id} data-testid="habit-card" className="flex gap-x-4 py-4 items-center cursor-pointer group">
-                      <input
-                        data-testid="habit-complete-btn"
-                        className="h-5 w-5 rounded-full border-white/30 border-2 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-0 focus:ring-offset-0 appearance-none transition-all duration-300 group-hover:border-primary cursor-pointer"
-                        type="checkbox"
-                        checked={habit.completed}
-                        onChange={() => handleToggleHabit(habit.id)}
-                      />
-                      <p className={`text-base font-normal leading-normal transition-colors ${habit.completed ? 'text-white/50 line-through' : 'text-white/80 group-hover:text-white'}`}>
-                        {habit.title}
-                      </p>
-                    </label>
-                  ))}
+                  {todayHabits.map((habit) => {
+                    const today = new Date().toISOString().split('T')[0]
+                    const isCompletedToday = habit.datesCompleted?.includes(today) || false
+
+                    return (
+                      <label key={habit.id} data-testid="habit-card" className="flex gap-x-4 py-4 items-center cursor-pointer group">
+                        <input
+                          data-testid="habit-complete-btn"
+                          className="h-5 w-5 rounded-full border-white/30 border-2 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-0 focus:ring-offset-0 appearance-none transition-all duration-300 group-hover:border-primary cursor-pointer"
+                          type="checkbox"
+                          checked={isCompletedToday}
+                          onChange={() => handleToggleHabit(habit.id)}
+                        />
+                        <p className={`text-base font-normal leading-normal transition-colors ${isCompletedToday ? 'text-white/50 line-through' : 'text-white/80 group-hover:text-white'}`}>
+                          {habit.title}
+                        </p>
+                      </label>
+                    )
+                  })}
                 </div>
               )}
             </div>
