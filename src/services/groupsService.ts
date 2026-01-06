@@ -38,47 +38,95 @@ export const groupsService = {
   },
 
   async createGroup(group: Omit<Group, 'id' | 'createdAt'>): Promise<Group> {
-    const newGroup = {
-      ...group,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      members: group.members ?? [group.ownerId],
+    try {
+      const newGroup = {
+        ...group,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        members: group.members ?? [group.ownerId],
+      }
+      const docRef = await addDoc(collection(db, COLLECTION_NAME), newGroup)
+      return { ...newGroup, id: docRef.id }
+    } catch (error: any) {
+      console.error('Error creating group:', error)
+      const errorMessage = error?.message || String(error)
+      const errorCode = error?.code || ''
+
+      if (errorCode.includes('permission') || errorMessage.toLowerCase().includes('permission')) {
+        throw new Error('Недостаточно прав для создания группы. Убедитесь, что правила Firestore опубликованы (firebase deploy --only firestore:rules)')
+      }
+
+      throw new Error(errorMessage)
     }
-    const docRef = await addDoc(collection(db, COLLECTION_NAME), newGroup)
-    return { ...newGroup, id: docRef.id }
   },
 
   async updateGroup(id: string, data: Partial<Group>): Promise<Group> {
-    const docRef = doc(db, COLLECTION_NAME, id)
-    const updateData = {
-      ...data,
-      updatedAt: new Date().toISOString()
+    try {
+      const docRef = doc(db, COLLECTION_NAME, id)
+      const updateData = {
+        ...data,
+        updatedAt: new Date().toISOString()
+      }
+      const { id: _, ...cleanData } = updateData as any
+
+      await updateDoc(docRef, cleanData)
+
+      const snap = await getDoc(docRef)
+      if (!snap.exists()) throw new Error('Group not found')
+
+      return { id: snap.id, ...snap.data() } as Group
+    } catch (error: any) {
+      console.error('Error updating group:', error)
+      const errorMessage = error?.message || String(error)
+      const errorCode = error?.code || ''
+
+      if (errorCode.includes('permission') || errorMessage.toLowerCase().includes('permission')) {
+        throw new Error('Недостаточно прав для обновления группы. Вы должны быть владельцем или участником.')
+      }
+
+      throw new Error(errorMessage)
     }
-    const { id: _, ...cleanData } = updateData as any
-
-    await updateDoc(docRef, cleanData)
-
-    const snap = await getDoc(docRef)
-    if (!snap.exists()) throw new Error('Group not found')
-
-    return { id: snap.id, ...snap.data() } as Group
   },
 
   async deleteGroup(id: string): Promise<void> {
-    await deleteDoc(doc(db, COLLECTION_NAME, id))
+    try {
+      await deleteDoc(doc(db, COLLECTION_NAME, id))
+    } catch (error: any) {
+      console.error('Error deleting group:', error)
+      const errorMessage = error?.message || String(error)
+      const errorCode = error?.code || ''
+
+      if (errorCode.includes('permission') || errorMessage.toLowerCase().includes('permission')) {
+        throw new Error('Недостаточно прав для удаления группы. Вы должны быть владельцем.')
+      }
+
+      throw new Error(errorMessage)
+    }
   },
 
   async joinGroup(groupId: string, userId: string): Promise<Group> {
-    const docRef = doc(db, COLLECTION_NAME, groupId)
+    try {
+      const docRef = doc(db, COLLECTION_NAME, groupId)
 
-    await updateDoc(docRef, {
-      members: arrayUnion(userId),
-      updatedAt: new Date().toISOString()
-    })
+      await updateDoc(docRef, {
+        members: arrayUnion(userId),
+        updatedAt: new Date().toISOString()
+      })
 
-    const snap = await getDoc(docRef)
-    if (!snap.exists()) throw new Error('Group not found')
-    return { id: snap.id, ...snap.data() } as Group
+      const snap = await getDoc(docRef)
+      if (!snap.exists()) throw new Error('Group not found')
+      return { id: snap.id, ...snap.data() } as Group
+    } catch (error: any) {
+      console.error('Error joining group:', error)
+      const errorMessage = error?.message || String(error)
+      const errorCode = error?.code || ''
+
+      if (errorCode.includes('permission') || errorMessage.toLowerCase().includes('permission')) {
+        throw new Error('Недостаточно прав для присоединения к группе. Убедитесь, что правила Firestore опубликованы.')
+      }
+
+      throw new Error(errorMessage)
+    }
   },
 
   async leaveGroup(groupId: string, userId: string): Promise<Group> {

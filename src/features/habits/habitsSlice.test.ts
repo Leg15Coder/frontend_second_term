@@ -4,7 +4,7 @@ import type { Habit, HabitsState } from '../../types'
 
 describe('habits slice reducer', () => {
   it('handles fetchHabits.fulfilled', () => {
-    const initial: HabitsState = { items: [], loading: false, error: null }
+    const initial: HabitsState = { items: [], loading: false, error: null, pending: {} }
     const sample: Habit[] = [
       { id: '1', title: 'H1', completed: false, streak: 0, createdAt: new Date().toISOString() },
     ]

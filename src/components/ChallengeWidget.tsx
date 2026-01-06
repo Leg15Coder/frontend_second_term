@@ -9,10 +9,50 @@ const ChallengeWidget: React.FC = () => {
   const user = useAppSelector((s) => s.user.me)
 
   useEffect(() => {
+    console.log('[ChallengeWidget] Fetching challenges...')
     dispatch(fetchChallenges())
   }, [dispatch])
 
-  const currentChallenge = challenges[0]
+  useEffect(() => {
+    console.log('[ChallengeWidget] Redux challenges updated:', {
+      count: challenges.length,
+      items: challenges.map(c => ({ id: c.id, title: c.title, participants: c.participants?.length || 0 }))
+    })
+  }, [challenges])
+
+  const currentChallenge = React.useMemo(() => {
+    console.log('[ChallengeWidget] Computing currentChallenge from challenges:', challenges.length)
+    if (!challenges?.length) {
+      console.log('[ChallengeWidget] No challenges available!')
+      return undefined
+    }
+    const demo = challenges.find((c) => c.id === 'demo-30-day-challenge')
+    if (demo) {
+      console.log('[ChallengeWidget] Found demo-30-day-challenge:', {
+        id: demo.id,
+        participants: demo.participants?.length || 0,
+        participantsList: demo.participants
+      })
+      return demo
+    }
+    console.log('[ChallengeWidget] demo-30-day-challenge NOT FOUND! Using fallback...')
+    return challenges.reduce((best, ch) => {
+      const bestCount = best?.participants?.length ?? 0
+      const chCount = ch?.participants?.length ?? 0
+      return chCount > bestCount ? ch : best
+    }, challenges[0])
+  }, [challenges])
+
+  useEffect(() => {
+    if (currentChallenge && user) {
+      console.log('[ChallengeWidget] Current state:', {
+        challengeId: currentChallenge.id,
+        userId: user.id,
+        participants: currentChallenge.participants,
+        isParticipating: currentChallenge.participants?.includes(user.id)
+      })
+    }
+  }, [currentChallenge, user])
 
   if (loading && !currentChallenge) {
     return (
@@ -41,23 +81,48 @@ const ChallengeWidget: React.FC = () => {
   }
 
   const userId = user?.id ?? ''
-  const participants = currentChallenge.participants ?? []
+  const participants = currentChallenge?.participants ?? []
   const isParticipating = userId && participants.includes(userId)
-  const userChecks = currentChallenge.dailyChecks?.[userId] ?? []
+  const userChecks = currentChallenge?.dailyChecks?.[userId] ?? []
   const today = new Date().toISOString().split('T')[0]
   const checkedInToday = userChecks.includes(today)
-  const progress = currentChallenge.days > 0 ? (userChecks.length / currentChallenge.days) * 100 : 0
+  const progress = currentChallenge && currentChallenge.days > 0 ? (userChecks.length / currentChallenge.days) * 100 : 0
 
   const handleJoin = async () => {
     if (!userId) {
       toast.error('Необходимо авторизоваться')
       return
     }
+
+    console.log('[ChallengeWidget] Joining challenge:', {
+      challengeId: currentChallenge.id,
+      userId,
+      currentParticipants: participants
+    })
+
     try {
-      await dispatch(joinChallenge({ challengeId: currentChallenge.id, userId })).unwrap()
+      const result = await dispatch(joinChallenge({ challengeId: currentChallenge.id, userId })).unwrap()
+      console.log('[ChallengeWidget] Join successful! New state:', {
+        participants: result.participants,
+        isNowParticipating: result.participants?.includes(userId)
+      })
+      console.log('[ChallengeWidget] Redux state after join:', {
+        allChallenges: challenges.length,
+        firstChallenge: challenges[0]
+      })
       toast.success('Вы присоединились к вызову!')
-    } catch {
-      toast.error('Не удалось присоединиться к вызову')
+    } catch (error) {
+      console.error('[ChallengeWidget] Join failed with error:', error)
+      console.error('[ChallengeWidget] Error type:', typeof error)
+      console.error('[ChallengeWidget] Error details:', JSON.stringify(error, null, 2))
+
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      if (errorMessage.toLowerCase().includes('permission') || errorMessage.toLowerCase().includes('denied')) {
+        toast.error('Ошибка доступа к Firestore! Проверьте правила безопасности.')
+        console.error('[ChallengeWidget] FIRESTORE PERMISSION DENIED! Правила не опубликованы!')
+      } else {
+        toast.error(`Не удалось присоединиться: ${errorMessage}`)
+      }
     }
   }
 

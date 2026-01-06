@@ -1,4 +1,17 @@
 export async function callPerplexity(prompt: string): Promise<unknown> {
+  const isDev = import.meta.env.DEV || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  
+  if (isDev) {
+    console.warn('Perplexity service not available in development, returning mock data')
+    return {
+      tasks: [
+        { title: 'Изучить основы', done: false },
+        { title: 'Практика', done: false },
+        { title: 'Создать проект', done: false }
+      ]
+    }
+  }
+  
   const res = await fetch('/.netlify/functions/perplexity', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

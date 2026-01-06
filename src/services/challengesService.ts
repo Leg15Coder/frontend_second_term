@@ -7,6 +7,7 @@ import {
   updateDoc,
   deleteDoc,
   getDoc,
+  setDoc,
   query,
   where,
   arrayUnion,
@@ -17,10 +18,10 @@ import type { Challenge } from '../types'
 const COLLECTION_NAME = 'challenges'
 
 const isTest = (typeof process !== 'undefined' && (process.env.VITEST === 'true' || process.env.NODE_ENV === 'test')) ||
-               (typeof window !== 'undefined' && (window as any).Cypress)
+               (typeof window !== 'undefined' && typeof (window as any).Cypress !== 'undefined' && (window as any).Cypress === true)
 
 if (typeof window !== 'undefined') {
-  console.log('[ChallengesService] isTest:', isTest, 'Cypress:', !!(window as any).Cypress)
+  console.log('[ChallengesService] isTest:', isTest, 'Cypress:', typeof (window as any).Cypress, 'Value:', (window as any).Cypress)
 }
 
 const memory = new Map<string, string>()
@@ -216,10 +217,11 @@ const localChallengesService = {
 const remoteChallengesService = {
   async getChallenges(): Promise<Challenge[]> {
     try {
-      const snapshot = await getDocs(collection(db, COLLECTION_NAME))
-      if (snapshot.empty) {
-        const demoChallenge: Challenge = {
-          id: 'demo-30-day-challenge',
+      const demoDocRef = doc(db, COLLECTION_NAME, 'demo-30-day-challenge')
+      const demoSnap = await getDoc(demoDocRef)
+
+      if (!demoSnap.exists()) {
+        const demoChallenge: Omit<Challenge, 'id'> = {
           title: '30-дневный вызов привычек',
           description: 'Создайте и поддерживайте ежедневные привычки в течение 30 дней',
           days: 30,
@@ -228,10 +230,108 @@ const remoteChallengesService = {
           dailyChecks: {},
           createdAt: new Date().toISOString(),
         }
-        await addDoc(collection(db, COLLECTION_NAME), demoChallenge)
-        return [demoChallenge]
+
+        let createdSucceeded = false
+        try {
+          await setDoc(demoDocRef, demoChallenge)
+          let createdSnap = await getDoc(demoDocRef)
+          let attempts = 0
+          while (!createdSnap.exists() && attempts < 3) {
+            attempts++
+            console.warn(`demoDoc creation not visible yet, retrying (${attempts})...`)
+            await new Promise((res) => setTimeout(res, 500))
+            createdSnap = await getDoc(demoDocRef)
+          }
+          if (!createdSnap.exists()) {
+            console.error('Failed to create demo challenge after retries')
+            throw new Error('Challenge with id demo-30-day-challenge not found')
+          }
+          console.log('Demo challenge created with ID: demo-30-day-challenge')
+          createdSucceeded = true
+        } catch (e) {
+          console.error('[remoteChallengesService] Failed to set demo challenge in Firestore:', e)
+          console.error('[remoteChallengesService] Falling back to local demo')
+        }
+
+      } else {
+        console.log('[remoteChallengesService] Demo challenge exists:', {
+          id: demoSnap.id,
+          participants: demoSnap.data()?.participants,
+          participantsCount: demoSnap.data()?.participants?.length || 0
+        })
       }
-      return snapshot.docs.map((d) => ({ id: d.id, ...d.data() } as Challenge))
+
+      const snapshot = await getDocs(collection(db, COLLECTION_NAME))
+      const challenges = snapshot.docs.map((d) => {
+        const data = d.data() as any
+        if ('id' in data) {
+          const cleaned = { ...data }
+          delete cleaned.id
+          return ({ id: d.id, ...cleaned } as Challenge)
+        }
+        return ({ id: d.id, ...data } as Challenge)
+      })
+
+      console.log('[remoteChallengesService] Loaded challenges total:', challenges.length)
+      challenges.forEach((ch, idx) => {
+        console.log(`  Challenge[${idx}]: id="${ch.id}", title="${ch.title}", participants=${ch.participants?.length || 0}`)
+      })
+
+      const demoChallenges = challenges.filter(c => c.id === 'demo-30-day-challenge')
+
+      if (demoChallenges.length > 1) {
+        console.log('[remoteChallengesService] MULTIPLE demo challenges found! Deleting extras...')
+        demoChallenges.sort((a, b) => (b.participants?.length || 0) - (a.participants?.length || 0))
+
+        const validChallenge = demoChallenges[0]
+        const duplicates = demoChallenges.slice(1)
+
+        for (const dup of duplicates) {
+          try {
+            console.log(`  Deleting duplicate demo challenge with ${dup.participants?.length || 0} participants`)
+            await deleteDoc(doc(db, COLLECTION_NAME, dup.id))
+          } catch (e) {
+            console.error('  Failed to delete duplicate:', e)
+          }
+        }
+
+        const result = [validChallenge]
+        console.log('[remoteChallengesService] RETURNING challenges:', result.length)
+        result.forEach((ch, idx) => {
+          console.log(`  RETURN[${idx}]: id="${ch.id}", participants=${ch.participants?.length || 0}, participantsList=${JSON.stringify(ch.participants)}`)
+        })
+        return result
+      }
+
+      const otherDuplicates = challenges.filter(c => c.id !== 'demo-30-day-challenge' && c.title === '30-дневный вызов привычек')
+      if (otherDuplicates.length > 0) {
+        console.log('[remoteChallengesService] Found duplicates with different IDs to cleanup:', otherDuplicates.length)
+        for (const dup of otherDuplicates) {
+          try {
+            console.log(`  Deleting duplicate challenge: ${dup.id}`)
+            await deleteDoc(doc(db, COLLECTION_NAME, dup.id))
+          } catch (e) {
+            console.error('  Failed to delete duplicate:', e)
+          }
+        }
+      }
+
+      if (demoChallenges.length > 0) {
+        console.log('[remoteChallengesService] RETURNING challenges from server:', demoChallenges.length)
+        demoChallenges.forEach((ch, idx) => {
+          console.log(`  RETURN[${idx}]: id="${ch.id}", participants=${ch.participants?.length || 0}, participantsList=${JSON.stringify(ch.participants)}`)
+        })
+        return demoChallenges
+      }
+
+      try {
+        const local = await localChallengesService.getChallenges()
+        console.log('[remoteChallengesService] Falling back to local challenges:', local.length)
+        return local
+      } catch (e) {
+        console.error('[remoteChallengesService] Failed to read local challenges as fallback:', e)
+        return []
+      }
     } catch (error) {
       console.error('Error fetching challenges:', error)
       return []
@@ -266,41 +366,144 @@ const remoteChallengesService = {
 
   async joinChallenge(challengeId: string, userId: string): Promise<Challenge> {
     const docRef = doc(db, COLLECTION_NAME, challengeId)
-    await updateDoc(docRef, { participants: arrayUnion(userId), updatedAt: new Date().toISOString() })
-    const snap = await getDoc(docRef)
-    if (!snap.exists()) throw new Error('Challenge not found')
-    return { id: snap.id, ...snap.data() } as Challenge
+    let snap = await getDoc(docRef)
+
+    if (!snap.exists()) {
+      if (challengeId === 'demo-30-day-challenge') {
+        console.warn(`Demo challenge ${challengeId} not found, создавая его`)
+        const demoChallenge: Omit<Challenge, 'id'> = {
+          title: '30-дневный вызов привычек',
+          description: 'Создайте и поддерживайте ежедневные привычки в течение 30 дней',
+          days: 30,
+          startDate: new Date().toISOString(),
+          participants: [],
+          dailyChecks: {},
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
+        await setDoc(docRef, demoChallenge)
+        snap = await getDoc(docRef)
+        let createdSnap = await getDoc(docRef)
+        let attempts = 0
+        while (!createdSnap.exists() && attempts < 3) {
+          attempts++
+          console.warn(`demoDoc creation not visible yet, retrying (${attempts})...`)
+          await new Promise((res) => setTimeout(res, 500))
+          createdSnap = await getDoc(docRef)
+        }
+        if (!createdSnap.exists()) {
+          console.error('Failed to create demo challenge after retries')
+          throw new Error('Challenge with id demo-30-day-challenge not found')
+        }
+        console.log('Demo challenge created with ID: demo-30-day-challenge')
+      } else {
+        console.error(`Challenge ${challengeId} not found in Firestore`)
+        throw new Error(`Challenge with id ${challengeId} not found`)
+      }
+    }
+
+    console.log(`Joining challenge ${challengeId} for user ${userId}`)
+    const snapDataBefore = snap && typeof snap.data === 'function' ? snap.data() : undefined
+    console.log(`Current participants BEFORE update:`, (snapDataBefore?.participants) || [])
+
+    try {
+      await updateDoc(docRef, {
+        participants: arrayUnion(userId),
+        updatedAt: new Date().toISOString()
+      })
+      console.log(`Challenge ${challengeId} updated successfully`)
+    } catch (updateError) {
+      console.error(`FAILED to update challenge ${challengeId}:`, updateError)
+      console.error(`Error code:`, (updateError as any)?.code)
+      console.error(`Error message:`, (updateError as any)?.message)
+      throw updateError
+    }
+
+    const updatedSnap = await getDoc(docRef)
+    if (!updatedSnap.exists()) throw new Error('Challenge not found after update')
+
+    const result = { id: updatedSnap.id, ...updatedSnap.data() } as Challenge
+    console.log(`Challenge participants AFTER update:`, result.participants)
+    console.log(`User ${userId} is now participating:`, result.participants?.includes(userId))
+
+    return result
   },
 
   async leaveChallenge(challengeId: string, userId: string): Promise<Challenge> {
     const docRef = doc(db, COLLECTION_NAME, challengeId)
-    await updateDoc(docRef, { participants: arrayRemove(userId), updatedAt: new Date().toISOString() })
-    const snap = await getDoc(docRef)
-    if (!snap.exists()) throw new Error('Challenge not found')
-    return { id: snap.id, ...snap.data() } as Challenge
+    let snap = await getDoc(docRef)
+
+    if (!snap.exists()) {
+      if (challengeId === 'demo-30-day-challenge') {
+        console.warn(`Demo challenge ${challengeId} not found on leave, создавая его`)
+        const demoChallenge: Omit<Challenge, 'id'> = {
+          title: '30-дневный вызов привычек',
+          description: 'Создайте и поддерживайте ежедневные привычки в течение 30 дней',
+          days: 30,
+          startDate: new Date().toISOString(),
+          participants: [],
+          dailyChecks: {},
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
+        await setDoc(docRef, demoChallenge)
+        snap = await getDoc(docRef)
+        if (!snap.exists()) throw new Error(`Challenge with id ${challengeId} not found`)
+      } else {
+        throw new Error(`Challenge with id ${challengeId} not found`)
+      }
+    }
+
+    await updateDoc(docRef, {
+      participants: arrayRemove(userId),
+      updatedAt: new Date().toISOString()
+    })
+
+    const updatedSnap = await getDoc(docRef)
+    if (!updatedSnap.exists()) throw new Error('Challenge not found after update')
+    return { id: updatedSnap.id, ...updatedSnap.data() } as Challenge
   },
 
   async checkInChallenge(challengeId: string, userId: string, date?: string): Promise<Challenge> {
     const docRef = doc(db, COLLECTION_NAME, challengeId)
-    const snap = await getDoc(docRef)
-    if (!snap.exists()) throw new Error('Challenge not found')
+    let snap = await getDoc(docRef)
+    if (!snap.exists()) {
+      if (challengeId === 'demo-30-day-challenge') {
+        console.warn(`Demo challenge ${challengeId} not found on checkIn, создавая его`)
+        const demoChallenge: Omit<Challenge, 'id'> = {
+          title: '30-дневный вызов привычек',
+          description: 'Создайте и поддерживайте ежедневные привычки в течение 30 дней',
+          days: 30,
+          startDate: new Date().toISOString(),
+          participants: [],
+          dailyChecks: {},
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
+        await setDoc(docRef, demoChallenge)
+        snap = await getDoc(docRef)
+        if (!snap.exists()) throw new Error(`Challenge with id ${challengeId} not found`)
+      } else {
+        throw new Error(`Challenge with id ${challengeId} not found`)
+      }
+    }
     const challenge = snap.data() as Challenge
 
     const dailyChecks = challenge.dailyChecks ?? {}
     const userChecks = dailyChecks[userId] ?? []
     const checkDate = date ?? new Date().toISOString().split('T')[0]
 
-    if (userChecks.includes(checkDate)) {
-      const { id: _id, ...rest } = challenge as any
-      return { ...rest, id: snap.id } as Challenge
-    }
+    if (userChecks.includes(checkDate)) return Object.assign({ id: snap.id }, challenge) as Challenge
+
+    dailyChecks[userId] = [...userChecks, checkDate]
 
     await updateDoc(docRef, {
-      [`dailyChecks.${userId}`]: arrayUnion(checkDate),
-      updatedAt: new Date().toISOString(),
+      dailyChecks,
+      updatedAt: new Date().toISOString()
     })
 
     const updatedSnap = await getDoc(docRef)
+    if (!updatedSnap.exists()) throw new Error('Challenge not found after update')
     return { id: updatedSnap.id, ...updatedSnap.data() } as Challenge
   },
 
@@ -321,3 +524,9 @@ const remoteChallengesService = {
 }
 
 export const challengesService = isTest ? localChallengesService : remoteChallengesService
+
+if (typeof window !== 'undefined') {
+  console.log('[ChallengesService] Using:', isTest ? 'localStorage (local)' : 'Firestore (remote)')
+  console.log('[ChallengesService] Service methods:', Object.keys(challengesService))
+  console.log('[ChallengesService] joinChallenge is:', challengesService.joinChallenge.toString().slice(0, 200))
+}
