@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html class="dark" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Авторизация - Goals &amp; Challenges</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#D4AF37", // Gold accent
+            "background-dark": "#0D0C1D", // Deep blue/purple
+            "surface-dark": "rgba(40, 38, 79, 0.4)", // Semi-transparent purple
+            "border-glow": "rgba(212, 175, 55, 0.3)",
+            "border-glow-strong": "rgba(212, 175, 55, 0.5)",
+            "text-light": "#E0E0E0",
+            "text-muted": "#A0A0A0",
+          },
+          fontFamily: {
+            "display": ["Manrope", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.75rem",
+            "lg": "1rem",
+            "xl": "1.5rem",
+            "full": "9999px"
+          },
+          boxShadow: {
+            'glow-gold': '0 0 15px 2px rgba(212, 175, 55, 0.4)',
+            'glow-purple': '0 0 30px 5px rgba(128, 90, 213, 0.3)',
+            'inner-glow': 'inset 0 0 10px rgba(212, 175, 55, 0.2)',
+          },
+          backdropBlur: {
+            'xl': '30px',
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      background-color: #0D0C1D;
+      overflow: hidden;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      font-size: 22px;
+    }
+    .background-blur-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+    .blur-circle-1 {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, rgba(168, 85, 247, 0) 70%);
+      top: 10%;
+      left: 5%;
+      animation: float 15s infinite ease-in-out;
+    }
+    .blur-circle-2 {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(79, 70, 229, 0.25) 0%, rgba(79, 70, 229, 0) 70%);
+      bottom: 5%;
+      right: 10%;
+      animation: float 20s infinite ease-in-out reverse;
+    }
+    .blur-circle-3 {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0) 70%);
+      top: 40%;
+      right: 20%;
+      animation: float 18s infinite ease-in-out;
+    }
+    @keyframes float {
+      0% { transform: translate(0, 0); }
+      50% { transform: translate(30px, 40px); }
+      100% { transform: translate(0, 0); }
+    }#register-form { display: none; }
+    #toggle-register:checked ~ #auth-container #login-form { display: none; }
+    #toggle-register:checked ~ #auth-container #register-form { display: block; }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-text-light">
+<div class="background-blur-container">
+<div class="blur-circle-1"></div>
+<div class="blur-circle-2"></div>
+<div class="blur-circle-3"></div>
+</div>
+<input class="hidden" id="toggle-register" type="checkbox"/>
+<div class="relative flex min-h-screen w-full flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
+<div class="w-full max-w-md rounded-xl bg-surface-dark p-6 sm:p-8 lg:p-10 shadow-glow-purple backdrop-blur-xl border border-white/10" id="auth-container">
+<div id="login-form">
+<div class="mb-8 text-center">
+<h1 class="font-display text-3xl font-bold tracking-tight text-white">Добро пожаловать</h1>
+<p class="mt-2 text-base font-normal text-text-muted">Войдите, чтобы продолжить</p>
+</div>
+<form class="space-y-6">
+<div>
+<label class="block text-sm font-medium text-text-muted mb-2" for="login-email">Электронная почта</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-muted">mail</span>
+<input autocomplete="email" class="w-full h-14 rounded-lg border-2 border-border-glow bg-white/5 py-2 pl-12 pr-4 text-base text-text-light placeholder-text-muted/80 shadow-inner-glow focus:border-border-glow-strong focus:outline-none focus:ring-0" id="login-email" name="email" placeholder="your@email.com" required="" type="email"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-text-muted mb-2" for="login-password">Пароль</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-muted">lock</span>
+<input autocomplete="current-password" class="w-full h-14 rounded-lg border-2 border-border-glow bg-white/5 py-2 pl-12 pr-4 text-base text-text-light placeholder-text-muted/80 shadow-inner-glow focus:border-border-glow-strong focus:outline-none focus:ring-0" id="login-password" name="password" placeholder="••••••••" required="" type="password"/>
+</div>
+</div>
+<div>
+<button class="w-full h-14 flex items-center justify-center rounded-lg bg-primary text-background-dark text-base font-bold transition-all duration-300 hover:bg-yellow-400 hover:shadow-glow-gold focus:outline-none focus:ring-4 focus:ring-primary/50" type="submit">
+Войти
+</button>
+</div>
+</form>
+<div class="mt-6 text-center text-sm">
+<p class="text-text-muted">
+Нет аккаунта?
+<label class="font-semibold text-primary hover:text-yellow-400 cursor-pointer transition-colors" for="toggle-register">Зарегистрироваться</label>
+</p>
+</div>
+</div>
+<div id="register-form">
+<div class="mb-8 text-center">
+<h1 class="font-display text-3xl font-bold tracking-tight text-white">Создать аккаунт</h1>
+<p class="mt-2 text-base font-normal text-text-muted">Присоединяйтесь к нам сегодня</p>
+</div>
+<form class="space-y-6">
+<div>
+<label class="block text-sm font-medium text-text-muted mb-2" for="register-email">Электронная почта</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-muted">mail</span>
+<input autocomplete="email" class="w-full h-14 rounded-lg border-2 border-border-glow bg-white/5 py-2 pl-12 pr-4 text-base text-text-light placeholder-text-muted/80 shadow-inner-glow focus:border-border-glow-strong focus:outline-none focus:ring-0" id="register-email" name="email" placeholder="your@email.com" required="" type="email"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-text-muted mb-2" for="register-password">Пароль</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-muted">lock</span>
+<input class="w-full h-14 rounded-lg border-2 border-border-glow bg-white/5 py-2 pl-12 pr-4 text-base text-text-light placeholder-text-muted/80 shadow-inner-glow focus:border-border-glow-strong focus:outline-none focus:ring-0" id="register-password" name="password" placeholder="••••••••" required="" type="password"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-text-muted mb-2" for="confirm-password">Подтвердите пароль</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-muted">password</span>
+<input class="w-full h-14 rounded-lg border-2 border-border-glow bg-white/5 py-2 pl-12 pr-4 text-base text-text-light placeholder-text-muted/80 shadow-inner-glow focus:border-border-glow-strong focus:outline-none focus:ring-0" id="confirm-password" name="confirm-password" placeholder="••••••••" required="" type="password"/>
+</div>
+</div>
+<div>
+<button class="w-full h-14 flex items-center justify-center rounded-lg bg-primary text-background-dark text-base font-bold transition-all duration-300 hover:bg-yellow-400 hover:shadow-glow-gold focus:outline-none focus:ring-4 focus:ring-primary/50" type="submit">
+Создать аккаунт
+</button>
+</div>
+</form>
+<div class="mt-6 text-center text-sm">
+<p class="text-text-muted">
+Уже есть аккаунт?
+<label class="font-semibold text-primary hover:text-yellow-400 cursor-pointer transition-colors" for="toggle-register">Войти</label>
+</p>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

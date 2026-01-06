@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#BE34D5", // Electric Purple
+              "accent": "#FFD700",  // Luminous Gold
+              "background-light": "#1B1038", // Placeholder for light mode, but using dark theme as primary
+              "background-dark": "#0A0F2B", // Deep Navy Blue
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+            boxShadow: {
+                'glow-purple': '0 0 15px 5px rgba(190, 52, 213, 0.2), 0 0 25px 10px rgba(190, 52, 213, 0.1)',
+                'glow-gold': '0 0 10px 2px rgba(255, 215, 0, 0.3), 0 0 20px 5px rgba(255, 215, 0, 0.2)',
+                'glow-gold-hover': '0 0 15px 4px rgba(255, 215, 0, 0.5), 0 0 25px 8px rgba(255, 215, 0, 0.3)',
+            }
+          },
+        },
+      }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: Inter, sans-serif;
+            background-color: #0A0F2B;
+            color: #ffffff;
+        }
+        .glass-panel {
+            @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl;
+        }
+        .glow-border {
+             @apply shadow-[0_0_2px_#fff,inset_0_0_2px_#fff,0_0_5px_#BE34D5,0_0_15px_#BE34D5,0_0_30px_#BE34D5];
+        }
+    </style>
+</head>
+<body class="relative min-h-screen w-full overflow-x-hidden">
+<!-- Background Glows -->
+<div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+<div class="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-primary/20 rounded-full blur-[150px] animate-pulse"></div>
+<div class="absolute bottom-[-15%] right-[-15%] w-[600px] h-[600px] bg-accent/10 rounded-full blur-[150px] animate-pulse"></div>
+<div class="absolute top-[30%] right-[5%] w-[400px] h-[400px] bg-[#1B1038] rounded-full blur-[120px]"></div>
+</div>
+<div class="flex h-full min-h-screen w-full">
+<!-- SideNavBar -->
+<aside class="w-64 p-4 flex-shrink-0">
+<div class="flex h-full flex-col justify-between glass-panel p-4">
+<div class="flex flex-col gap-4">
+<div class="flex gap-3 items-center">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-accent/50" data-alt="User profile picture of Alex Mercer" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAsZ7KMbxc4Kgqb5qIHSWF26LY279GQZ0Z8KIM7CLI4Vugo-aW3nUZUmIFmEgs5MwHrEEtZwWBhS_vFBIVabCAJkpmU6yfgJX0TjFpaS6TjutdURA3KsJFolV0ri-MMMA1r1ndk-LA1lp45benYrHK-wjAtPpfy0EyVWiO_2BbchFfXp6mi7GZDpAJpO4XmpKy4OUUkDcBF1--tfZ_VVT8maDb17VyHBQti_LSF2EEQCFNq8Ia9MTh6Lswxb0BfxvNTm13QdVbxXig5");'></div>
+<div class="flex flex-col">
+<h1 class="text-white text-base font-medium leading-normal">Alex Mercer</h1>
+<p class="text-white/60 text-sm font-normal leading-normal">Welcome Back</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 mt-6">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-white/10 border border-white/20" href="#">
+<span class="material-symbols-outlined text-accent" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<p class="text-white text-sm font-medium leading-normal">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-white/80">checklist</span>
+<p class="text-white/80 text-sm font-medium leading-normal">Habits</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-white/80">flag</span>
+<p class="text-white/80 text-sm font-medium leading-normal">Goals</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-white/80">shield</span>
+<p class="text-white/80 text-sm font-medium leading-normal">Challenges</p>
+</a>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-white/80">settings</span>
+<p class="text-white/80 text-sm font-medium leading-normal">Settings</p>
+</a>
+</div>
+</div>
+</aside>
+<main class="flex-1 p-8">
+<div class="flex flex-col gap-8">
+<div class="flex flex-wrap justify-between items-center gap-4">
+<div class="flex flex-col gap-2">
+<p class="text-white text-4xl font-black leading-tight tracking-[-0.033em]">Dashboard</p>
+<p class="text-white/60 text-base font-normal leading-normal">Here's your progress for today. Keep going!</p>
+</div>
+<button class="flex items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-accent/10 text-accent text-sm font-bold leading-normal tracking-[0.015em] border border-accent/80 shadow-glow-gold hover:shadow-glow-gold-hover transition-shadow duration-300">
+<span class="truncate">Add New Goal</span>
+</button>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 flex flex-col gap-8">
+<div class="glass-panel p-6">
+<h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] pb-4">Today's Focus</h2>
+<div class="flex flex-col divide-y divide-white/10">
+<label class="flex gap-x-4 py-4 items-center cursor-pointer group">
+<input class="h-5 w-5 rounded-full border-white/30 border-2 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-0 focus:ring-offset-0 appearance-none transition-all duration-300 group-hover:border-primary" type="checkbox"/>
+<p class="text-white/80 text-base font-normal leading-normal group-hover:text-white transition-colors">Meditate for 10 minutes</p>
+</label>
+<label class="flex gap-x-4 py-4 items-center cursor-pointer group">
+<input checked="" class="h-5 w-5 rounded-full border-white/30 border-2 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-0 focus:ring-offset-0 appearance-none transition-all duration-300 group-hover:border-primary" type="checkbox"/>
+<p class="text-white/80 text-base font-normal leading-normal line-through text-white/50 group-hover:text-white transition-colors">Read 1 chapter of a book</p>
+</label>
+<label class="flex gap-x-4 py-4 items-center cursor-pointer group">
+<input class="h-5 w-5 rounded-full border-white/30 border-2 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-0 focus:ring-offset-0 appearance-none transition-all duration-300 group-hover:border-primary" type="checkbox"/>
+<p class="text-white/80 text-base font-normal leading-normal group-hover:text-white transition-colors">30-minute workout</p>
+</label>
+</div>
+</div>
+<div class="glass-panel p-6">
+<h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] pb-4">Active Goals</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="p-4 rounded-lg bg-white/5 border border-white/10 flex flex-col gap-3">
+<p class="text-white font-semibold">Learn Spanish Fluently</p>
+<div class="w-full bg-black/20 rounded-full h-2.5">
+<div class="bg-primary h-2.5 rounded-full" style="width: 45%; box-shadow: 0 0 8px rgba(190, 52, 213, 0.7);"></div>
+</div>
+<p class="text-sm text-white/60">45% complete</p>
+</div>
+<!-- Goal Card -->
+<div class="p-4 rounded-lg bg-white/5 border border-white/10 flex flex-col gap-3">
+<p class="text-white font-semibold">Run a Half Marathon</p>
+<div class="w-full bg-black/20 rounded-full h-2.5">
+<div class="bg-primary h-2.5 rounded-full" style="width: 75%; box-shadow: 0 0 8px rgba(190, 52, 213, 0.7);"></div>
+</div>
+<p class="text-sm text-white/60">75% complete</p>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-1 flex flex-col gap-8">
+<div class="glass-panel p-6">
+<h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] pb-4">Ongoing Challenge</h2>
+<div class="relative p-4 rounded-lg bg-gradient-to-br from-accent/20 to-primary/20 border border-accent/30 flex flex-col gap-3 items-center text-center glow-border">
+<span class="material-symbols-outlined text-accent text-4xl">local_fire_department</span>
+<p class="text-white font-bold text-lg">30-Day Meditation</p>
+<p class="text-white/70 text-sm">Complete your daily session to keep the streak alive.</p>
+<div class="mt-2 text-2xl font-black text-accent tracking-widest">
+<span>12 / 30 Days</span>
+</div>
+</div>
+</div>
+<div class="glass-panel p-6">
+<h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] pb-4">Progress Overview</h2>
+<div class="flex items-center justify-center">
+<div class="relative size-40">
+<svg class="size-full" height="36" viewbox="0 0 36 36" width="36" xmlns="http://www.w3.org/2000/svg">
+<circle class="stroke-current text-white/10" cx="18" cy="18" fill="none" r="16" stroke-width="3"></circle>
+<circle class="stroke-current text-primary" cx="18" cy="18" fill="none" r="16" stroke-dasharray="100" stroke-dashoffset="35" stroke-linecap="round" stroke-width="3" transform="rotate(-90 18 18)"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-3xl font-bold text-white">65%</span>
+<span class="text-sm text-white/60">Weekly Habits</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html class="dark" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Magic Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+    @layer utilities {
+      @keyframes portal-pulse {
+        0%, 100% {
+          transform: scale(1);
+          opacity: 1;
+          box-shadow: 0 0 40px 10px #6b21a8, 0 0 80px 20px #a855f7, inset 0 0 30px 5px #c084fc;
+        }
+        50% {
+          transform: scale(1.05);
+          opacity: 0.9;
+          box-shadow: 0 0 50px 15px #6b21a8, 0 0 100px 30px #a855f7, inset 0 0 40px 10px #c084fc;
+        }
+      }
+      @keyframes runes-glow {
+        0%, 100% {
+          text-shadow: 0 0 5px #c084fc, 0 0 10px #c084fc, 0 0 15px #a855f7;
+          opacity: 0.6;
+        }
+        50% {
+          text-shadow: 0 0 8px #d8b4fe, 0 0 15px #c084fc, 0 0 25px #a855f7;
+          opacity: 1;
+        }
+      }
+      @keyframes fade-in {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-fade-in {
+        animation: fade-in 1s ease-out forwards;
+      }
+      .animate-portal-pulse {
+        animation: portal-pulse 6s infinite ease-in-out;
+      }
+      .animate-runes-glow {
+        animation: runes-glow 4s infinite ease-in-out;
+      }
+      @keyframes fade-out-portal {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.1); opacity: 0.7; }
+        100% { transform: scale(0.1); opacity: 0; }
+      }
+      .animate-fade-out-portal {
+        animation: fade-out-portal 1.5s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards;
+      }
+    }
+  </style>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: {
+            "display": ["Cinzel", "serif"]
+          },
+          colors: {
+            "magic-purple": {
+              DEFAULT: "#a855f7", // purple-500
+              dark: "#6b21a8",     // purple-800
+              light: "#c084fc",    // purple-400
+              lighter: "#d8b4fe",  // purple-300
+            },
+            "deep-space": "#0c0a1a",
+            "starlight": "#f5f3ff",
+          },
+          boxShadow: {
+            'glow-purple': '0 0 15px 5px rgba(168, 85, 247, 0.5)',
+            'glow-purple-lg': '0 0 30px 10px rgba(168, 85, 247, 0.4)',
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-deep-space font-display text-starlight overflow-hidden">
+<div class="relative flex min-h-screen w-full items-center justify-center p-4">
+<div class="absolute inset-0 z-0">
+<div class="absolute top-0 left-0 h-full w-full bg-gradient-to-br from-black/50 via-transparent to-black/50"></div>
+<div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(107,33,168,0.2)_0%,_rgba(12,10,26,0)_70%)]"></div>
+</div>
+<div class="relative z-10 flex flex-col items-center justify-center">
+<div class="relative mb-12 h-[300px] w-[300px] sm:h-[400px] sm:w-[400px]">
+<div class="absolute inset-0 rounded-full border-[10px] border-magic-purple-dark bg-black/50 transition-all duration-1000 animate-portal-pulse animate-fade-out-portal" id="portal-ring" style="animation-delay: 2s;">
+<span class="absolute top-1/2 left-[-20px] -translate-y-1/2 text-4xl text-magic-purple-lighter animate-runes-glow" style="animation-delay: 0.2s;">ᛟ</span>
+<span class="absolute top-[-20px] left-1/2 -translate-x-1/2 text-4xl text-magic-purple-lighter animate-runes-glow" style="animation-delay: 0.4s;">ᛝ</span>
+<span class="absolute top-1/2 right-[-20px] -translate-y-1/2 text-4xl text-magic-purple-lighter animate-runes-glow" style="animation-delay: 0.6s;">ᚲ</span>
+<span class="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-4xl text-magic-purple-lighter animate-runes-glow" style="animation-delay: 0.8s;">ᛗ</span>
+<span class="absolute top-[15%] left-[15%] -translate-x-1/2 -translate-y-1/2 rotate-[-45deg] text-3xl text-magic-purple-lighter animate-runes-glow" style="animation-delay: 1s;">ᛒ</span>
+<span class="absolute top-[15%] right-[15%] translate-x-1/2 -translate-y-1/2 rotate-[45deg] text-3xl text-magic-purple-lighter animate-runes-glow" style="animation-delay: 1.2s;">ᛖ</span>
+<span class="absolute bottom-[15%] left-[15%] -translate-x-1/2 translate-y-1/2 rotate-[45deg] text-3xl text-magic-purple-lighter animate-runes-glow" style="animation-delay: 1.4s;">ᚹ</span>
+<span class="absolute bottom-[15%] right-[15%] translate-x-1/2 translate-y-1/2 rotate-[-45deg] text-3xl text-magic-purple-lighter animate-runes-glow" style="animation-delay: 1.6s;">ᚷ</span>
+</div>
+</div>
+<div class="text-center">
+<h1 class="text-4xl font-bold tracking-widest text-starlight animate-fade-in sm:text-5xl" style="text-shadow: 0 0 10px rgba(216, 180, 254, 0.7), 0 0 20px rgba(168, 85, 247, 0.5);">Quest Complete</h1>
+<p class="mt-4 text-lg text-starlight/80 animate-fade-in sm:text-xl" style="animation-delay: 0.5s;">A new chapter is written. Your path unfolds.</p>
+</div>
+</div>
+</div>
+<script>
+    // JS for demo purposes: Redirect after animation
+    const portalRing = document.getElementById('portal-ring');
+    portalRing.addEventListener('animationend', (event) => {
+      if (event.animationName === 'fade-out-portal') {
+        // In a real SPA, you would use a router to navigate
+        // For this static demo, we'll just log to console
+        console.log('Portal closed. Navigating to the next page...');
+        // window.location.href = '/next-page'; // Example navigation
+      }
+    });
+  </script>
+
+</body></html>

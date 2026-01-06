@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Вызов завершен</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#6a25f4",
+              "background-light": "#f6f5f8",
+              "background-dark": "#161022",
+            },
+            fontFamily: {
+              "display": ["Space Grotesk", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .glow-effect {
+            box-shadow: 0 0 15px 4px rgba(138, 43, 226, 0.4), 0 0 5px 1px rgba(138, 43, 226, 0.3);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+        .glow-effect:hover {
+            box-shadow: 0 0 25px 8px rgba(138, 43, 226, 0.5), 0 0 10px 3px rgba(138, 43, 226, 0.4);
+        }
+    </style>
+</head>
+<body class="font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-[#0A051A] dark group/design-root overflow-hidden">
+<div class="absolute inset-0 bg-no-repeat bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAAtFygcd1YIVlTlIpj2ATEH9vd5-yDyAqpZMYB7zERo8-8zsZn7aiIHvyHSu3d4h31XzrynmDlST8p51ZCHgYfuXVUhBhErkAAybEvdiutFWsWn9pBCO_iSx41zZeLO6bSIRgUVLIScz7dCzesk62c75FmFV0ZKYrFdhhLZR9oZlaXhIsJ2hcG8KpG-k9_YguZ3MUPsntY4XKwTeg9SIgTzre3XA2MtVzft9qoHpX9c6bFe2KJBdFml4HhCCST58-8wSXPosaTHjUK'); opacity: 0.15;"></div>
+<div class="relative layout-container flex h-full grow flex-col">
+<div class="flex flex-1 justify-center items-center p-5">
+<div class="layout-content-container flex flex-col max-w-[960px] flex-1 items-center">
+<div class="flex w-full grow @container py-3 justify-center">
+<div class="w-full max-w-lg gap-1 overflow-hidden @[480px]:gap-2 aspect-square flex">
+<div class="w-full bg-center bg-no-repeat bg-contain rounded-none flex-1" data-alt="An abstract, glowing magical portal with swirling neon purple and blue energy against a dark, starry background." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCqIhiJFQ8dt_OBEU1y6F41LteRwT4L7EP6XzEdvBBUSrs3LiRIpu82Aq6NGZyZhWSkMq7AVe05TG97nbQ7BnYv6qISVqeTvKWQU10pfuEKg2ruF0F28emvtYTKn4GqH1rtocNEEPt77GEuvzdRT01CGGS_hNMUXH_flBM9OtVDZMRJBtKUue4H40ASSaZJcvM8d5u9NyFDanaDS5XpZVsbH6NYyh7Ncf1Eo1xEUpzW6cF7KWWeVY0dmgEd6KYwJd15DTty7DnoSsou");'></div>
+</div>
+</div>
+<h1 class="text-white tracking-light text-3xl md:text-4xl font-bold leading-tight px-4 text-center pb-3 pt-6">Вызов завершен!</h1>
+<p class="text-gray-300 text-base font-normal leading-normal pb-3 pt-1 px-4 text-center max-w-md">Новые горизонты открыты. Ваше путешествие продолжается.</p>
+<div class="flex px-4 py-3 justify-center w-full max-w-xs mt-4">
+<button class="flex w-full min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 bg-[#8A2BE2] text-white text-base font-bold leading-normal tracking-[0.015em] glow-effect">
+<span class="truncate">К новым свершениям</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

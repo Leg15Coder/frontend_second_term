@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toast & Snackbar - The Mystic Path</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0e1e 0%, #1a1530 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 40px;
+            font-size: 32px;
+        }
+
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 50px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #a8e6cf, #8fd3d3);
+            color: #0f0e1e;
+        }
+
+        .btn-error {
+            background: rgba(255, 100, 100, 0.15);
+            color: #ff9999;
+            border: 1px solid rgba(255, 100, 100, 0.3);
+        }
+
+        .btn-warning {
+            background: rgba(255, 184, 102, 0.15);
+            color: #ffd89b;
+            border: 1px solid rgba(255, 184, 102, 0.3);
+        }
+
+        .btn-info {
+            background: rgba(168, 230, 207, 0.15);
+            color: #a8e6cf;
+            border: 1px solid rgba(168, 230, 207, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Toast Container */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 350px;
+        }
+
+        /* Snackbar Container */
+        .snackbar-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            padding-bottom: 20px;
+        }
+
+        /* Toast Message */
+        .toast {
+            background: rgba(255, 255, 255, 0.95);
+            color: #0f0e1e;
+            padding: 16px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: slideInRight 0.3s ease;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .toast.success {
+            background: rgba(168, 230, 207, 0.95);
+        }
+
+        .toast.error {
+            background: rgba(255, 153, 153, 0.95);
+            color: #0f0e1e;
+        }
+
+        .toast.warning {
+            background: rgba(255, 184, 102, 0.95);
+            color: #0f0e1e;
+        }
+
+        .toast.info {
+            background: rgba(143, 211, 211, 0.95);
+            color: #0f0e1e;
+        }
+
+        .toast-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: inherit;
+            font-size: 18px;
+            margin-left: auto;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .toast-close:hover {
+            opacity: 1;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+        }
+
+        .toast.removing {
+            animation: slideOutRight 0.3s ease forwards;
+        }
+
+        /* Snackbar Message */
+        .snackbar {
+            background: linear-gradient(135deg, rgba(168, 230, 207, 0.95), rgba(143, 211, 211, 0.95));
+            color: #0f0e1e;
+            padding: 16px 24px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+            animation: slideUpSnackbar 0.3s ease;
+            font-size: 14px;
+            max-width: 600px;
+            font-weight: 500;
+        }
+
+        .snackbar.error {
+            background: linear-gradient(135deg, rgba(255, 153, 153, 0.95), rgba(255, 120, 120, 0.95));
+        }
+
+        .snackbar.warning {
+            background: linear-gradient(135deg, rgba(255, 184, 102, 0.95), rgba(255, 160, 60, 0.95));
+        }
+
+        .snackbar-action {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: inherit;
+            padding: 6px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .snackbar-action:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .snackbar-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: inherit;
+            font-size: 20px;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .snackbar-close:hover {
+            opacity: 1;
+        }
+
+        @keyframes slideUpSnackbar {
+            from {
+                opacity: 0;
+                transform: translateY(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDownSnackbar {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(100px);
+            }
+        }
+
+        .snackbar.removing {
+            animation: slideDownSnackbar 0.3s ease forwards;
+        }
+
+        /* Section */
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(168, 230, 207, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #a8e6cf;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+        }
+
+        .description {
+            font-size: 12px;
+            color: #8fd3d3;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 600px) {
+            .toast-container {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+
+            .snackbar {
+                margin: 0 10px;
+                max-width: none;
+            }
+
+            .buttons-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Toast & Snackbar Messages</h1>
+
+        <!-- Toast Section -->
+        <div class="section">
+            <div class="section-title">Toast Notifications</div>
+            <div class="description">
+                Brief, non-intrusive messages that appear in the corner. Auto-dismiss after 4 seconds.
+            </div>
+            <div class="buttons-grid">
+                <button class="btn-success" onclick="showToast('success')">Show Success Toast</button>
+                <button class="btn-error" onclick="showToast('error')">Show Error Toast</button>
+                <button class="btn-warning" onclick="showToast('warning')">Show Warning Toast</button>
+                <button class="btn-info" onclick="showToast('info')">Show Info Toast</button>
+            </div>
+        </div>
+
+        <!-- Snackbar Section -->
+        <div class="section">
+            <div class="section-title">Snackbar Messages</div>
+            <div class="description">
+                Bottom-aligned messages with optional action button. Better for important notifications.
+            </div>
+            <div class="buttons-grid">
+                <button class="btn-success" onclick="showSnackbar('success')">Show Success Snackbar</button>
+                <button class="btn-error" onclick="showSnackbar('error')">Show Error Snackbar</button>
+                <button class="btn-warning" onclick="showSnackbar('warning')">Show Warning Snackbar</button>
+                <button class="btn-info" onclick="showSnackbar('info')">Show Info Snackbar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Snackbar Container -->
+    <div class="snackbar-container" id="snackbarContainer"></div>
+
+    <script>
+        const toastMessages = {
+            success: { icon: '✓', text: 'Operation completed successfully!' },
+            error: { icon: '✕', text: 'An error occurred. Please try again.' },
+            warning: { icon: '⚠', text: 'Please pay attention to this.' },
+            info: { icon: 'ℹ', text: 'Here is some important information.' }
+        };
+
+        const snackbarMessages = {
+            success: { text: 'Your habit has been created successfully!' },
+            error: { text: 'Failed to save. Please check your connection.' },
+            warning: { text: 'You\'re about to break your 7-day streak!' },
+            info: { text: 'A new challenge has been added to your feed.' }
+        };
+
+        function showToast(type) {
+            const container = document.getElementById('toastContainer');
+            const msg = toastMessages[type];
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span class="toast-icon">${msg.icon}</span>
+                <span>${msg.text}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.classList.add('removing');
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 4000);
+        }
+
+        function showSnackbar(type) {
+            const container = document.getElementById('snackbarContainer');
+            const msg = snackbarMessages[type];
+            
+            // Remove existing snackbar if any
+            const existing = container.querySelector('.snackbar');
+            if (existing) {
+                existing.classList.add('removing');
+                setTimeout(() => existing.remove(), 300);
+            }
+            
+            const snackbar = document.createElement('div');
+            snackbar.className = `snackbar ${type}`;
+            snackbar.innerHTML = `
+                <span>${msg.text}</span>
+                <div style="display: flex; gap: 10px;">
+                    <button class="snackbar-action" onclick="handleSnackbarAction()">Action</button>
+                    <button class="snackbar-close" onclick="this.parentElement.parentElement.remove()">×</button>
+                </div>
+            `;
+            
+            container.appendChild(snackbar);
+            
+            setTimeout(() => {
+                if (snackbar.parentElement) {
+                    snackbar.classList.add('removing');
+                    setTimeout(() => snackbar.remove(), 300);
+                }
+            }, 6000);
+        }
+
+        function handleSnackbarAction() {
+            console.log('Action button clicked');
+            document.getElementById('snackbarContainer').querySelector('.snackbar').remove();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+openapi: 3.0.3
+info:
+  title: Motify API
+  version: "1.0.0"
+  description: |
+    Полная (актуальная) минимальная спецификация REST API, основанная на кодовой базе клиента и mock handlers.
+servers:
+  - url: /
+paths:
+  /api/habits:
+    get:
+      summary: Get all habits
+      responses:
+        '200':
+          description: A list of Habit objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Habit'
+    post:
+      summary: Create a habit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewHabit'
+      responses:
+        '201':
+          description: Created habit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Habit'
+  /api/habits/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    patch:
+      summary: Update habit partially
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HabitUpdate'
+      responses:
+        '200':
+          description: Updated habit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Habit'
+    delete:
+      summary: Delete habit
+      responses:
+        '204':
+          description: No content
+  /api/habits/{id}/toggle:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    patch:
+      summary: Toggle habit completed state (mock helper)
+      responses:
+        '200':
+          description: Toggled habit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Habit'
+  /api/goals:
+    get:
+      summary: Get all goals
+      responses:
+        '200':
+          description: A list of Goal objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Goal'
+    post:
+      summary: Create a goal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewGoal'
+      responses:
+        '201':
+          description: Created goal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Goal'
+  /goals:
+    get:
+      summary: Alternate route for getting goals (some client code uses /goals)
+      responses:
+        '200':
+          description: Goals list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Goal'
+    post:
+      summary: Alternate create goal endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewGoal'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Goal'
+  /api/me:
+    get:
+      summary: Get current user profile
+      responses:
+        '200':
+          description: User object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    patch:
+      summary: Update current user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /api/challenges:
+    get:
+      summary: Get challenges (list)
+      responses:
+        '200':
+          description: A list of Challenge objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Challenge'
+    post:
+      summary: Create a challenge (if supported)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewChallenge'
+      responses:
+        '201':
+          description: Created challenge
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Challenge'
+components:
+  schemas:
+    Habit:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        completed:
+          type: boolean
+        streak:
+          type: integer
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+      required: [id, title, completed, createdAt]
+    NewHabit:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+    HabitUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        completed:
+          type: boolean
+        streak:
+          type: integer
+    Goal:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        progress:
+          type: number
+        completed:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+      required: [id, title, progress, completed, createdAt]
+    NewGoal:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        progress:
+          type: number
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          nullable: true
+        avatar:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+      required: [id, name, createdAt]
+    UserUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        avatar:
+          type: string
+    Challenge:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        daysTotal:
+          type: integer
+        daysCompleted:
+          type: integer
+        description:
+          type: string
+          nullable: true
+      required: [id, title, daysTotal, daysCompleted]
+    NewChallenge:
+      type: object
+      required: [title, daysTotal]
+      properties:
+        title:
+          type: string
+        daysTotal:
+          type: integer
+        description:
+          type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
