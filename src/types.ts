@@ -89,6 +89,7 @@ export interface HabitsState {
   items: Habit[];
   loading: boolean;
   error: string | null;
+  pending: Record<string, number>;
 }
 
 export interface GoalsState {
